@@ -1,0 +1,49 @@
+﻿<UserControl
+    x:Class="ParentingTrackerApp.Views.CustomizingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ParentingTrackerApp.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/Base.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel>
+            <Button Click="AddOnClicked">Add</Button>
+            <ListView ItemsSource="{Binding EventTypes}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding Name, Mode=TwoWay}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}"></TextBox>
+                            <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="30" />
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
+                                                <TextBlock Grid.Column="0"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button Content="&#xE106;" FontFamily="Segoe UI Symbol" Click="DelOnClicked"></Button>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</UserControl>
