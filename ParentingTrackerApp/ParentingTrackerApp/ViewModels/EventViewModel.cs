@@ -8,6 +8,7 @@ namespace ParentingTrackerApp.ViewModels
         private DateTime _endTime;
         private EventTypeViewModel _eventType;
         private string _notes;
+        private bool _isEditing;
 
         public DateTime StartTime
         {
@@ -20,8 +21,8 @@ namespace ParentingTrackerApp.ViewModels
                 if (_startTime != value)
                 {
                     _startTime = value;
-                    RaisePropertyChanged("StartTime");
-                    RaisePropertyChanged("Title");
+                    RaisePropertyChangedEvent("StartTime");
+                    RaisePropertyChangedEvent("Title");
                 }
             }
         }
@@ -37,7 +38,7 @@ namespace ParentingTrackerApp.ViewModels
                 if (_endTime != value)
                 {
                     _endTime = value;
-                    RaisePropertyChanged("EndTime");
+                    RaisePropertyChangedEvent("EndTime");
                 }
             }
         }
@@ -53,9 +54,9 @@ namespace ParentingTrackerApp.ViewModels
                 if (_eventType != value)
                 {
                     _eventType = value;
-                    RaisePropertyChanged("EventType");
-                    RaisePropertyChanged("Title");
-                    RaisePropertyChanged("Type");
+                    RaisePropertyChangedEvent("EventType");
+                    RaisePropertyChangedEvent("Title");
+                    RaisePropertyChangedEvent("Type");
                 }
             }
         }
@@ -76,16 +77,35 @@ namespace ParentingTrackerApp.ViewModels
                 if (_notes != value)
                 {
                     _notes = value;
-                    RaisePropertyChanged("Notes");
+                    RaisePropertyChangedEvent("Notes");
                 }
             }
         }
 
+        /// <summary>
+        ///  The event displayed as a tag when being halfway created
+        /// </summary>
         public string Title
         {
             get
             {
                 return string.Format("{0} {1}", EventType.Name, StartTime.ToString());
+            }
+        }
+
+        public bool IsEditing
+        {
+            get
+            {
+                return _isEditing;
+            }
+            set
+            {
+                if (_isEditing != value)
+                {
+                    _isEditing = value;
+                    RaisePropertyChangedEvent("IsEditing");
+                }
             }
         }
     }

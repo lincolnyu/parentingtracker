@@ -30,5 +30,12 @@ namespace ParentingTrackerApp.Views
             var c = (CentralViewModel)DataContext;
             c.Log();
         }
+
+        private void RemoveLoggedOnClick(object sender, RoutedEventArgs args)
+        {
+            var e = (EventViewModel)((FrameworkElement)sender).DataContext;
+            var central = (CentralViewModel)DataContext;
+            central.RemoveLoggedEvent(e);
+        }
     }
 }

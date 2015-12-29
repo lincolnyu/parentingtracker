@@ -32,7 +32,7 @@ namespace ParentingTrackerApp.ViewModels
                 if (_name != value)
                 {
                     _name = value;
-                    RaisePropertyChanged("Name");
+                    RaisePropertyChangedEvent("Name");
                 }
             }
         }
@@ -67,8 +67,8 @@ namespace ParentingTrackerApp.ViewModels
                 if (_selectedColor != value)
                 {
                     _selectedColor = value;
-                    RaisePropertyChanged("SelectedColor");
-                    RaisePropertyChanged("Color");
+                    RaisePropertyChangedEvent("SelectedColor");
+                    RaisePropertyChangedEvent("Color");
                 }
             }
         }

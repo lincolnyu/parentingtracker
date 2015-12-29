@@ -1,6 +1,8 @@
 ﻿using ParentingTrackerApp.Default;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 
 namespace ParentingTrackerApp.ViewModels
 {
@@ -27,31 +29,6 @@ namespace ParentingTrackerApp.ViewModels
         public ObservableCollection<EventViewModel> LoggedEvents { get; }
         = new ObservableCollection<EventViewModel>();
 
-        public EventTypeViewModel SelectedEventType
-        {
-            get { return SelectedRunningEvent?.EventType?? 
-                    SelectedLoggedEvent?.EventType??
-                    _selectedEventType; }
-            set
-            {
-                if (SelectedRunningEvent != null)
-                {
-                    SelectedRunningEvent.EventType = value;
-                    RaisePropertyChanged("SelectedEventType");
-                }
-                else if (SelectedLoggedEvent != null)
-                {
-                    SelectedLoggedEvent.EventType = value;
-                    RaisePropertyChanged("SelectedEventType");
-                }
-                else if (_selectedEventType != value)
-                {
-                    _selectedEventType = value;
-                    RaisePropertyChanged("SelectedEventType");
-                }
-            }
-        }
-
         public EventViewModel SelectedRunningEvent
         {
             get { return _selectedRunningEvent; }
@@ -60,10 +37,9 @@ namespace ParentingTrackerApp.ViewModels
                 if (_selectedRunningEvent != value)
                 {
                     _selectedRunningEvent = value;
-                    RaisePropertyChanged("SelectedRunningEvent");
-                    RaisePropertyChanged("CanStop");
-                    RaisePropertyChanged("Notes");
-                    RaisePropertyChanged("SelectedEventType");
+                    RaisePropertyChangedEvent("SelectedRunningEvent");
+                    RaisePropertyChangedEvent("CanStop");
+                    AffectMutliRoleFields();
                 }
             }
         }
@@ -76,9 +52,9 @@ namespace ParentingTrackerApp.ViewModels
                 if (_selectedLoggedEvent != value)
                 {
                     _selectedLoggedEvent = value;
-                    RaisePropertyChanged("SelectedLoggedEvent");
-                    RaisePropertyChanged("Notes");
-                    RaisePropertyChanged("SelectedEventType");
+                    FinishEditing(value);
+                    AffectMutliRoleFields();
+                    RaisePropertyChangedEvent("SelectedLoggedEvent");
                 }
             }
         }
@@ -91,30 +67,58 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
+        public EventTypeViewModel SelectedEventType
+        {
+            get
+            {
+                return SelectedRunningEvent?.EventType ??
+                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  SelectedLoggedEvent.EventType : _selectedEventType);
+            }
+            set
+            {
+                if (SelectedRunningEvent != null)
+                {
+                    SelectedRunningEvent.EventType = value;
+                    RaisePropertyChangedEvent("SelectedEventType");
+                }
+                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
+                {
+                    SelectedLoggedEvent.EventType = value;
+                    RaisePropertyChangedEvent("SelectedEventType");
+                }
+                else if (_selectedEventType != value)
+                {
+                    _selectedEventType = value;
+                    RaisePropertyChangedEvent("SelectedEventType");
+                }
+            }
+        }
         public string Notes
         {
             get
             {
                 return SelectedRunningEvent?.Notes ??
-                  SelectedLoggedEvent?.Notes ??
-                  _notes;
+                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  SelectedLoggedEvent.Notes :
+                  _notes);
             }
             set
             {
                 if (SelectedRunningEvent != null)
                 {
                     SelectedRunningEvent.Notes = value;
-                    RaisePropertyChanged("Notes");
+                    RaisePropertyChangedEvent("Notes");
                 }
-                else if (SelectedLoggedEvent != null)
+                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
                 {
                     SelectedLoggedEvent.Notes = value;
-                    RaisePropertyChanged("Notes");
+                    RaisePropertyChangedEvent("Notes");
                 }
                 else if (_notes != value)
                 {
                     _notes = value;
-                    RaisePropertyChanged("Notes");
+                    RaisePropertyChangedEvent("Notes");
                 }
             }
         }
@@ -142,7 +146,7 @@ namespace ParentingTrackerApp.ViewModels
             var t = DateTime.Now;
             sre.EndTime = t;
             RunningEvents.Remove(SelectedRunningEvent);
-            LoggedEvents.Add(sre);
+            AddLogggedEvent(sre);
             SelectedRunningEvent = null; // not needed
         }
 
@@ -156,7 +160,48 @@ namespace ParentingTrackerApp.ViewModels
                 EventType = SelectedEventType,
                 Notes = Notes
             };
+            AddLogggedEvent(evm);
+        }
+
+        private void AddLogggedEvent(EventViewModel evm)
+        {
             LoggedEvents.Add(evm);
+            evm.PropertyChanged += LoggedEventPropertyChanged;
+        }
+
+        public void RemoveLoggedEvent(EventViewModel evm)
+        {
+            evm.PropertyChanged -= LoggedEventPropertyChanged;
+            LoggedEvents.Remove(evm);
+        }
+
+
+        private void LoggedEventPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "IsEditing")
+            {
+                var evm = (EventViewModel)sender;
+                if (evm.IsEditing)
+                {
+                    SelectedLoggedEvent = evm;
+                    FinishEditing(evm);
+                }
+                AffectMutliRoleFields();
+            }
+        }
+        
+        private void FinishEditing(EventViewModel evm)
+        {
+            foreach (var le in LoggedEvents.Where(x => x != evm))
+            {
+                le.IsEditing = false;
+            }
+        }
+
+        private void AffectMutliRoleFields()
+        {
+            RaisePropertyChangedEvent("Notes");
+            RaisePropertyChangedEvent("SelectedEventType");
         }
     }
 }

@@ -29,7 +29,7 @@
                 </ComboBox>
             </StackPanel>
             <TextBlock>Notes</TextBlock>
-            <TextBox Text="{Binding Notes, Mode=TwoWay}"></TextBox>
+            <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
             <ListView ItemsSource="{Binding RunningEvents}" 
                       SelectedItem="{Binding SelectedRunningEvent, Mode=TwoWay}">
                 <ListView.ItemTemplate>
@@ -54,11 +54,17 @@
                                 <ColumnDefinition Width="200"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="20"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="{Binding StartTime}"></TextBlock>
                             <TextBlock Grid.Column="1" Text="{Binding EndTime}"></TextBlock>
                             <TextBlock Grid.Column="2" Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
                             <TextBlock Grid.Column="3" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
+                            <ToggleButton Name="EditingButton" Grid.Column="4" Content="&#xE104;" FontFamily="Segoe UI Symbol"
+                                          IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>
+                            <Button Grid.Column="5" Content="&#xE106;" FontFamily="Segoe UI Symbol"
+                                          Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

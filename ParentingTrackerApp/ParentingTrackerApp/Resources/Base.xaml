@@ -5,4 +5,5 @@
     xmlns:converters="using:ParentingTrackerApp.Converters">
     <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 </ResourceDictionary>

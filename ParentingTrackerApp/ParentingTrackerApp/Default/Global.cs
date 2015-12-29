@@ -15,6 +15,8 @@ namespace ParentingTrackerApp.Default
             colors.Add(new ColorOptionViewModel("Pink", Colors.Pink));
             colors.Add(new ColorOptionViewModel("Wheat", Colors.Wheat));
             colors.Add(new ColorOptionViewModel("Brown", Colors.Brown));
+            colors.Add(new ColorOptionViewModel("Dark Blue", Colors.DarkBlue));
+            colors.Add(new ColorOptionViewModel("Gray", Colors.Gray));
         }
 
         public static void LoadDefaultBreastFeedingEventTypes(this ICollection<EventTypeViewModel> types)
@@ -23,6 +25,9 @@ namespace ParentingTrackerApp.Default
             types.Add(new EventTypeViewModel("Breast feeding, Left", Colors.Pink));
             types.Add(new EventTypeViewModel("Breast feeding, Right", Colors.Wheat));
             types.Add(new EventTypeViewModel("Nappy changing", Colors.Brown));
+            types.Add(new EventTypeViewModel("Bathing", Colors.Blue));
+            types.Add(new EventTypeViewModel("Sleeping", Colors.DarkBlue));
+            types.Add(new EventTypeViewModel("Measuring", Colors.Gray));
         }
     }
 }
