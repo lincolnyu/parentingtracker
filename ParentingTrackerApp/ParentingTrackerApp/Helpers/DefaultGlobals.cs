@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Windows.UI;
 
-namespace ParentingTrackerApp.Default
+namespace ParentingTrackerApp.Helpers
 {
-    public static class Global
+    public static class DefaultGlobals
     {
         public static void LoadColorOptions(this ICollection<ColorOptionViewModel> colors)
         {
@@ -19,7 +19,7 @@ namespace ParentingTrackerApp.Default
             colors.Add(new ColorOptionViewModel("Gray", Colors.Gray));
         }
 
-        public static void LoadDefaultBreastFeedingEventTypes(this ICollection<EventTypeViewModel> types)
+        public static void LoadDefaultParentingColorMapping(this ICollection<EventTypeViewModel> types)
         {
             types.Clear();
             types.Add(new EventTypeViewModel("Breast feeding, Left", Colors.Pink));

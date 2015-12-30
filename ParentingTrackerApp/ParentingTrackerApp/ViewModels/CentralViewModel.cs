@@ -1,6 +1,7 @@
-﻿using ParentingTrackerApp.Default;
+﻿using ParentingTrackerApp.Helpers;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 
@@ -15,9 +16,9 @@ namespace ParentingTrackerApp.ViewModels
 
         public CentralViewModel()
         {
-            EventTypes.LoadDefaultBreastFeedingEventTypes();
-
-            SelectedEventType = EventTypes[0];
+            EventTypes.LoadRoamingColorMapping();
+            ResetWithEventTypes();
+            EventTypes.CollectionChanged += EventTypesOnCollectionChanged;
         }
 
         public ObservableCollection<EventTypeViewModel> EventTypes { get; } =
@@ -202,6 +203,21 @@ namespace ParentingTrackerApp.ViewModels
         {
             RaisePropertyChangedEvent("Notes");
             RaisePropertyChangedEvent("SelectedEventType");
+        }
+
+
+        private void EventTypesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            ResetWithEventTypes();
+            EventTypes.SaveRoamingColorMapping();
+        }
+
+        private void ResetWithEventTypes()
+        {
+            if (EventTypes.Count > 0)
+            {
+                SelectedEventType = EventTypes[0];
+            }
         }
     }
 }

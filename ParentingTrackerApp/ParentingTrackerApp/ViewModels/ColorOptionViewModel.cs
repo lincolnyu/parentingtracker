@@ -1,4 +1,4 @@
-﻿using ParentingTrackerApp.Default;
+﻿using ParentingTrackerApp.Helpers;
 using System.Collections.Generic;
 using Windows.UI;
 
@@ -17,7 +17,7 @@ namespace ParentingTrackerApp.ViewModels
             Color = color;
         }
 
-        public static List<ColorOptionViewModel> ColorOptions { get; } = new List<ColorOptionViewModel>();
+        public static IList<ColorOptionViewModel> ColorOptions { get; } = new List<ColorOptionViewModel>();
 
         public string Name { get; }
 

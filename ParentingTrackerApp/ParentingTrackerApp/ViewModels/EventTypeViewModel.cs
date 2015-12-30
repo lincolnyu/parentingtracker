@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using Windows.UI;
 
 namespace ParentingTrackerApp.ViewModels
@@ -12,7 +11,10 @@ namespace ParentingTrackerApp.ViewModels
         public EventTypeViewModel()
         {
             Name = "New event type";
-            SelectedColor = AvailableColors[0];
+            if (AvailableColors.Count > 0)
+            {
+                SelectedColor = AvailableColors[0];
+            }
         }
 
         public EventTypeViewModel(string name, Color color)
