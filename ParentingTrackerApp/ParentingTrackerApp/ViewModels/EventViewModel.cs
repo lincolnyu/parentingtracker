@@ -3,13 +3,19 @@ using System;
 
 namespace ParentingTrackerApp.ViewModels
 {
-    public class EventViewModel : BaseViewModel
+    public class EventViewModel : BaseViewModel, IComparable<EventViewModel>
     {
+        #region Fields
+
         private DateTime _startTime;
         private DateTime _endTime;
         private EventTypeViewModel _eventType;
         private string _notes;
         private bool _isEditing;
+
+        #endregion
+
+        #region Properties
 
         public DateTime StartTime
         {
@@ -185,6 +191,24 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
+        #endregion
+
+        #region Methods
+
+        #region  IComparable<EventViewModel> members
+
+        public int CompareTo(EventViewModel other)
+        {
+            var c = StartTime.CompareTo(other.StartTime);
+            if (c != 0) return c;
+            c = EndTime.CompareTo(other.EndTime);
+            if (c != 0) return c;
+            c = EventType.Name.CompareTo(other.EventType.Name);
+            if (c != 0) return c;
+            return Notes.CompareTo(other.Notes);
+        }
+
+        #endregion
 
         private void RaiseStartTimeChangedEvent()
         {
@@ -202,5 +226,7 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("EndTimeOfDay");
             RaisePropertyChangedEvent("LocalisedTimeRange");
         }
+
+        #endregion
     }
 }

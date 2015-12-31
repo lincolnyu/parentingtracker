@@ -40,7 +40,7 @@ namespace ParentingTrackerApp.ViewModels
             = new ObservableCollection<EventViewModel>();
 
         public ObservableCollection<EventViewModel> LoggedEvents { get; }
-        = new ObservableCollection<EventViewModel>();
+            = new ObservableCollection<EventViewModel>();
 
         public EventViewModel SelectedRunningEvent
         {
@@ -282,6 +282,7 @@ namespace ParentingTrackerApp.ViewModels
                 EventTypes.LoadRoamingColorMapping();
                 ResetWithEventTypes();
                 var res = await LoggedEvents.LoadEvents(EventTypes);
+                LoggedEvents.QuickSort();
                 _state = States.Synced;
                 return res;
             }
@@ -380,9 +381,18 @@ namespace ParentingTrackerApp.ViewModels
             AddLogggedEvent(evm);
         }
 
-        private void AddLogggedEvent(EventViewModel evm)
+        /// <summary>
+        ///  Use this to add an event as it also makes sure events are in order
+        /// </summary>
+        /// <param name="evm"></param>
+        public void AddLogggedEvent(EventViewModel evm)
         {
-            LoggedEvents.Add(evm);
+            var index = LoggedEvents.BinarySearch(evm);
+            if (index < 0)
+            {
+                index = -index - 1;
+            }
+            LoggedEvents.Insert(index, evm);
         }
 
         public void RemoveLoggedEvent(EventViewModel evm)
