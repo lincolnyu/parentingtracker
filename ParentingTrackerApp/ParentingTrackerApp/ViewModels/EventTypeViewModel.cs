@@ -44,7 +44,7 @@ namespace ParentingTrackerApp.ViewModels
         /// </summary>
         public Color Color
         {
-            get { return SelectedColor.Color ; }
+            get { return SelectedColor != null ? SelectedColor.Color : default(Color); }
             set
             {
                 foreach (var colorOption in AvailableColors)

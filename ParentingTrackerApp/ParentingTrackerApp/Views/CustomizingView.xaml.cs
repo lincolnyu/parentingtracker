@@ -22,7 +22,9 @@ namespace ParentingTrackerApp.Views
 
         private void DelOnClicked(object sender, RoutedEventArgs e)
         {
-
+            var tvm = (CentralViewModel)DataContext;
+            var del = (EventTypeViewModel)((FrameworkElement)sender).DataContext;
+            tvm.EventTypes.Remove(del);
         }
     }
 }

@@ -171,7 +171,7 @@ namespace ParentingTrackerApp.ViewModels
         {
             get
             {
-                return string.Format("{0} {1}", EventType.Name, StartTime.ToString());
+                return string.Format("{0} {1}", EventType != null?EventType.Name : "(null)", StartTime.ToString());
             }
         }
 

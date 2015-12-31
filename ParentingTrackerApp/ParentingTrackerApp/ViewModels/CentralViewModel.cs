@@ -1,5 +1,6 @@
 ﻿using ParentingTrackerApp.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -439,10 +440,33 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("EndPickerEnabled");
         }
 
-        private void EventTypesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void EventTypesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             ResetWithEventTypes();
+
             // TODO validate event references...
+            if (args.OldItems != null)
+            {
+                var set = new HashSet<EventTypeViewModel>();
+                foreach (var oi in args.OldItems.Cast<EventTypeViewModel>())
+                {
+                    set.Add(oi);
+                }
+                foreach (var ev in RunningEvents)
+                {
+                    if (set.Contains(ev.EventType))
+                    {
+                        ev.EventType = null;
+                    }
+                }
+                foreach(var ev in LoggedEvents)
+                {
+                    if (set.Contains(ev.EventType))
+                    {
+                        ev.EventType = null;
+                    }
+                }
+            }
         }
 
         private void ResetWithEventTypes()
@@ -450,6 +474,10 @@ namespace ParentingTrackerApp.ViewModels
             if (EventTypes.Count > 0)
             {
                 SelectedEventType = EventTypes[0];
+            }
+            else
+            {
+                SelectedEventType = null;
             }
         }
     }
