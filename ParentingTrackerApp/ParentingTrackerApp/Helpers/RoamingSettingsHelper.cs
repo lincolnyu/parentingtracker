@@ -32,26 +32,14 @@ namespace ParentingTrackerApp.Helpers
         public static void SaveRoamingColorMapping(this ICollection<EventTypeViewModel> colors)
         {
             var roamingSettings = ApplicationData.Current.RoamingSettings;
-            ApplicationDataCompositeValue cc;
-            if (roamingSettings.Values.ContainsKey("colorMapping"))
+            var cc = new ApplicationDataCompositeValue();
+            // NOTE this must be called before assigning cc to the registry below
+            // NOTE and the assignment should be made regardless
+            foreach (var color in colors)
             {
-                var cm = roamingSettings.Values["colorMapping"];
-                cc = (ApplicationDataCompositeValue)cm;
-                cc.Clear();
-                foreach (var color in colors)
-                {
-                    cc[color.Name] = ColorToArgb(color.Color);
-                }
+                cc[color.Name] = ColorToArgb(color.Color);
             }
-            else
-            {
-                cc = new ApplicationDataCompositeValue();
-                foreach (var color in colors)
-                {
-                    cc[color.Name] = ColorToArgb(color.Color);
-                }
-                roamingSettings.Values["colorMapping"] = cc;
-            }
+            roamingSettings.Values["colorMapping"] = cc;
         }
 
         private static uint ColorToArgb(this Color color)

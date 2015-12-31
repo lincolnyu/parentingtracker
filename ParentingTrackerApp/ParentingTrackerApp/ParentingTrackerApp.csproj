@@ -102,7 +102,9 @@
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Helpers\DefaultGlobals.cs" />
+    <Compile Include="Helpers\RoamingFilesHelper.cs" />
     <Compile Include="Helpers\RoamingSettingsHelper.cs" />
+    <Compile Include="Helpers\StringEncodingHelper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

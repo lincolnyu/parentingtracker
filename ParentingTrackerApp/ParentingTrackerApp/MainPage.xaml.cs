@@ -4,6 +4,7 @@ using ParentingTrackerApp.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Threading;
+using Windows.UI.Xaml.Navigation;
 
 namespace ParentingTrackerApp
 {
@@ -15,7 +16,7 @@ namespace ParentingTrackerApp
         private Timer _timer;
 
         private DateTime _time;
-        
+
         public MainPage()
         {
             InitializeComponent();
@@ -27,7 +28,8 @@ namespace ParentingTrackerApp
 
         public DateTime Time
         {
-            get { return _time; } set
+            get { return _time; }
+            set
             {
                 if (_time != value)
                 {
@@ -37,7 +39,7 @@ namespace ParentingTrackerApp
             }
         }
 
-        public CentralViewModel CentralViewModel { get; } = new CentralViewModel();
+        public static CentralViewModel CentralViewModel { get; } = new CentralViewModel();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -50,6 +52,20 @@ namespace ParentingTrackerApp
         private void RaisePropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            await CentralViewModel.Load();
+        }
+
+        protected override async void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            await CentralViewModel.Save();
         }
     }
 }

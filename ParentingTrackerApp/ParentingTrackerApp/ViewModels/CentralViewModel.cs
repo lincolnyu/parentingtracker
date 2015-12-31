@@ -4,11 +4,20 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ParentingTrackerApp.ViewModels
 {
     public class CentralViewModel : BaseViewModel
     {
+        private enum States
+        {
+            Init,
+            Synced,
+            Dirty
+        }
+
+        private States _state = States.Init;
         private string _notes;
         private EventTypeViewModel _selectedEventType;
         private EventViewModel _selectedRunningEvent;
@@ -16,9 +25,8 @@ namespace ParentingTrackerApp.ViewModels
 
         public CentralViewModel()
         {
-            EventTypes.LoadRoamingColorMapping();
-            ResetWithEventTypes();
             EventTypes.CollectionChanged += EventTypesOnCollectionChanged;
+            LoggedEvents.CollectionChanged += LoggedEventsOnCollectionChanged;
         }
 
         public ObservableCollection<EventTypeViewModel> EventTypes { get; } =
@@ -124,6 +132,39 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
+        public async Task<bool> Load()
+        {
+            if (_state == States.Init)
+            {
+                _state = States.Synced;
+                EventTypes.LoadRoamingColorMapping();
+                ResetWithEventTypes();
+                return await LoggedEvents.LoadEvents(EventTypes);
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public async Task Save()
+        {
+            if (_state == States.Dirty)
+            {
+                EventTypes.SaveRoamingColorMapping();
+                await LoggedEvents.SaveEvents();
+                _state = States.Synced;
+            }
+        }
+
+        private void LoggedEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            if (_state == States.Synced)
+            {
+                _state = States.Dirty;
+            }
+        }
+
         public void Start()
         {
             var time = DateTime.Now;
@@ -205,11 +246,10 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("SelectedEventType");
         }
 
-
         private void EventTypesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ResetWithEventTypes();
-            EventTypes.SaveRoamingColorMapping();
+            // TODO validate event references...
         }
 
         private void ResetWithEventTypes()
