@@ -30,6 +30,27 @@
             </StackPanel>
             <TextBlock>Notes</TextBlock>
             <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                    <ColumnDefinition MaxWidth="300"></ColumnDefinition>
+                    <ColumnDefinition MaxWidth="300"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Start" Grid.Row="0" Grid.Column="0"></TextBlock>
+                <DatePicker Grid.Row="0" Grid.Column="1" IsEnabled="{Binding StartPickerEnabled}"
+                            Date="{Binding StartDate, Mode=TwoWay}"></DatePicker>
+                <TimePicker Grid.Row="0" Grid.Column="2" IsEnabled="{Binding StartPickerEnabled}"
+                            Time="{Binding StartTimeOfDay, Mode=TwoWay}"></TimePicker>
+                <TextBlock Text="End" Grid.Row="1" Grid.Column="0"></TextBlock>
+                <DatePicker Grid.Row="1" Grid.Column="1" IsEnabled="{Binding EndPickerEnabled}"
+                            Date="{Binding EndDate, Mode=TwoWay}"></DatePicker>
+                <TimePicker Grid.Row="1" Grid.Column="2" IsEnabled="{Binding EndPickerEnabled}"
+                            Time="{Binding EndTimeOfDay, Mode=TwoWay}"></TimePicker>
+            </Grid>
             <ListView ItemsSource="{Binding RunningEvents}" 
                       SelectedItem="{Binding SelectedRunningEvent, Mode=TwoWay}">
                 <ListView.ItemTemplate>
@@ -50,21 +71,23 @@
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="200"/>
-                                <ColumnDefinition Width="200"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{Binding StartTime}"></TextBlock>
-                            <TextBlock Grid.Column="1" Text="{Binding EndTime}"></TextBlock>
-                            <TextBlock Grid.Column="2" Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
-                            <TextBlock Grid.Column="3" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
-                            <ToggleButton Name="EditingButton" Grid.Column="4" Content="&#xE104;" FontFamily="Segoe UI Symbol"
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
+                            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Orientation="Horizontal">
+                                <ToggleButton Name="EditingButton" Content="&#xE104;" FontFamily="Segoe UI Symbol"
                                           IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>
-                            <Button Grid.Column="5" Content="&#xE106;" FontFamily="Segoe UI Symbol"
+                                <Button Content="&#xE106;" FontFamily="Segoe UI Symbol"
                                           Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>
+                            </StackPanel>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

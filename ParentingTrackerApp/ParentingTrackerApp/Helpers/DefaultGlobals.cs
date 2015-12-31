@@ -13,9 +13,11 @@ namespace ParentingTrackerApp.Helpers
             colors.Add(new ColorOptionViewModel("Green", Colors.Green));
             colors.Add(new ColorOptionViewModel("Blue", Colors.Blue));
             colors.Add(new ColorOptionViewModel("Pink", Colors.Pink));
+            colors.Add(new ColorOptionViewModel("Light Pink", Colors.LightPink));
             colors.Add(new ColorOptionViewModel("Wheat", Colors.Wheat));
             colors.Add(new ColorOptionViewModel("Brown", Colors.Brown));
             colors.Add(new ColorOptionViewModel("Dark Blue", Colors.DarkBlue));
+            colors.Add(new ColorOptionViewModel("Light Blue", Colors.LightBlue));
             colors.Add(new ColorOptionViewModel("Gray", Colors.Gray));
         }
 
@@ -28,6 +30,7 @@ namespace ParentingTrackerApp.Helpers
             types.Add(new EventTypeViewModel("Bathing", Colors.Blue));
             types.Add(new EventTypeViewModel("Sleeping", Colors.DarkBlue));
             types.Add(new EventTypeViewModel("Measuring", Colors.Gray));
+            types.Add(new EventTypeViewModel("Others", Colors.Green));
         }
     }
 }

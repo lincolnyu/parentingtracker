@@ -13,7 +13,7 @@ namespace ParentingTrackerApp
     /// </summary>
     public sealed partial class MainPage : INotifyPropertyChanged
     {
-        private Timer _timer;
+        private readonly Timer _timer;
 
         private DateTime _time;
 
@@ -21,8 +21,9 @@ namespace ParentingTrackerApp
         {
             InitializeComponent();
 
-            DataContext = CentralViewModel;
+            DataContext = this;
 
+            _time = DateTime.Now;
             _timer = new Timer(TimerOnTick, null, 0, 1000);
         }
 
@@ -40,6 +41,8 @@ namespace ParentingTrackerApp
         }
 
         public static CentralViewModel CentralViewModel { get; } = new CentralViewModel();
+
+        public CentralViewModel Central { get { return CentralViewModel; } }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

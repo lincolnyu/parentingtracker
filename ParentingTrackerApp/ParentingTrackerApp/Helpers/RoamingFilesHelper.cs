@@ -43,7 +43,7 @@ namespace ParentingTrackerApp.Helpers
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // files not found
                 return false;

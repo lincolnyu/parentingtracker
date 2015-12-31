@@ -17,8 +17,8 @@
     </UserControl.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel>
-            <TextBlock Text="{Binding Time, Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
-            <Pivot>
+            <TextBlock FontSize="36" Text="{Binding Time, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
+            <Pivot DataContext="{Binding Central}">
                 <!--
                 <Pivot.RightHeader>
                     <CommandBar ClosedDisplayMode="Compact">
@@ -37,7 +37,6 @@
 
                 </PivotItem>
             </Pivot>
-          
         </StackPanel>
     </Grid>
 </Page>

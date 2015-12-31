@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ParentingTrackerApp.Helpers;
+using System;
 using Windows.UI.Xaml.Data;
 
 namespace ParentingTrackerApp.Converters
@@ -7,6 +8,16 @@ namespace ParentingTrackerApp.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+            var paramStr = parameter as string;
+            if (string.IsNullOrWhiteSpace(paramStr))
+            {
+                return value.ToString();
+            }
+            else if (paramStr.ToLower() == "reldatetime")
+            {
+                var val = (DateTime)value;
+                return val.ToRelativeDateTimeString();
+            }
             return value.ToString();
         }
 
@@ -14,5 +25,6 @@ namespace ParentingTrackerApp.Converters
         {
             throw new NotSupportedException();
         }
+
     }
 }

@@ -101,6 +101,7 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
+    <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\DefaultGlobals.cs" />
     <Compile Include="Helpers\RoamingFilesHelper.cs" />
     <Compile Include="Helpers\RoamingSettingsHelper.cs" />
