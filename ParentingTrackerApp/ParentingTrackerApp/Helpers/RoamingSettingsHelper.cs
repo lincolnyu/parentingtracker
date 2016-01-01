@@ -2,11 +2,31 @@
 using System.Collections.Generic;
 using Windows.Storage;
 using Windows.UI;
+using System;
 
 namespace ParentingTrackerApp.Helpers
 {
     public static class RoamingSettingsHelper
     {
+        public static void LoadExportSettings(out string path)
+        {
+            var roamingSettings = ApplicationData.Current.RoamingSettings;
+            if (roamingSettings.Values.ContainsKey("exportPath"))
+            {
+                path = (string)roamingSettings.Values["exportPath"];
+            }
+            else
+            {
+                path = "";
+            }
+        }
+
+        public static void SaveExportSettings(string path)
+        {
+            var roamingSettings = ApplicationData.Current.RoamingSettings;
+            roamingSettings.Values["exportPath"] = path;
+        }
+
         public static void LoadRoamingColorMapping(this ICollection<EventTypeViewModel> colors)
         {
             var roamingSettings = ApplicationData.Current.RoamingSettings;
@@ -61,6 +81,11 @@ namespace ParentingTrackerApp.Helpers
             var g = (byte)((ucolor >> 8) & 0xff);
             var b = (byte)(ucolor & 0xff);
             return Color.FromArgb(a, r, g, b);
+        }
+
+        internal static void LoadExportSettings(out object expPath)
+        {
+            throw new NotImplementedException();
         }
     }
 }

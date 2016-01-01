@@ -27,6 +27,7 @@ namespace ParentingTrackerApp.ViewModels
         private EventTypeViewModel _selectedEventType;
         private EventViewModel _selectedRunningEvent;
         private EventViewModel _selectedLoggedEvent;
+        private string _exportPath;
 
         public CentralViewModel()
         {
@@ -42,6 +43,23 @@ namespace ParentingTrackerApp.ViewModels
 
         public ObservableCollection<EventViewModel> LoggedEvents { get; }
             = new ObservableCollection<EventViewModel>();
+
+        /// <summary>
+        ///  File to export to
+        /// </summary>
+        public string ExportPath
+        {
+            get { return _exportPath; }
+            set
+            {
+                if (_exportPath != value)
+                {
+                    _exportPath = value;
+                    RaisePropertyChangedEvent("ExportPath");
+                    MarkAsDirty();
+                }
+            }
+        }
 
         public EventViewModel SelectedRunningEvent
         {
@@ -280,6 +298,9 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_state == States.Init)
             {
+                string expPath;
+                RoamingSettingsHelper.LoadExportSettings(out expPath);
+                ExportPath = expPath;
                 EventTypes.LoadRoamingColorMapping();
                 ResetWithEventTypes();
                 var res = await LoggedEvents.LoadEvents(EventTypes);
@@ -298,9 +319,18 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_state == States.Dirty)
             {
+                RoamingSettingsHelper.SaveExportSettings(ExportPath);
                 EventTypes.SaveRoamingColorMapping();
                 await LoggedEvents.SaveEvents();
                 _state = States.Synced;
+            }
+        }
+
+        private void MarkAsDirty()
+        {
+            if (_state == States.Synced)
+            {
+                _state = States.Dirty;
             }
         }
 
@@ -327,11 +357,7 @@ namespace ParentingTrackerApp.ViewModels
                     }
                 }
             }
-
-            if (_state == States.Synced)
-            {
-                _state = States.Dirty;
-            }
+            MarkAsDirty();
         }
 
         private void SubscribeForLoadedLoggedEvents()

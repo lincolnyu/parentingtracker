@@ -119,6 +119,9 @@
     <Compile Include="Views\CustomizingView.xaml.cs">
       <DependentUpon>CustomizingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ExportView.xaml.cs">
+      <DependentUpon>ExportView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TrackingView.xaml.cs">
       <DependentUpon>TrackingView.xaml</DependentUpon>
     </Compile>
@@ -154,6 +157,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Views\CustomizingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ExportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
