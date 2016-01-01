@@ -314,10 +314,9 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-
-        public async Task Save()
+        public async Task Save(bool forceSave = false)
         {
-            if (_state == States.Dirty)
+            if (_state == States.Dirty || forceSave)
             {
                 RoamingSettingsHelper.SaveExportSettings(ExportPath);
                 EventTypes.SaveRoamingColorMapping();
@@ -440,6 +439,7 @@ namespace ParentingTrackerApp.ViewModels
                 AffectPickerEnabled();
                 AffectMutliRoleFields();
             }
+            MarkAsDirty();
         }
         
         private void FinishEditing(EventViewModel evm)
@@ -470,29 +470,58 @@ namespace ParentingTrackerApp.ViewModels
         {
             ResetWithEventTypes();
 
-            // TODO validate event references...
-            if (args.OldItems != null)
+            if (args.Action == NotifyCollectionChangedAction.Reset)
             {
-                var set = new HashSet<EventTypeViewModel>();
-                foreach (var oi in args.OldItems.Cast<EventTypeViewModel>())
+                SubscribeForLoadedEventTypes();
+            }
+            else
+            {
+                if (args.OldItems != null)
                 {
-                    set.Add(oi);
-                }
-                foreach (var ev in RunningEvents)
-                {
-                    if (set.Contains(ev.EventType))
+                    var set = new HashSet<EventTypeViewModel>();
+                    foreach (var oi in args.OldItems.Cast<EventTypeViewModel>())
                     {
-                        ev.EventType = null;
+                        set.Add(oi);
+                        oi.PropertyChanged -= EventTypeOnPropertyChanged;
+                    }
+                    foreach (var ev in RunningEvents)
+                    {
+                        if (set.Contains(ev.EventType))
+                        {
+                            ev.EventType = null;
+                        }
+                    }
+                    foreach (var ev in LoggedEvents)
+                    {
+                        if (set.Contains(ev.EventType))
+                        {
+                            ev.EventType = null;
+                        }
                     }
                 }
-                foreach(var ev in LoggedEvents)
+                if (args.NewItems != null)
                 {
-                    if (set.Contains(ev.EventType))
+                    foreach (var ni in args.NewItems.Cast<EventTypeViewModel>())
                     {
-                        ev.EventType = null;
+                        ni.PropertyChanged += EventTypeOnPropertyChanged;
                     }
                 }
             }
+           
+            MarkAsDirty();
+        }
+
+        private void SubscribeForLoadedEventTypes()
+        {
+            foreach (var et in EventTypes)
+            {
+                et.PropertyChanged += EventTypeOnPropertyChanged;
+            }
+        }
+
+        private void EventTypeOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            MarkAsDirty();
         }
 
         private void ResetWithEventTypes()
