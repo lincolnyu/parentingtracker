@@ -218,21 +218,6 @@ namespace ParentingTrackerApp.ViewModels
 
         #endregion
 
-        public override bool Equals(object obj)
-        {
-            var other = obj as EventViewModel;
-            if (other == null)
-            {
-                return false;
-            }
-            return CompareTo(other) == 0;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         private void RaiseStartTimeChangedEvent()
         {
             RaisePropertyChangedEvent("StartDate");

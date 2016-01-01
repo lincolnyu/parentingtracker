@@ -7,6 +7,21 @@ namespace ParentingTrackerApp.Helpers
 {
     public static class HtmlExportHelper
     {
+        private class EventViewModelEqualizer : IEqualityComparer<EventViewModel>
+        {
+            public static EventViewModelEqualizer Instance = new EventViewModelEqualizer();
+
+            public bool Equals(EventViewModel x, EventViewModel y)
+            {
+                return x.CompareTo(y) == 0;
+            }
+
+            public int GetHashCode(EventViewModel obj)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public class DocInfo
         {
             public string Title { get; set; }
@@ -73,7 +88,7 @@ namespace ParentingTrackerApp.Helpers
 
         public static IEnumerable<EventViewModel> Merge(IEnumerable<EventViewModel> existing, IEnumerable<EventViewModel> toadd)
         {
-            var merged = existing.Concat(toadd).OrderBy(x => x).Distinct();
+            var merged = existing.Concat(toadd).OrderBy(x => x).Distinct(EventViewModelEqualizer.Instance);
             return merged;
         }
 
