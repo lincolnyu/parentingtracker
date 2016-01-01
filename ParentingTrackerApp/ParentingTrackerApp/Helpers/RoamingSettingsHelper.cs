@@ -82,10 +82,5 @@ namespace ParentingTrackerApp.Helpers
             var b = (byte)(ucolor & 0xff);
             return Color.FromArgb(a, r, g, b);
         }
-
-        internal static void LoadExportSettings(out object expPath)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

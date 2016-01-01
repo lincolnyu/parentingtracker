@@ -11,12 +11,18 @@ namespace ParentingTrackerApp.ViewModels
 {
     public class CentralViewModel : BaseViewModel
     {
+        #region Enumerations
+
         private enum States
         {
             Init,
             Synced,
             Dirty
         }
+
+        #endregion
+
+        #region Fields
 
         private States _state = States.Init;
         private string _notes;
@@ -29,11 +35,19 @@ namespace ParentingTrackerApp.ViewModels
         private EventViewModel _selectedLoggedEvent;
         private string _exportPath;
 
+        #endregion
+
+        #region Constructors
+
         public CentralViewModel()
         {
             EventTypes.CollectionChanged += EventTypesOnCollectionChanged;
             LoggedEvents.CollectionChanged += LoggedEventsOnCollectionChanged;
         }
+
+        #endregion
+
+        #region Properties
 
         public ObservableCollection<EventTypeViewModel> EventTypes { get; } =
             new ObservableCollection<EventTypeViewModel>();
@@ -294,6 +308,11 @@ namespace ParentingTrackerApp.ViewModels
                 }
             }
         }
+
+        #endregion
+
+        #region Methods
+
         public async Task<bool> Load()
         {
             if (_state == States.Init)
@@ -322,48 +341,6 @@ namespace ParentingTrackerApp.ViewModels
                 EventTypes.SaveRoamingColorMapping();
                 await LoggedEvents.SaveEvents();
                 _state = States.Synced;
-            }
-        }
-
-        private void MarkAsDirty()
-        {
-            if (_state == States.Synced)
-            {
-                _state = States.Dirty;
-            }
-        }
-
-        private void LoggedEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
-        {
-            if (args.Action == NotifyCollectionChangedAction.Reset)
-            {
-                SubscribeForLoadedLoggedEvents();
-            }
-            else
-            {
-                if (args.OldItems != null)
-                {
-                    foreach (var oldItem in args.OldItems.Cast<EventViewModel>())
-                    {
-                        oldItem.PropertyChanged -= LoggedEventPropertyChanged;
-                    }
-                }
-                if (args.NewItems != null)
-                {
-                    foreach (var newItem in args.NewItems.Cast<EventViewModel>())
-                    {
-                        newItem.PropertyChanged += LoggedEventPropertyChanged;
-                    }
-                }
-            }
-            MarkAsDirty();
-        }
-
-        private void SubscribeForLoadedLoggedEvents()
-        {
-            foreach (var loggedEvent in LoggedEvents)
-            {
-                loggedEvent.PropertyChanged += LoggedEventPropertyChanged;
             }
         }
 
@@ -450,20 +427,38 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-        private void AffectMutliRoleFields()
+        private void LoggedEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            RaisePropertyChangedEvent("Notes");
-            RaisePropertyChangedEvent("SelectedEventType");
-            RaisePropertyChangedEvent("StartDate");
-            RaisePropertyChangedEvent("StartTimeOfDay");
-            RaisePropertyChangedEvent("EndDate");
-            RaisePropertyChangedEvent("EndTimeOfDay");
+            if (args.Action == NotifyCollectionChangedAction.Reset)
+            {
+                SubscribeForLoadedLoggedEvents();
+            }
+            else
+            {
+                if (args.OldItems != null)
+                {
+                    foreach (var oldItem in args.OldItems.Cast<EventViewModel>())
+                    {
+                        oldItem.PropertyChanged -= LoggedEventPropertyChanged;
+                    }
+                }
+                if (args.NewItems != null)
+                {
+                    foreach (var newItem in args.NewItems.Cast<EventViewModel>())
+                    {
+                        newItem.PropertyChanged += LoggedEventPropertyChanged;
+                    }
+                }
+            }
+            MarkAsDirty();
         }
 
-        private void AffectPickerEnabled()
+        private void SubscribeForLoadedLoggedEvents()
         {
-            RaisePropertyChangedEvent("StartPickerEnabled");
-            RaisePropertyChangedEvent("EndPickerEnabled");
+            foreach (var loggedEvent in LoggedEvents)
+            {
+                loggedEvent.PropertyChanged += LoggedEventPropertyChanged;
+            }
         }
 
         private void EventTypesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -524,6 +519,10 @@ namespace ParentingTrackerApp.ViewModels
             MarkAsDirty();
         }
 
+        /// <summary>
+        ///  note this may also set the broken event type on running event
+        ///  to the first type available
+        /// </summary>
         private void ResetWithEventTypes()
         {
             if (EventTypes.Count > 0)
@@ -535,5 +534,31 @@ namespace ParentingTrackerApp.ViewModels
                 SelectedEventType = null;
             }
         }
+
+        private void MarkAsDirty()
+        {
+            if (_state == States.Synced)
+            {
+                _state = States.Dirty;
+            }
+        }
+
+        private void AffectMutliRoleFields()
+        {
+            RaisePropertyChangedEvent("Notes");
+            RaisePropertyChangedEvent("SelectedEventType");
+            RaisePropertyChangedEvent("StartDate");
+            RaisePropertyChangedEvent("StartTimeOfDay");
+            RaisePropertyChangedEvent("EndDate");
+            RaisePropertyChangedEvent("EndTimeOfDay");
+        }
+
+        private void AffectPickerEnabled()
+        {
+            RaisePropertyChangedEvent("StartPickerEnabled");
+            RaisePropertyChangedEvent("EndPickerEnabled");
+        }
+
+        #endregion
     }
 }
