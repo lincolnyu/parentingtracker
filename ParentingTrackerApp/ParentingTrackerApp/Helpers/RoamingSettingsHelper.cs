@@ -8,7 +8,7 @@ namespace ParentingTrackerApp.Helpers
 {
     public static class RoamingSettingsHelper
     {
-        public static void LoadExportSettings(out string path)
+        public static void LoadExportSettings(out string path, out string token)
         {
             var roamingSettings = ApplicationData.Current.RoamingSettings;
             if (roamingSettings.Values.ContainsKey("exportPath"))
@@ -19,12 +19,21 @@ namespace ParentingTrackerApp.Helpers
             {
                 path = "";
             }
+            if (roamingSettings.Values.ContainsKey("exportToken"))
+            {
+                token = (string)roamingSettings.Values["exportToken"];
+            }
+            else
+            {
+                token = "";
+            }
         }
 
-        public static void SaveExportSettings(string path)
+        public static void SaveExportSettings(string path, string token)
         {
             var roamingSettings = ApplicationData.Current.RoamingSettings;
             roamingSettings.Values["exportPath"] = path;
+            roamingSettings.Values["exportToken"] = token;
         }
 
         public static void LoadRoamingColorMapping(this ICollection<EventTypeViewModel> colors)

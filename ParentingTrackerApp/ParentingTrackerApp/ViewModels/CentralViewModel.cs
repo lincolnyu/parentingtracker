@@ -34,6 +34,7 @@ namespace ParentingTrackerApp.ViewModels
         private EventViewModel _selectedRunningEvent;
         private EventViewModel _selectedLoggedEvent;
         private string _exportPath;
+        private string _exportFileToken;
 
         #endregion
 
@@ -70,6 +71,20 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _exportPath = value;
                     RaisePropertyChangedEvent("ExportPath");
+                    MarkAsDirty();
+                }
+            }
+        }
+
+        public string ExportFileToken
+        {
+            get { return _exportFileToken; }
+            set
+            {
+                if (_exportFileToken != value)
+                {
+                    _exportFileToken = value;
+                    RaisePropertyChangedEvent("ExportFileToken");
                     MarkAsDirty();
                 }
             }
@@ -317,9 +332,10 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_state == States.Init)
             {
-                string expPath;
-                RoamingSettingsHelper.LoadExportSettings(out expPath);
+                string expPath, expToken;
+                RoamingSettingsHelper.LoadExportSettings(out expPath, out expToken);
                 ExportPath = expPath;
+                ExportFileToken = expToken;
                 EventTypes.LoadRoamingColorMapping();
                 ResetWithEventTypes();
                 var res = await LoggedEvents.LoadEvents(EventTypes);
@@ -337,7 +353,7 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_state == States.Dirty || forceSave)
             {
-                RoamingSettingsHelper.SaveExportSettings(ExportPath);
+                RoamingSettingsHelper.SaveExportSettings(ExportPath, ExportFileToken);
                 EventTypes.SaveRoamingColorMapping();
                 await LoggedEvents.SaveEvents();
                 _state = States.Synced;

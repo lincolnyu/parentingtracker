@@ -205,10 +205,33 @@ namespace ParentingTrackerApp.ViewModels
             if (c != 0) return c;
             c = EventType.Name.CompareTo(other.EventType.Name);
             if (c != 0) return c;
+            if (Notes == null)
+            {
+                return other.Notes != null ? -1 : 0;
+            }
+            else if (other.Notes == null)
+            {
+                return 1;
+            }
             return Notes.CompareTo(other.Notes);
         }
 
         #endregion
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as EventViewModel;
+            if (other == null)
+            {
+                return false;
+            }
+            return CompareTo(other) == 0;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
         private void RaiseStartTimeChangedEvent()
         {
