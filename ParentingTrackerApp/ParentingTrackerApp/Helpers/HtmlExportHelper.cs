@@ -7,21 +7,6 @@ namespace ParentingTrackerApp.Helpers
 {
     public static class HtmlExportHelper
     {
-        private class EventViewModelEqualizer : IEqualityComparer<EventViewModel>
-        {
-            public static EventViewModelEqualizer Instance = new EventViewModelEqualizer();
-
-            public bool Equals(EventViewModel x, EventViewModel y)
-            {
-                return x.CompareTo(y) == 0;
-            }
-
-            public int GetHashCode(EventViewModel obj)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public class DocInfo
         {
             public string Title { get; set; }
@@ -88,8 +73,21 @@ namespace ParentingTrackerApp.Helpers
 
         public static IEnumerable<EventViewModel> Merge(IEnumerable<EventViewModel> existing, IEnumerable<EventViewModel> toadd)
         {
-            var merged = existing.Concat(toadd).OrderBy(x => x).Distinct(EventViewModelEqualizer.Instance);
-            return merged;
+            var merged = existing.Concat(toadd).OrderBy(x => x);
+            // Since Distinct() seems not to work... (maybe due to the accuracy issue 
+            // which has now been fixed by the date-time compare helper
+            // But still this could be more effient than Distinct() as it's aware of
+            // the advantage of OrderBy()
+            EventViewModel last = null;
+            foreach (var x in merged)
+            {
+                if (last != null && x.CompareTo(last)==0)
+                {
+                    continue;
+                }
+                last = x;
+                yield return x;
+            }
         }
 
         public static IEnumerable<string> WriteToTable(this IEnumerable<EventViewModel> events, 

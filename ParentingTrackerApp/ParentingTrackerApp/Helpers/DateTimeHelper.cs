@@ -4,6 +4,13 @@ namespace ParentingTrackerApp.Helpers
 {
     public static class DateTimeHelper
     {
+        public static int CompareTimeIgnoreMs(this DateTime dt1, DateTime dt2)
+        {
+            var ldt1 = new DateTime(dt1.Year, dt1.Month, dt1.Day, dt1.Hour, dt1.Minute, dt1.Second);
+            var ldt2 = new DateTime(dt2.Year, dt2.Month, dt2.Day, dt2.Hour, dt2.Minute, dt2.Second);
+            return ldt1.CompareTo(ldt2);
+        }
+
         public static string GetTimeRangeString(DateTime dt1, DateTime dt2)
         {
             var dayDiff = GetDayDiff(dt1, dt2);

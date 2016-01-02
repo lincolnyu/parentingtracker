@@ -199,9 +199,9 @@ namespace ParentingTrackerApp.ViewModels
 
         public int CompareTo(EventViewModel other)
         {
-            var c = StartTime.CompareTo(other.StartTime);
+            var c = StartTime.CompareTimeIgnoreMs(other.StartTime);
             if (c != 0) return c;
-            c = EndTime.CompareTo(other.EndTime);
+            c = EndTime.CompareTimeIgnoreMs(other.EndTime);
             if (c != 0) return c;
             c = EventType.Name.CompareTo(other.EventType.Name);
             if (c != 0) return c;
