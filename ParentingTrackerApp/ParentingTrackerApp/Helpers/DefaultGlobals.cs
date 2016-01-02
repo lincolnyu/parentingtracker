@@ -14,6 +14,7 @@ namespace ParentingTrackerApp.Helpers
             colors.Add(new ColorOptionViewModel("Blue", Colors.Blue));
             colors.Add(new ColorOptionViewModel("Pink", Colors.Pink));
             colors.Add(new ColorOptionViewModel("Light Pink", Colors.LightPink));
+            colors.Add(new ColorOptionViewModel("Deep Pink", Colors.DeepPink));
             colors.Add(new ColorOptionViewModel("Wheat", Colors.Wheat));
             colors.Add(new ColorOptionViewModel("Brown", Colors.Brown));
             colors.Add(new ColorOptionViewModel("Dark Blue", Colors.DarkBlue));
