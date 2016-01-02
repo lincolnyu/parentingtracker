@@ -98,6 +98,10 @@ namespace ParentingTrackerApp.Helpers
             yield return "  <head>";
             yield return string.Format("    <title>{0}</title>", docInfo.Title);
             yield return "    <meta charset=\"utf-8\">";
+            yield return "    <style>";
+            yield return "      table { width: 100%; }";
+            yield return "      td { text-align: center; }";
+            yield return "    </style>";
             yield return "  </head>";
             yield return "<body>";
             var indent = GetIndent(1);
@@ -128,7 +132,7 @@ namespace ParentingTrackerApp.Helpers
 
         private static IEnumerable<string> WriteTableHeader(string indent)
         {
-            yield return string.Format("{0}<table style=\"width:100%\"", indent);
+            yield return string.Format("{0}<table>", indent);
             yield return string.Format("{0}  <tr>", indent);
             yield return string.Format("{0}    <th>Start</th>", indent);
             yield return string.Format("{0}    <th>End</th>", indent);

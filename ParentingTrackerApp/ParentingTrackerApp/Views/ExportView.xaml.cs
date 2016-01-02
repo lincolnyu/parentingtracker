@@ -55,9 +55,12 @@ namespace ParentingTrackerApp.Views
                 merged = central.LoggedEvents;
             }
 
-            var wlines = merged.WriteToTable(otherInfo);
-
             file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
+            if (string.IsNullOrWhiteSpace(otherInfo.Title))
+            {
+                otherInfo.Title = file.DisplayName;
+            }
+            var wlines = merged.WriteToTable(otherInfo);
             await FileIO.WriteLinesAsync(file, wlines);
         }
     }
