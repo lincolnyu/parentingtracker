@@ -89,12 +89,12 @@ namespace ParentingTrackerApp
             var df = AnalyticsInfo.VersionInfo.DeviceFamily;
             switch (df)
             {
-                case "Desktop":
+                case "Windows.Desktop":
                     SetAdsId(DesktopAdsId);
                     MyAds.Width = 728;
                     MyAds.Height = 90;
                     break;
-                case "Mobile":
+                case "Windows.Mobile":
                     if (args.NewSize.Width < 320 && args.NewSize.Width >= 300)
                     {
                         SetAdsId(MobileAdsId);
