@@ -210,3 +210,12 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+
+# explicitly needed?
+
+/ParentingTrackerApp/ParentingTrackerApp/BundleArtifacts
+/ParentingTrackerApp/ParentingTrackerApp/_scale-400.appx
+/ParentingTrackerApp/ParentingTrackerApp/_scale-150.appx
+/ParentingTrackerApp/ParentingTrackerApp/_scale-125.appx
+/ParentingTrackerApp/ParentingTrackerApp/_scale-100.appx
+/ParentingTrackerApp/ParentingTrackerApp/_pkginfo.txt
