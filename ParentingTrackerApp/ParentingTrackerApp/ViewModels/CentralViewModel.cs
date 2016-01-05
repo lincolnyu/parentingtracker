@@ -368,6 +368,12 @@ namespace ParentingTrackerApp.ViewModels
                 _state = States.Synced;
             }
         }
+        public void New()
+        {
+            SelectedRunningEvent = null;
+            FinishEditing(null);
+            SelectedLoggedEvent = null;
+        }
 
         public void Start()
         {
@@ -378,7 +384,7 @@ namespace ParentingTrackerApp.ViewModels
                 EventType = SelectedEventType,
                 Notes = Notes
             };
-            RunningEvents.Add(evm);
+            RunningEvents.Insert(0, evm);
             SelectedRunningEvent = evm;
         }
 
