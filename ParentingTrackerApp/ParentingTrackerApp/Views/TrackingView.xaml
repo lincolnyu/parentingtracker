@@ -28,13 +28,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=".7*"></ColumnDefinition>
-                    <ColumnDefinition Width=".1*" MinWidth="60"></ColumnDefinition>
-                    <ColumnDefinition Width=".1*" MinWidth="60"></ColumnDefinition>
-                    <ColumnDefinition Width=".1*" MinWidth="80"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock>Event type:</TextBlock>
                     <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding SelectedEventType, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
