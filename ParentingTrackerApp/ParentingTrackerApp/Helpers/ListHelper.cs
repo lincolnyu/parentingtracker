@@ -104,6 +104,9 @@ namespace ParentingTrackerApp.Helpers
                     i++;
                 }
             }
+            var tt = list[i];
+            list[i] = pivot;
+            list[high] = tt;
             return i;
         }
     }

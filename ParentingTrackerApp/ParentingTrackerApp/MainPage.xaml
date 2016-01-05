@@ -16,21 +16,25 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Grid.Row="1">
-            <universal:AdMediatorControl Name="MyAds" Width="728" Height="90"
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="ClockRow"/>
+            <RowDefinition/>
+            <RowDefinition x:Name="AdsRow" Height="90"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Name="Clock"
+            FontSize="36" Text="{Binding Time, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
+        <Pivot Grid.Row="1" DataContext="{Binding Central}">
+            <PivotItem Header="Track">
+                <views:TrackingView/>
+            </PivotItem>
+            <PivotItem Header="Customize">
+                <views:CustomizingView/>
+            </PivotItem>
+            <PivotItem Header="Export">
+                <views:ExportView/>
+            </PivotItem>
+        </Pivot>
+        <universal:AdMediatorControl Grid.Row="2" Name="MyAds" Width="728" Height="90"
                                      Id="6280a407-b64e-431b-b032-c97dac77cae7"/>
-            <TextBlock FontSize="36" Text="{Binding Time, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
-            <Pivot DataContext="{Binding Central}">
-                <PivotItem Header="Track">
-                    <views:TrackingView/>
-                </PivotItem>
-                <PivotItem Header="Customize">
-                    <views:CustomizingView/>
-                </PivotItem>
-                <PivotItem Header="Export">
-                    <views:ExportView/>
-                </PivotItem>
-            </Pivot>
-        </StackPanel>
     </Grid>
 </Page>

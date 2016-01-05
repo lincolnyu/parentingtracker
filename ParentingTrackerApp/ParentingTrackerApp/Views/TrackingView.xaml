@@ -16,18 +16,38 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock>Event type: </TextBlock>
-                <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding SelectedEventType, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name, Mode=OneWay}" 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".3*" MinHeight="150"/>
+            <RowDefinition Height=".2*" MinHeight="60"/>
+            <RowDefinition Height=".5*" MinHeight="60"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=".7*"></ColumnDefinition>
+                    <ColumnDefinition Width=".1*" MinWidth="60"></ColumnDefinition>
+                    <ColumnDefinition Width=".1*" MinWidth="60"></ColumnDefinition>
+                    <ColumnDefinition Width=".1*" MinWidth="80"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <TextBlock>Event type:</TextBlock>
+                    <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding SelectedEventType, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name, Mode=OneWay}" 
                                    Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"></TextBlock>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+                <Button Grid.Column="1" Click="StartOnClick">Start</Button>
+                <Button Grid.Column="2" IsEnabled="{Binding CanStop}" Click="StopOnClick">Stop</Button>
+                <Button Grid.Column="3" Click="LogOnClick">Just Add</Button>
+            </Grid>
             <TextBlock>Notes</TextBlock>
             <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
             <Grid>
@@ -51,47 +71,48 @@
                 <TimePicker Grid.Row="1" Grid.Column="2" IsEnabled="{Binding EndPickerEnabled}"
                             Time="{Binding EndTimeOfDay, Mode=TwoWay}"></TimePicker>
             </Grid>
-            <ListView ItemsSource="{Binding RunningEvents}" 
-                      SelectedItem="{Binding SelectedRunningEvent, Mode=TwoWay}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Title}"></TextBlock>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <StackPanel Orientation="Horizontal">
-                <Button Click="StartOnClick">Start</Button>
-                <Button IsEnabled="{Binding CanStop}" Click="StopOnClick">Stop</Button>
-                <Button Click="LogOnClick">Just Log</Button>
-            </StackPanel>
-            <ListView ItemsSource="{Binding LoggedEvents}"
-                      SelectedItem="{Binding SelectedLoggedEvent, Mode=TwoWay}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
-                            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Orientation="Horizontal">
-                                <ToggleButton Name="EditingButton" Content="&#xE104;" FontFamily="Segoe UI Symbol"
-                                          IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>
-                                <Button Content="&#xE106;" FontFamily="Segoe UI Symbol"
-                                          Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
         </StackPanel>
+        <TextBlock Grid.Row="1" Grid.Column="0">Running:</TextBlock>
+        <ListView Grid.Row="1" Grid.Column="1"
+                  ItemsSource="{Binding RunningEvents}" 
+                  SelectedItem="{Binding SelectedRunningEvent, Mode=TwoWay}"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Title}"></TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <TextBlock Grid.Row="2" Grid.Column="0">Logged:</TextBlock>
+        <ListView Grid.Row="2" Grid.Column="1" 
+                  ItemsSource="{Binding LoggedEvents}"
+                  SelectedItem="{Binding SelectedLoggedEvent, Mode=TwoWay}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
+                        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Orientation="Horizontal">
+                            <ToggleButton Name="EditingButton" Content="&#xE104;" FontFamily="Segoe UI Symbol"
+                                          IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>
+                            <Button Content="&#xE106;" FontFamily="Segoe UI Symbol"
+                                          Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </UserControl>

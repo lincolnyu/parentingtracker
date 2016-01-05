@@ -36,6 +36,9 @@ namespace ParentingTrackerApp.ViewModels
         private string _exportPath;
         private string _exportFileToken;
 
+        private bool _suppressSorting;
+        private bool _inLoggedCollectionChangedHandler;
+
         #endregion
 
         #region Constructors
@@ -338,8 +341,14 @@ namespace ParentingTrackerApp.ViewModels
                 ExportFileToken = expToken;
                 EventTypes.LoadRoamingColorMapping();
                 ResetWithEventTypes();
+
+                var wasSuppressing = _suppressSorting;
+                _suppressSorting = true;
                 var res = await LoggedEvents.LoadEvents(EventTypes);
-                LoggedEvents.QuickSort();
+                _suppressSorting = false;
+                SortLoggedEvents();
+                _suppressSorting = wasSuppressing;
+
                 _state = States.Synced;
                 return res;
             }
@@ -411,12 +420,18 @@ namespace ParentingTrackerApp.ViewModels
             {
                 index = -index - 1;
             }
+            var wasSuppressed = _suppressSorting;
+            _suppressSorting = true;
             LoggedEvents.Insert(index, evm);
+            _suppressSorting = wasSuppressed;
         }
 
         public void RemoveLoggedEvent(EventViewModel evm)
         {
+            var wasSuppressed = _suppressSorting;
+            _suppressSorting = true;
             LoggedEvents.Remove(evm);
+            _suppressSorting = wasSuppressed;
         }
 
         private void LoggedEventPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -426,11 +441,16 @@ namespace ParentingTrackerApp.ViewModels
                 var evm = (EventViewModel)sender;
                 if (evm.IsEditing)
                 {
+                    SelectedRunningEvent = null;
                     FinishEditing(evm);
                     SelectedLoggedEvent = evm;
                 }
                 AffectPickerEnabled();
                 AffectMutliRoleFields();
+            }
+            else
+            {
+                SortLoggedEvents();
             }
             MarkAsDirty();
         }
@@ -445,6 +465,12 @@ namespace ParentingTrackerApp.ViewModels
 
         private void LoggedEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
+            if (_inLoggedCollectionChangedHandler)
+            {
+                return;
+            }
+            _inLoggedCollectionChangedHandler = true;
+
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
                 SubscribeForLoadedLoggedEvents();
@@ -466,7 +492,20 @@ namespace ParentingTrackerApp.ViewModels
                     }
                 }
             }
+            SortLoggedEvents();
             MarkAsDirty();
+
+            _inLoggedCollectionChangedHandler = false;
+        }
+
+        private void SortLoggedEvents()
+        {
+            if (!_suppressSorting)
+            {
+                _suppressSorting = true;
+                LoggedEvents.QuickSort();
+                _suppressSorting = false;
+            }
         }
 
         private void SubscribeForLoadedLoggedEvents()

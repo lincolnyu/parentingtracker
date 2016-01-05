@@ -7,6 +7,7 @@ using System.Threading;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml;
 using Windows.System.Profile;
+using Windows.Foundation;
 
 namespace ParentingTrackerApp
 {
@@ -86,48 +87,61 @@ namespace ParentingTrackerApp
         /// </remarks>
         private void MainPageOnSizeChanged(object sender, SizeChangedEventArgs args)
         {
+            UpdateClockRowDimension();
+            AdjustAds(args.NewSize);
+        }
+
+        private void UpdateClockRowDimension()
+        {
+            ClockRow.Height = new GridLength(Clock.ActualHeight);
+        }
+
+        // TODO use single ads source
+        private void AdjustAds(Size size)
+        {
             var df = AnalyticsInfo.VersionInfo.DeviceFamily;
             switch (df)
             {
                 case "Windows.Desktop":
                     SetAdsId(DesktopAdsId);
-                    MyAds.Width = 728;
-                    MyAds.Height = 90;
+                    SetAdsSize(728, 90);
                     break;
                 case "Windows.Mobile":
-                    if (args.NewSize.Width < 320 && args.NewSize.Width >= 300)
+                    if (size.Width < 320 && size.Width >= 300)
                     {
                         SetAdsId(MobileAdsId);
-                        MyAds.Width = 300;
-                        MyAds.Height = 50;
+                        SetAdsSize(300, 50);
                     }
-                    else if (args.NewSize.Width < 480)
+                    else if (size.Width < 480)
                     {
                         SetAdsId(MobileAdsId);
-                        MyAds.Width = 320;
-                        MyAds.Height = 50;
+                        SetAdsSize(320, 50);
                     }
-                    else if (args.NewSize.Width < 640)
+                    else if (size.Width < 640)
                     {
                         SetAdsId(MobileAdsId);
-                        MyAds.Width = 480;
-                        MyAds.Height = 80;
+                        SetAdsSize(480, 80);
                     }
-                    else if (args.NewSize.Width < 728)
+                    else if (size.Width < 728)
                     {
                         SetAdsId(MobileAdsId);
-                        MyAds.Width = 640;
-                        MyAds.Height = 100;
+                        SetAdsSize(640, 100);
                     }
                     else
                     {
                         // could be Windows Tablet
                         SetAdsId(DesktopAdsId);
-                        MyAds.Width = 728;
-                        MyAds.Height = 90;
+                        SetAdsSize(728, 90);
                     }
                     break;
             }
+        }
+
+        private void SetAdsSize(double width, double height)
+        {
+            MyAds.Width = width;
+            AdsRow.Height = new GridLength(height);
+            MyAds.Height = height;
         }
         
         private void SetAdsId(string id)
