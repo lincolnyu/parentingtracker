@@ -52,11 +52,11 @@ namespace ParentingTrackerApp.Helpers
             }
             else if (days > 0)
             {
-                return string.Format("In {0} days");
+                return string.Format("In {0} days", days);
             }
             else
             {
-                return string.Format("{0} days ago");
+                return string.Format("{0} days ago", -days);
             }
         }
 

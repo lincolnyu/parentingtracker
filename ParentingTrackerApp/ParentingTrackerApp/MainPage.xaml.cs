@@ -16,8 +16,8 @@ namespace ParentingTrackerApp
     /// </summary>
     public sealed partial class MainPage : INotifyPropertyChanged
     {
-        private const string DesktopAdsId = "6280a407-b64e-431b-b032-c97dac77cae7";
-        private const string MobileAdsId = "535a18c3-9e0d-4ba4-a359-f1928cf778a0";
+        private const string DesktopAdsId = "AdMediator-Id-6280A407-B64E-431B-B032-C97daC77CAE7";
+        private const string MobileAdsId = "AdMediator-Id-535A18C3-9E0D-4BA4-A359-F1928CF778A0";
 
         private readonly Timer _timer;
         private DateTime _time;

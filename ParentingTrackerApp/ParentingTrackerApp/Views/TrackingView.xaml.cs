@@ -1,6 +1,9 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using ParentingTrackerApp.ViewModels;
+using System;
+using System.ComponentModel;
+using System.Collections.Specialized;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -11,6 +14,60 @@ namespace ParentingTrackerApp.Views
         public TrackingView()
         {
             InitializeComponent();
+
+            DataContextChanged += DataContextOnChanged;
+        }
+
+        private void DataContextOnChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            UpdateAsPerRunningItems();
+            UpdateAsPerIsEditingState();
+            var dc = (CentralViewModel)DataContext;
+            dc.PropertyChanged += ViewModelPropertyChanged;
+            dc.RunningEvents.CollectionChanged += RunningEventsOnCollectionChanged;
+        }
+
+        private void RunningEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            UpdateAsPerRunningItems();
+        }
+
+        private void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "IsEditing")
+            {
+                UpdateAsPerIsEditingState();
+            }
+        }
+
+        private void UpdateAsPerRunningItems()
+        {
+            var dc = (CentralViewModel)DataContext;
+            if (dc.RunningEvents.Count > 0)
+            {
+                RunningRow.MinHeight = 60;
+                RunningRow.Height = new GridLength(0.2, GridUnitType.Star);
+            }
+            else
+            {
+                RunningRow.MinHeight = 0;
+                RunningRow.Height = new GridLength(0);
+            }
+        }
+
+        private void UpdateAsPerIsEditingState()
+        {
+            var dc = (CentralViewModel)DataContext;
+            if (dc.IsEditing)
+            {
+                EditorRow.MinHeight = 150;
+                EditorRow.Height = new GridLength(0.3, GridUnitType.Star);
+            }
+            else
+            {
+                EditorRow.MinHeight = 0;
+                EditorRow.Height = new GridLength(0);
+            }
         }
 
         private void StartOnClick(object sender, RoutedEventArgs args)

@@ -38,6 +38,7 @@ namespace ParentingTrackerApp.ViewModels
 
         private bool _suppressSorting;
         private bool _inLoggedCollectionChangedHandler;
+        private bool _isEditing;
 
         #endregion
 
@@ -61,6 +62,22 @@ namespace ParentingTrackerApp.ViewModels
 
         public ObservableCollection<EventViewModel> LoggedEvents { get; }
             = new ObservableCollection<EventViewModel>();
+
+        public bool IsEditing
+        {
+            get
+            {
+                return _isEditing;
+            }
+            set
+            {
+                if (_isEditing != value)
+                {
+                    _isEditing = value;
+                    RaisePropertyChangedEvent("IsEditing");
+                }
+            }
+        }
 
         /// <summary>
         ///  File to export to
@@ -101,6 +118,7 @@ namespace ParentingTrackerApp.ViewModels
                 if (_selectedRunningEvent != value)
                 {
                     _selectedRunningEvent = value;
+                    IsEditing = value != null;
                     RaisePropertyChangedEvent("SelectedRunningEvent");
                     RaisePropertyChangedEvent("CanStop");
                     AffectPickerEnabled();
@@ -117,6 +135,7 @@ namespace ParentingTrackerApp.ViewModels
                 if (_selectedLoggedEvent != value)
                 {
                     _selectedLoggedEvent = value;
+                    IsEditing = value != null;
                     FinishEditing(value);
                     RaisePropertyChangedEvent("SelectedLoggedEvent");
                     AffectPickerEnabled();
@@ -161,7 +180,7 @@ namespace ParentingTrackerApp.ViewModels
             get
             {
                 return SelectedRunningEvent?.EventType ??
-                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  (SelectedLoggedEvent != null?
                   SelectedLoggedEvent.EventType : _selectedEventType);
             }
             set
@@ -171,7 +190,7 @@ namespace ParentingTrackerApp.ViewModels
                     SelectedRunningEvent.EventType = value;
                     RaisePropertyChangedEvent("SelectedEventType");
                 }
-                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
+                else if (SelectedLoggedEvent != null)
                 {
                     SelectedLoggedEvent.EventType = value;
                     RaisePropertyChangedEvent("SelectedEventType");
@@ -188,7 +207,7 @@ namespace ParentingTrackerApp.ViewModels
             get
             {
                 return SelectedRunningEvent?.Notes ??
-                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  (SelectedLoggedEvent != null?
                   SelectedLoggedEvent.Notes :
                   _notes);
             }
@@ -199,7 +218,7 @@ namespace ParentingTrackerApp.ViewModels
                     SelectedRunningEvent.Notes = value;
                     RaisePropertyChangedEvent("Notes");
                 }
-                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
+                else if (SelectedLoggedEvent != null)
                 {
                     SelectedLoggedEvent.Notes = value;
                     RaisePropertyChangedEvent("Notes");
@@ -217,7 +236,7 @@ namespace ParentingTrackerApp.ViewModels
             get
             {
                 return SelectedRunningEvent?.StartDate ??
-                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  (SelectedLoggedEvent != null?
                   SelectedLoggedEvent.StartDate :
                   _startDate);
             }
@@ -228,7 +247,7 @@ namespace ParentingTrackerApp.ViewModels
                     SelectedRunningEvent.StartDate = value;
                     RaisePropertyChangedEvent("StartDate");
                 }
-                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
+                else if (SelectedLoggedEvent != null)
                 {
                     SelectedLoggedEvent.StartDate = value;
                     RaisePropertyChangedEvent("StartDate");
@@ -246,7 +265,7 @@ namespace ParentingTrackerApp.ViewModels
             get
             {
                 return SelectedRunningEvent?.StartTimeOfDay ??
-                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  (SelectedLoggedEvent != null?
                   SelectedLoggedEvent.StartTimeOfDay :
                   _startTimeOfDay);
             }
@@ -257,7 +276,7 @@ namespace ParentingTrackerApp.ViewModels
                     SelectedRunningEvent.StartTimeOfDay = value;
                     RaisePropertyChangedEvent("StartTimeOfDay");
                 }
-                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
+                else if (SelectedLoggedEvent != null)
                 {
                     SelectedLoggedEvent.StartTimeOfDay = value;
                     RaisePropertyChangedEvent("StartTimeOfDay");
@@ -274,7 +293,7 @@ namespace ParentingTrackerApp.ViewModels
             get
             {
                 return SelectedRunningEvent?.EndDate ??
-                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  (SelectedLoggedEvent != null?
                   SelectedLoggedEvent.EndDate :
                   _endDate);
             }
@@ -285,7 +304,7 @@ namespace ParentingTrackerApp.ViewModels
                     SelectedRunningEvent.EndDate = value;
                     RaisePropertyChangedEvent("EndDate");
                 }
-                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
+                else if (SelectedLoggedEvent != null)
                 {
                     SelectedLoggedEvent.EndDate = value;
                     RaisePropertyChangedEvent("EndDate");
@@ -303,7 +322,7 @@ namespace ParentingTrackerApp.ViewModels
             get
             {
                 return SelectedRunningEvent?.EndTimeOfDay ??
-                  (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing ?
+                  (SelectedLoggedEvent != null?
                   SelectedLoggedEvent.EndTimeOfDay :
                   _endTimeOfDay);
             }
@@ -314,7 +333,7 @@ namespace ParentingTrackerApp.ViewModels
                     SelectedRunningEvent.EndTimeOfDay = value;
                     RaisePropertyChangedEvent("EndTimeOfDay");
                 }
-                else if (SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing)
+                else if (SelectedLoggedEvent != null)
                 {
                     SelectedLoggedEvent.EndTimeOfDay = value;
                     RaisePropertyChangedEvent("EndTimeOfDay");
@@ -373,6 +392,7 @@ namespace ParentingTrackerApp.ViewModels
             SelectedRunningEvent = null;
             FinishEditing(null);
             SelectedLoggedEvent = null;
+            IsEditing = true;
         }
 
         public void Start()
@@ -399,7 +419,7 @@ namespace ParentingTrackerApp.ViewModels
             sre.EndTime = t;
             RunningEvents.Remove(SelectedRunningEvent);
             AddLogggedEvent(sre);
-            SelectedRunningEvent = null; // not needed
+            SelectedRunningEvent = RunningEvents.FirstOrDefault();
         }
 
         public void Log()

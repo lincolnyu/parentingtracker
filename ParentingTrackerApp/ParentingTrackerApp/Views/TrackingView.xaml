@@ -21,16 +21,17 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height=".3*" MinHeight="150"/>
-            <RowDefinition Height=".2*" MinHeight="60"/>
+            <RowDefinition x:Name="EditorRow" Height=".3*" MinHeight="150"/>
+            <RowDefinition x:Name="RunningRow" Height=".2*" MinHeight="60"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height=".5*" MinHeight="60"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+        <StackPanel Name="Editor" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Event type:</TextBlock>
-                    <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding SelectedEventType, Mode=TwoWay}">
+                    <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding SelectedEventType, Mode=TwoWay}"
+                              IsEnabled="{Binding EventTypeAndNotesEnabled}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name, Mode=OneWay}" 
@@ -41,7 +42,8 @@
                 </StackPanel>
             </Grid>
             <TextBlock>Notes</TextBlock>
-            <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+            <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding EventTypeAndNotesEnabled}"></TextBox>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
