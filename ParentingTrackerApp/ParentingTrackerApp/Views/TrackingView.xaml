@@ -81,9 +81,10 @@
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
             <Button Click="NewOnClick">New</Button>
             <Button Click="StartOnClick">Start</Button>
-            <Button IsEnabled="{Binding CanStop}" Click="StopOnClick">Stop</Button>
+            <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="StopOnClick">Stop</Button>
+            <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="CancelOnClick">Cancel</Button>
             <Button Click="LogOnClick">Just Add</Button>
-            <Button Click="CloseEditorOnClick">Close Editor</Button>
+            <Button Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}" Click="CloseEditorOnClick">Close Editor</Button>
         </StackPanel>
         <TextBlock Grid.Row="3" Grid.Column="0">Logged:</TextBlock>
         <ListView Grid.Row="3" Grid.Column="1" Name="LoggedEventsList"

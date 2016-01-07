@@ -101,6 +101,12 @@ namespace ParentingTrackerApp.Views
             c.Stop();
         }
 
+        private void CancelOnClick(object sender, RoutedEventArgs e)
+        {
+            var c = (CentralViewModel)DataContext;
+            c.Cancel();
+        }
+
         private void LogOnClick(object sender, RoutedEventArgs args)
         {
             var c = (CentralViewModel)DataContext;

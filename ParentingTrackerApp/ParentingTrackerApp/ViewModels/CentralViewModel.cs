@@ -395,15 +395,6 @@ namespace ParentingTrackerApp.ViewModels
             IsEditing = true;
         }
 
-        public void CloseEditor()
-        {
-            SelectedRunningEvent = null;
-            FinishEditing(null);
-            SelectedLoggedEvent = null;
-            IsEditing = false;
-        }
-
-
         public void Start()
         {
             var time = DateTime.Now;
@@ -430,6 +421,24 @@ namespace ParentingTrackerApp.ViewModels
             AddLogggedEvent(sre);
             SelectedRunningEvent = RunningEvents.FirstOrDefault();
         }
+
+        public void Cancel()
+        {
+            if (SelectedRunningEvent != null)
+            {
+                RunningEvents.Remove(SelectedRunningEvent);
+                SelectedRunningEvent = RunningEvents.FirstOrDefault();
+            }
+        }
+
+        public void CloseEditor()
+        {
+            SelectedRunningEvent = null;
+            FinishEditing(null);
+            SelectedLoggedEvent = null;
+            IsEditing = false;
+        }
+
 
         public void Log()
         {
