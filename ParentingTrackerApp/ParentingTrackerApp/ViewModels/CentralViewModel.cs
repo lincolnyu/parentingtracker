@@ -395,6 +395,15 @@ namespace ParentingTrackerApp.ViewModels
             IsEditing = true;
         }
 
+        public void CloseEditor()
+        {
+            SelectedRunningEvent = null;
+            FinishEditing(null);
+            SelectedLoggedEvent = null;
+            IsEditing = false;
+        }
+
+
         public void Start()
         {
             var time = DateTime.Now;
@@ -467,23 +476,25 @@ namespace ParentingTrackerApp.ViewModels
                 var evm = (EventViewModel)sender;
                 if (evm.IsEditing)
                 {
+                    SelectedLoggedEvent = evm;
                     SelectedRunningEvent = null;
                     FinishEditing(evm);
-                    SelectedLoggedEvent = evm;
+                }
+                else
+                {
+                    // finished editing, sort it
+                    SortLoggedEvents();
                 }
                 AffectPickerEnabled();
                 AffectMutliRoleFields();
-            }
-            else
-            {
-                SortLoggedEvents();
             }
             MarkAsDirty();
         }
         
         private void FinishEditing(EventViewModel evm)
         {
-            foreach (var le in LoggedEvents.Where(x => x != evm))
+            var buf = LoggedEvents.Where(x => x != evm).ToList();
+            foreach (var le in buf)
             {
                 le.IsEditing = false;
             }

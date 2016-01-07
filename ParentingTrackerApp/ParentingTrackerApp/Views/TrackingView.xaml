@@ -67,7 +67,7 @@
             </Grid>
         </StackPanel>
         <TextBlock Grid.Row="1" Grid.Column="0">Running:</TextBlock>
-        <ListView Grid.Row="1" Grid.Column="1"
+        <ListView Grid.Row="1" Grid.Column="1" Name="RunningEventsList"
                   ItemsSource="{Binding RunningEvents}" 
                   SelectedItem="{Binding SelectedRunningEvent, Mode=TwoWay}"
                   SelectionMode="Single"
@@ -83,9 +83,10 @@
             <Button Click="StartOnClick">Start</Button>
             <Button IsEnabled="{Binding CanStop}" Click="StopOnClick">Stop</Button>
             <Button Click="LogOnClick">Just Add</Button>
+            <Button Click="CloseEditorOnClick">Close Editor</Button>
         </StackPanel>
         <TextBlock Grid.Row="3" Grid.Column="0">Logged:</TextBlock>
-        <ListView Grid.Row="3" Grid.Column="1"
+        <ListView Grid.Row="3" Grid.Column="1" Name="LoggedEventsList"
                   ItemsSource="{Binding LoggedEvents}"
                   SelectedItem="{Binding SelectedLoggedEvent, Mode=TwoWay}"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"

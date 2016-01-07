@@ -16,6 +16,9 @@ namespace ParentingTrackerApp.Views
             InitializeComponent();
 
             DataContextChanged += DataContextOnChanged;
+
+            RunningEventsList.SelectionChanged += RunningEventsOnSelectionChanged;
+            LoggedEventsList.SelectionChanged += LoggedEventsOnSelectionChanged;
         }
 
         private void DataContextOnChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -70,6 +73,22 @@ namespace ParentingTrackerApp.Views
             }
         }
 
+        private void RunningEventsOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (RunningEventsList.SelectedItem != null)
+            {
+                RunningEventsList.ScrollIntoView(RunningEventsList.SelectedItem);
+            }
+        }
+
+        private void LoggedEventsOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (LoggedEventsList.SelectedItem != null)
+            {
+                LoggedEventsList.ScrollIntoView(LoggedEventsList.SelectedItem);
+            }
+        }
+
         private void StartOnClick(object sender, RoutedEventArgs args)
         {
             var c = (CentralViewModel)DataContext;
@@ -99,6 +118,12 @@ namespace ParentingTrackerApp.Views
         {
             var c = (CentralViewModel)DataContext;
             c.New();
+        }
+
+        private void CloseEditorOnClick(object sender, RoutedEventArgs e)
+        {
+            var c = (CentralViewModel)DataContext;
+            c.CloseEditor();
         }
     }
 }
