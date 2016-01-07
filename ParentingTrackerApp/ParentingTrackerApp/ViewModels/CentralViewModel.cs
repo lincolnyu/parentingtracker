@@ -39,6 +39,7 @@ namespace ParentingTrackerApp.ViewModels
         private bool _suppressSorting;
         private bool _inLoggedCollectionChangedHandler;
         private bool _isEditing;
+        private bool _wasLoggedSelectedBeforeEditing;
 
         #endregion
 
@@ -136,7 +137,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _selectedLoggedEvent = value;
                     IsEditing = value != null;
-                    FinishEditing(value);
+                    FinishEditingBut(value);
                     RaisePropertyChangedEvent("SelectedLoggedEvent");
                     AffectPickerEnabled();
                     AffectMutliRoleFields();
@@ -390,7 +391,7 @@ namespace ParentingTrackerApp.ViewModels
         public void New()
         {
             SelectedRunningEvent = null;
-            FinishEditing(null);
+            FinishEditingBut(null);
             SelectedLoggedEvent = null;
             IsEditing = true;
         }
@@ -434,7 +435,7 @@ namespace ParentingTrackerApp.ViewModels
         public void CloseEditor()
         {
             SelectedRunningEvent = null;
-            FinishEditing(null);
+            FinishEditingBut(null);
             SelectedLoggedEvent = null;
             IsEditing = false;
         }
@@ -485,14 +486,23 @@ namespace ParentingTrackerApp.ViewModels
                 var evm = (EventViewModel)sender;
                 if (evm.IsEditing)
                 {
-                    SelectedLoggedEvent = evm;
                     SelectedRunningEvent = null;
-                    FinishEditing(evm);
+                    _wasLoggedSelectedBeforeEditing = SelectedLoggedEvent == evm;
+                    if (!_wasLoggedSelectedBeforeEditing)
+                    {
+                        SelectedLoggedEvent = evm;
+                    }
+                    FinishEditingBut(evm);
                 }
                 else
                 {
                     // finished editing, sort it
                     SortLoggedEvents();
+                    // make the event remain selected and therefore details displayed
+                    if (_wasLoggedSelectedBeforeEditing)
+                    {
+                        SelectedLoggedEvent = evm;
+                    }
                 }
                 AffectPickerEnabled();
                 AffectMutliRoleFields();
@@ -500,7 +510,11 @@ namespace ParentingTrackerApp.ViewModels
             MarkAsDirty();
         }
         
-        private void FinishEditing(EventViewModel evm)
+        /// <summary>
+        ///  Mark as not-editing except the specified
+        /// </summary>
+        /// <param name="evm">The event that's not marked not-editing</param>
+        private void FinishEditingBut(EventViewModel evm)
         {
             var buf = LoggedEvents.Where(x => x != evm).ToList();
             foreach (var le in buf)

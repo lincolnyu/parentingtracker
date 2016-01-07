@@ -28,7 +28,11 @@
         </Grid.RowDefinitions>
         <StackPanel Name="Editor" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid>
-                <StackPanel Orientation="Horizontal">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <TextBlock>Event type:</TextBlock>
                     <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding SelectedEventType, Mode=TwoWay}"
                               IsEnabled="{Binding EventTypeAndNotesEnabled}">
@@ -40,6 +44,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </StackPanel>
+                <Button Grid.Column="1" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}" Click="CloseEditorOnClick">X</Button>
             </Grid>
             <TextBlock>Notes</TextBlock>
             <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -84,7 +89,6 @@
             <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="StopOnClick">Stop</Button>
             <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="CancelOnClick">Cancel</Button>
             <Button Click="LogOnClick">Just Add</Button>
-            <Button Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}" Click="CloseEditorOnClick">Close Editor</Button>
         </StackPanel>
         <TextBlock Grid.Row="3" Grid.Column="0">Logged:</TextBlock>
         <ListView Grid.Row="3" Grid.Column="1" Name="LoggedEventsList"
@@ -92,26 +96,33 @@
                   SelectedItem="{Binding SelectedLoggedEvent, Mode=TwoWay}"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid Loaded="LoggedEntryGridOnLoaded">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
-                        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Orientation="Horizontal">
-                            <ToggleButton Name="EditingButton" Content="&#xE104;" FontFamily="Segoe UI Symbol"
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <TextBlock Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
+                            <TextBlock Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
+                        <StackPanel Name="ControlPanel" Grid.Column="1" Orientation="Horizontal">
+                            <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
+                                Click="RemoveLoggedOnClick" 
+                                Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>
+                            <ToggleButton Name="EditButton" Content="&#xE104;" FontFamily="Segoe UI Symbol"
                                           IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>
-                            <Button Content="&#xE106;" FontFamily="Segoe UI Symbol"
-                                          Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

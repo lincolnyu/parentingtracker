@@ -4,6 +4,7 @@ using ParentingTrackerApp.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using Windows.UI.Xaml.Controls.Primitives;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -11,6 +12,52 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class TrackingView : UserControl
     {
+        private class LoggedEntryUiAdaptor
+        {
+            public LoggedEntryUiAdaptor(Grid grid)
+            {
+                LoggedEntry = (EventViewModel)grid.DataContext;
+                if (LoggedEntry == null)
+                {
+                    return;// cancel creation and leave the object as garbage
+                }
+                EditButton = (ToggleButton)grid.FindName("EditButton");
+                RemoveButton = (Button)grid.FindName("RemoveButton");
+                Column = grid.ColumnDefinitions[1];
+                UpdateWidth();
+                grid.Unloaded += GridOnUnloaded;
+                LoggedEntry.PropertyChanged += LoggedDataContextOnPropertyChanged;
+            }
+
+            public EventViewModel LoggedEntry { get; private set; }
+
+            public ToggleButton EditButton { get; private set; }
+
+            public Button RemoveButton { get; private set; }
+
+            public ColumnDefinition Column { get; private set; }
+
+            private void GridOnUnloaded(object sender, RoutedEventArgs e)
+            {
+                LoggedEntry.PropertyChanged -= LoggedDataContextOnPropertyChanged;
+            }
+
+            public void LoggedDataContextOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+            {
+                if (args.PropertyName == "IsEditing")
+                {
+                    UpdateWidth();
+                }
+            }
+
+            private void UpdateWidth()
+            {
+                var colWidth = LoggedEntry.IsEditing ? RemoveButton.ActualWidth + EditButton.ActualWidth
+                    : EditButton.ActualWidth;
+                Column.Width = new GridLength(colWidth);
+            }
+        }
+
         public TrackingView()
         {
             InitializeComponent();
@@ -130,6 +177,12 @@ namespace ParentingTrackerApp.Views
         {
             var c = (CentralViewModel)DataContext;
             c.CloseEditor();
+        }
+
+        private void LoggedEntryGridOnLoaded(object sender, RoutedEventArgs e)
+        {
+            var grid = (Grid)sender;
+            new LoggedEntryUiAdaptor(grid);
         }
     }
 }
