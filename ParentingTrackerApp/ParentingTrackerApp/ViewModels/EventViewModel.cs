@@ -11,9 +11,9 @@ namespace ParentingTrackerApp.ViewModels
 
         public enum Statuses
         {
-            Editing,
+            Logged,
             Running,
-            Logged
+            Editing,
         }
 
         #endregion
@@ -24,7 +24,6 @@ namespace ParentingTrackerApp.ViewModels
         private DateTime _endTime;
         private EventTypeViewModel _eventType;
         private string _notes;
-        private bool _isEditing;
         private Statuses _status;
 
         #endregion
@@ -88,7 +87,7 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-        public DateTime StartDate
+        public DateTimeOffset StartDate
         {
             get
             {
@@ -176,7 +175,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _eventType = value;
                     RaisePropertyChangedEvent("EventType");
-                    RaisePropertyChangedEvent("Title");
+                    RaisePropertyChangedEvent("RunningTag");
                     RaisePropertyChangedEvent("EventTypeName");
                     RaisePropertyChangedEvent("Color");
                 }
@@ -213,11 +212,12 @@ namespace ParentingTrackerApp.ViewModels
         /// <summary>
         ///  The event displayed as a tag when being halfway created
         /// </summary>
-        public string Title
+        public string RunningTag
         {
             get
             {
-                return string.Format("{0} {1}", EventTypeName, StartTime.ToString());
+                return string.Format("{0} since {1} for {2}", EventTypeName, 
+                    StartTime.ToString(), (DateTime.Now-StartTime).ToString(@"hh\:mm\:ss"));
             }
         }
 
@@ -301,6 +301,13 @@ namespace ParentingTrackerApp.ViewModels
 
         public int CompareTo(EventViewModel other)
         {
+            return -CompareToAscending(other);
+        }
+
+        #endregion
+        
+        private int CompareToAscending(EventViewModel other)
+        {
             var c = Status.CompareTo(other.Status);
             if (c != 0) return c;
             c = StartTime.CompareTimeIgnoreMs(other.StartTime);
@@ -320,14 +327,12 @@ namespace ParentingTrackerApp.ViewModels
             return Notes.CompareTo(other.Notes);
         }
 
-        #endregion
-
         private void RaiseStartTimeChangedEvent()
         {
             RaisePropertyChangedEvent("StartDate");
             RaisePropertyChangedEvent("StartTime");
             RaisePropertyChangedEvent("StartTimeOfDay");
-            RaisePropertyChangedEvent("Title");
+            RaisePropertyChangedEvent("RunningTag");
             RaisePropertyChangedEvent("LocalisedTimeRange");
         }
 

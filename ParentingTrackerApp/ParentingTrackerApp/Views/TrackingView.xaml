@@ -18,7 +18,7 @@
                                       RunningEventDataTemplate="{StaticResource RunningEventDataTemplate}"
                                       LoggedEventDataTemplate="{StaticResource LoggedEventDataTemplate}"/>
                     <DataTemplate x:Key="RunningEventDataTemplate">
-                        <TextBlock Text="{Binding Title}"></TextBlock>
+                        <TextBlock Text="{Binding RunningTag}"></TextBlock>
                     </DataTemplate>
                     <DataTemplate x:Key="LoggedEventDataTemplate">
                         <Grid Loaded="LoggedEntryGridOnLoaded">
@@ -105,7 +105,7 @@
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Click="NewOnClick">New</Button>
-            <Button Click="StartOnClick">Start</Button>
+            <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="StartOnClick">Start</Button>
             <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="StopOnClick">Stop</Button>
             <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="CancelOnClick">Cancel</Button>
             <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="LogOnClick">Just Add</Button>

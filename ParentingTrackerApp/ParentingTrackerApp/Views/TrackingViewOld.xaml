@@ -82,7 +82,7 @@
                   ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Title}"></TextBlock>
+                    <TextBlock Text="{Binding RunningTag}"></TextBlock>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

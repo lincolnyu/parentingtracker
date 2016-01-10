@@ -35,7 +35,7 @@ namespace ParentingTrackerApp.ViewModels
         private const string EventFileName = "events.csv";
         private EventViewModel _selectedEvent;
         private bool _isInLoggedEventPropertyChanged;
-        private bool _inAllEventsCollectionChangedHandler;
+        private bool _suppressAllEventsCollectionChangedHandler;
 
         #endregion
 
@@ -214,6 +214,7 @@ namespace ParentingTrackerApp.ViewModels
             FinishEditingBut(null);
             _newEvent = new EventViewModel(this)
             {
+                Status = EventViewModel.Statuses.Running,
                 EventType = EventTypes.FirstOrDefault(),
                 StartTime = DateTime.Now,
                 EndTime = DateTime.Now
@@ -372,12 +373,31 @@ namespace ParentingTrackerApp.ViewModels
                 else
                 {
                     CloseEditor(evm);
+                    SortLists();
+                }
+            }
+            else
+            {
+                var o = (EventViewModel)sender;
+                if (o.IsRunning)
+                {
+                    SortLists();
                 }
             }
             MarkAsDirty();
             _isInLoggedEventPropertyChanged = false;
         }
-        
+
+        private void SortLists()
+        {
+            var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
+            _suppressAllEventsCollectionChangedHandler = true;
+            AllEvents.QuickSort();
+            RunningEvents.QuickSort();
+            LoggedEvents.QuickSort();
+            _suppressAllEventsCollectionChangedHandler = wasSuppressing;
+        }
+
         /// <summary>
         ///  Mark as not-editing except the specified
         /// </summary>
@@ -391,14 +411,13 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-
         private void AllEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            if (_inAllEventsCollectionChangedHandler)
+            if (_suppressAllEventsCollectionChangedHandler)
             {
                 return;
             }
-            _inAllEventsCollectionChangedHandler = true;
+            _suppressAllEventsCollectionChangedHandler = true;
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
                 RunningEvents.Clear();
@@ -428,15 +447,11 @@ namespace ParentingTrackerApp.ViewModels
                     {
                         if (newItem.IsRunningEvent)
                         {
-                            var index = RunningEvents.BinarySearch(newItem);
-                            if (index < 0) index = -index - 1;
-                            RunningEvents.Insert(index, newItem);
+                            RunningEvents.Insert(newItem);
                         }
                         else if (newItem.IsLoggedEvent)
                         {
-                            var index = LoggedEvents.BinarySearch(newItem);
-                            if (index < 0) index = -index - 1;
-                            LoggedEvents.Insert(index, newItem);
+                            LoggedEvents.Insert(newItem);
                         }
                         newItem.PropertyChanged += EventOnPropertyChanged;
                     }
@@ -444,7 +459,7 @@ namespace ParentingTrackerApp.ViewModels
             }
        
             MarkAsDirty();
-            _inAllEventsCollectionChangedHandler = false;
+            _suppressAllEventsCollectionChangedHandler = false;
         }
 
         private void SubscribeForEvents()
