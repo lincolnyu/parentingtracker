@@ -13,7 +13,7 @@ namespace ParentingTrackerApp.Helpers
         }
 
         public static IEnumerable<EventViewModel> ReadFromTable(this IEnumerable<string> lines,
-            ICollection<EventTypeViewModel> eventTypes, DocInfo docInfo)
+            CentralViewModel cvm, DocInfo docInfo)
         {
             var state = 0;
             EventViewModel evm = null;
@@ -28,7 +28,7 @@ namespace ParentingTrackerApp.Helpers
                 else if (line.StartsWith("<tr>"))
                 {
                     state = 1;
-                    evm = new EventViewModel();
+                    evm = new EventViewModel(cvm);
                 }
                 else if (line.StartsWith("<td>"))
                 {
@@ -44,7 +44,7 @@ namespace ParentingTrackerApp.Helpers
                             state = 3;
                             break;
                         case 3:
-                            evm.EventType = GetOrCreateEventType(eventTypes, val);
+                            evm.EventType = GetOrCreateEventType(cvm.EventTypes, val);
                             state = 4;
                             break;
                         case 4:
@@ -146,7 +146,7 @@ namespace ParentingTrackerApp.Helpers
             yield return string.Format("{0}  <tr>", indent);
             yield return string.Format("{0}    <td>{1}</td>", indent, ev.StartTime);
             yield return string.Format("{0}    <td>{1}</td>", indent, ev.EndTime);
-            yield return string.Format("{0}    <td>{1}</td>", indent, ev.Type);
+            yield return string.Format("{0}    <td>{1}</td>", indent, ev.EventTypeName);
             yield return string.Format("{0}    <td>{1}</td>", indent, ev.Notes);
             yield return string.Format("{0}  </tr>", indent);
         }

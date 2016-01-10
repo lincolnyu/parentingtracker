@@ -1,10 +1,23 @@
 ﻿using ParentingTrackerApp.Helpers;
 using System;
+using System.Collections.ObjectModel;
+using Windows.UI;
 
 namespace ParentingTrackerApp.ViewModels
 {
     public class EventViewModel : BaseViewModel, IComparable<EventViewModel>
     {
+        #region Enumerations
+
+        public enum Statuses
+        {
+            Editing,
+            Running,
+            Logged
+        }
+
+        #endregion
+
         #region Fields
 
         private DateTime _startTime;
@@ -12,10 +25,36 @@ namespace ParentingTrackerApp.ViewModels
         private EventTypeViewModel _eventType;
         private string _notes;
         private bool _isEditing;
+        private Statuses _status;
+
+        #endregion
+
+        #region Constructors
+
+        public EventViewModel(CentralViewModel cvm)
+        {
+            CentralViewModel = cvm;
+        }
 
         #endregion
 
         #region Properties
+
+        public CentralViewModel CentralViewModel
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        ///  All available event types
+        /// </summary>
+        public ObservableCollection<EventTypeViewModel> EventTypes
+        {
+            get
+            {
+                return CentralViewModel.EventTypes;
+            }
+        }
 
         public DateTime StartTime
         {
@@ -133,19 +172,26 @@ namespace ParentingTrackerApp.ViewModels
             }
             set
             {
-                if (_eventType != value)
+                if (_eventType != value && !SuppressUpdate)
                 {
                     _eventType = value;
                     RaisePropertyChangedEvent("EventType");
                     RaisePropertyChangedEvent("Title");
-                    RaisePropertyChangedEvent("Type");
+                    RaisePropertyChangedEvent("EventTypeName");
+                    RaisePropertyChangedEvent("Color");
                 }
             }
         }
 
-        public string Type
+        public string EventTypeName
         {
-            get { return EventType.Name; }
+            get { return EventType != null ?
+                    EventType.Name : "(null)"; }
+        }
+
+        public Color Color
+        {
+            get { return EventType.Color; }
         }
 
         public string Notes
@@ -171,7 +217,39 @@ namespace ParentingTrackerApp.ViewModels
         {
             get
             {
-                return string.Format("{0} {1}", EventType != null?EventType.Name : "(null)", StartTime.ToString());
+                return string.Format("{0} {1}", EventTypeName, StartTime.ToString());
+            }
+        }
+
+        public Statuses Status
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    RaiseStatusChangedEvents();
+                }
+            }
+        }
+
+        public bool IsLoggedEvent
+        {
+            get
+            {
+                return Status == Statuses.Logged || Status == Statuses.Editing;
+            }
+        }
+
+        public bool IsRunningEvent
+        {
+            get
+            {
+                return Status == Statuses.Running;
             }
         }
 
@@ -179,16 +257,40 @@ namespace ParentingTrackerApp.ViewModels
         {
             get
             {
-                return _isEditing;
+                return Status == Statuses.Editing;
             }
             set
             {
-                if (_isEditing != value)
+                if (value)
                 {
-                    _isEditing = value;
-                    RaisePropertyChangedEvent("IsEditing");
+                    Status = Statuses.Editing;
+                }
+                else if (Status == Statuses.Editing)
+                {
+                    Status = Statuses.Logged;
                 }
             }
+        }
+
+        public bool IsRunning
+        {
+            get
+            {
+                return Status == Statuses.Running;
+            }
+        }
+
+        public bool IsEditingOrRunning
+        {
+            get
+            {
+                return IsEditing || IsRunning;
+            }
+        }
+        
+        public bool SuppressUpdate
+        {
+            get; set;
         }
 
         #endregion
@@ -199,7 +301,9 @@ namespace ParentingTrackerApp.ViewModels
 
         public int CompareTo(EventViewModel other)
         {
-            var c = StartTime.CompareTimeIgnoreMs(other.StartTime);
+            var c = Status.CompareTo(other.Status);
+            if (c != 0) return c;
+            c = StartTime.CompareTimeIgnoreMs(other.StartTime);
             if (c != 0) return c;
             c = EndTime.CompareTimeIgnoreMs(other.EndTime);
             if (c != 0) return c;
@@ -233,6 +337,16 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("EndTime");
             RaisePropertyChangedEvent("EndTimeOfDay");
             RaisePropertyChangedEvent("LocalisedTimeRange");
+        }
+
+        private void RaiseStatusChangedEvents()
+        {
+            RaisePropertyChangedEvent("Status");
+            RaisePropertyChangedEvent("IsEditing");
+            RaisePropertyChangedEvent("IsRunning");
+            RaisePropertyChangedEvent("IsEditingOrRunning");
+            RaisePropertyChangedEvent("IsLoggedEvent");
+            RaisePropertyChangedEvent("IsRunningEvent");
         }
 
         #endregion

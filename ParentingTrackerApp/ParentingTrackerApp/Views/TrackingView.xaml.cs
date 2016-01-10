@@ -1,7 +1,6 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using ParentingTrackerApp.ViewModels;
-using System;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -64,7 +63,6 @@ namespace ParentingTrackerApp.Views
 
             DataContextChanged += DataContextOnChanged;
 
-            RunningEventsList.SelectionChanged += RunningEventsOnSelectionChanged;
             LoggedEventsList.SelectionChanged += LoggedEventsOnSelectionChanged;
         }
 
@@ -119,15 +117,7 @@ namespace ParentingTrackerApp.Views
                 EditorRow.Height = new GridLength(0);
             }
         }
-
-        private void RunningEventsOnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (RunningEventsList.SelectedItem != null)
-            {
-                RunningEventsList.ScrollIntoView(RunningEventsList.SelectedItem);
-            }
-        }
-
+        
         private void LoggedEventsOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (LoggedEventsList.SelectedItem != null)

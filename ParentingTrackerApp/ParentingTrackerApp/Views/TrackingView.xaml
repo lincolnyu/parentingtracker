@@ -26,50 +26,53 @@
             <RowDefinition Height="60"/>
             <RowDefinition Height=".5*" MinHeight="60"/>
         </Grid.RowDefinitions>
-        <StackPanel Name="Editor" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="30"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock>Event type:</TextBlock>
-                    <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding SelectedEventType, Mode=TwoWay}"
-                              IsEnabled="{Binding EventTypeAndNotesEnabled}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name, Mode=OneWay}" 
+        <StackPanel Name="Editor" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                    Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel DataContext="{Binding EventInEditing}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock>Event type:</TextBlock>
+                        <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding EventType, Mode=TwoWay}"
+                              IsEnabled="{Binding IsEditingOrRunning}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" 
                                    Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"></TextBlock>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-                <Button Grid.Column="1" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}" Click="CloseEditorOnClick">X</Button>
-            </Grid>
-            <TextBlock>Notes</TextBlock>
-            <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     IsEnabled="{Binding EventTypeAndNotesEnabled}"></TextBox>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"></ColumnDefinition>
-                    <ColumnDefinition MaxWidth="300"></ColumnDefinition>
-                    <ColumnDefinition MaxWidth="300"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Start" Grid.Row="0" Grid.Column="0"></TextBlock>
-                <DatePicker Grid.Row="0" Grid.Column="1" IsEnabled="{Binding StartPickerEnabled}"
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <Button Grid.Column="1" Click="CloseEditorOnClick">X</Button>
+                </Grid>
+                <TextBlock>Notes</TextBlock>
+                <TextBox Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding IsEditingOrRunning}"></TextBox>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"></ColumnDefinition>
+                        <ColumnDefinition MaxWidth="300"></ColumnDefinition>
+                        <ColumnDefinition MaxWidth="300"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Start" Grid.Row="0" Grid.Column="0"></TextBlock>
+                    <DatePicker Grid.Row="0" Grid.Column="1" IsEnabled="{Binding IsEditingOrRunning}"
                             Date="{Binding StartDate, Mode=TwoWay}"></DatePicker>
-                <TimePicker Grid.Row="0" Grid.Column="2" IsEnabled="{Binding StartPickerEnabled}"
+                    <TimePicker Grid.Row="0" Grid.Column="2" IsEnabled="{Binding IsEditingOrRunning}"
                             Time="{Binding StartTimeOfDay, Mode=TwoWay}"></TimePicker>
-                <TextBlock Text="End" Grid.Row="1" Grid.Column="0"></TextBlock>
-                <DatePicker Grid.Row="1" Grid.Column="1" IsEnabled="{Binding EndPickerEnabled}"
+                    <TextBlock Text="End" Grid.Row="1" Grid.Column="0"></TextBlock>
+                    <DatePicker Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEditing}"
                             Date="{Binding EndDate, Mode=TwoWay}"></DatePicker>
-                <TimePicker Grid.Row="1" Grid.Column="2" IsEnabled="{Binding EndPickerEnabled}"
+                    <TimePicker Grid.Row="1" Grid.Column="2" IsEnabled="{Binding IsEditing}"
                             Time="{Binding EndTimeOfDay, Mode=TwoWay}"></TimePicker>
-            </Grid>
+                </Grid>
+            </StackPanel>
         </StackPanel>
         <TextBlock Grid.Row="1" Grid.Column="0">Running:</TextBlock>
         <ListView Grid.Row="1" Grid.Column="1" Name="RunningEventsList"
@@ -112,12 +115,13 @@
                             <RowDefinition></RowDefinition>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
                             <TextBlock Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
-                            <TextBlock Text="{Binding Type}" Margin="5,0,5,0"></TextBlock>
+                            <TextBlock Text="{Binding EventTypeName}" Margin="5,0,5,0"></TextBlock>
                         </StackPanel>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
-                        <StackPanel Name="ControlPanel" Grid.Column="1" Orientation="Horizontal">
+                        <StackPanel Name="ControlPanel" Grid.Row="0" Grid.RowSpan="2" 
+                                    Grid.Column="1" Orientation="Horizontal">
                             <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
                                 Click="RemoveLoggedOnClick" 
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>

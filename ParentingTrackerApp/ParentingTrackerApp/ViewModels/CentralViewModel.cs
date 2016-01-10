@@ -25,21 +25,18 @@ namespace ParentingTrackerApp.ViewModels
         #region Fields
 
         private States _state = States.Init;
-        private string _notes;
-        private DateTime _startDate;
-        private DateTime _endDate;
-        private TimeSpan _startTimeOfDay;
-        private TimeSpan _endTimeOfDay;
-        private EventTypeViewModel _selectedEventType;
-        private EventViewModel _selectedRunningEvent;
-        private EventViewModel _selectedLoggedEvent;
         private string _exportPath;
         private string _exportFileToken;
 
         private bool _suppressSorting;
         private bool _inLoggedCollectionChangedHandler;
-        private bool _isEditing;
         private bool _wasLoggedSelectedBeforeEditing;
+
+        private EventViewModel _newEvent;
+
+        private const string EventFileName = "events.csv";
+        private EventViewModel _selectedEvent;
+        private bool _isInLoggedEventPropertyChanged;
 
         #endregion
 
@@ -64,20 +61,28 @@ namespace ParentingTrackerApp.ViewModels
         public ObservableCollection<EventViewModel> LoggedEvents { get; }
             = new ObservableCollection<EventViewModel>();
 
+        public ObservableCollection<EventViewModel> AllEvents { get; }
+            = new ObservableCollection<EventViewModel>();
+
+        /// <summary>
+        ///  Data context for the editor
+        /// </summary>
+        public EventViewModel EventInEditing
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        ///  If the editor is showing for either selected object or object being created
+        /// </summary>
         public bool IsEditing
         {
-            get
-            {
-                return _isEditing;
-            }
-            set
-            {
-                if (_isEditing != value)
-                {
-                    _isEditing = value;
-                    RaisePropertyChangedEvent("IsEditing");
-                }
-            }
+            get; private set;
+        }
+
+        public bool CanStop
+        {
+            get; private set;
         }
 
         /// <summary>
@@ -110,239 +115,51 @@ namespace ParentingTrackerApp.ViewModels
                 }
             }
         }
+        public EventViewModel SelectedLoggedEvent
+        {
+            get
+            {
+                return SelectedEvent != null && SelectedEvent.IsLoggedEvent? SelectedEvent : null;
+            }
+            set
+            {
+                if (SelectedEvent != null && SelectedEvent.IsLoggedEvent
+                        || value != null && value.IsLoggedEvent)
+                {
+                    SelectedEvent = value;
+                }
+            }
+        }
 
         public EventViewModel SelectedRunningEvent
         {
-            get { return _selectedRunningEvent; }
+            get
+            {
+                return SelectedEvent != null && SelectedEvent.IsRunningEvent ? SelectedEvent : null;
+            }
             set
             {
-                if (_selectedRunningEvent != value)
+                if (SelectedEvent != null && SelectedEvent.IsRunningEvent
+                        || value != null && value.IsRunningEvent)
                 {
-                    _selectedRunningEvent = value;
-                    IsEditing = value != null;
-                    RaisePropertyChangedEvent("SelectedRunningEvent");
-                    RaisePropertyChangedEvent("CanStop");
-                    AffectPickerEnabled();
-                    AffectMutliRoleFields();
+                    SelectedEvent = value;
                 }
             }
         }
-
-        public EventViewModel SelectedLoggedEvent
+        
+        public EventViewModel SelectedEvent
         {
-            get { return _selectedLoggedEvent; }
+            get { return _selectedEvent;  }
             set
             {
-                if (_selectedLoggedEvent != value)
+                if (_selectedEvent != value)
                 {
-                    _selectedLoggedEvent = value;
-                    IsEditing = value != null;
+                    _selectedEvent = value;
                     FinishEditingBut(value);
+                    RaisePropertyChangedEvent("SelectedEvent");
                     RaisePropertyChangedEvent("SelectedLoggedEvent");
-                    AffectPickerEnabled();
-                    AffectMutliRoleFields();
-                }
-            }
-        }
-
-        public bool CanStop
-        {
-            get
-            {
-                return SelectedRunningEvent != null;
-            }
-        }
-
-        /// <summary>
-        ///  enabled when is editing or is going
-        /// </summary>
-        public bool StartPickerEnabled
-        {
-            get
-            {
-                return SelectedRunningEvent != null ||
-                    SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing;
-            }
-        }
-
-        /// <summary>
-        ///  enabled only when is editing
-        /// </summary>
-        public bool EndPickerEnabled
-        {
-            get
-            {
-                return SelectedLoggedEvent != null && SelectedLoggedEvent.IsEditing;
-            }
-        }
-
-        public EventTypeViewModel SelectedEventType
-        {
-            get
-            {
-                return SelectedRunningEvent?.EventType ??
-                  (SelectedLoggedEvent != null?
-                  SelectedLoggedEvent.EventType : _selectedEventType);
-            }
-            set
-            {
-                if (SelectedRunningEvent != null)
-                {
-                    SelectedRunningEvent.EventType = value;
-                    RaisePropertyChangedEvent("SelectedEventType");
-                }
-                else if (SelectedLoggedEvent != null)
-                {
-                    SelectedLoggedEvent.EventType = value;
-                    RaisePropertyChangedEvent("SelectedEventType");
-                }
-                else if (_selectedEventType != value)
-                {
-                    _selectedEventType = value;
-                    RaisePropertyChangedEvent("SelectedEventType");
-                }
-            }
-        }
-        public string Notes
-        {
-            get
-            {
-                return SelectedRunningEvent?.Notes ??
-                  (SelectedLoggedEvent != null?
-                  SelectedLoggedEvent.Notes :
-                  _notes);
-            }
-            set
-            {
-                if (SelectedRunningEvent != null)
-                {
-                    SelectedRunningEvent.Notes = value;
-                    RaisePropertyChangedEvent("Notes");
-                }
-                else if (SelectedLoggedEvent != null)
-                {
-                    SelectedLoggedEvent.Notes = value;
-                    RaisePropertyChangedEvent("Notes");
-                }
-                else if (_notes != value)
-                {
-                    _notes = value;
-                    RaisePropertyChangedEvent("Notes");
-                }
-            }
-        }
-
-        public DateTime StartDate
-        {
-            get
-            {
-                return SelectedRunningEvent?.StartDate ??
-                  (SelectedLoggedEvent != null?
-                  SelectedLoggedEvent.StartDate :
-                  _startDate);
-            }
-            set
-            {
-                if (SelectedRunningEvent != null)
-                {
-                    SelectedRunningEvent.StartDate = value;
-                    RaisePropertyChangedEvent("StartDate");
-                }
-                else if (SelectedLoggedEvent != null)
-                {
-                    SelectedLoggedEvent.StartDate = value;
-                    RaisePropertyChangedEvent("StartDate");
-                }
-                else if (_startDate != value)
-                {
-                    _startDate = value;
-                    RaisePropertyChangedEvent("StartDate");
-                }
-            }
-        }
-
-        public TimeSpan StartTimeOfDay
-        {
-            get
-            {
-                return SelectedRunningEvent?.StartTimeOfDay ??
-                  (SelectedLoggedEvent != null?
-                  SelectedLoggedEvent.StartTimeOfDay :
-                  _startTimeOfDay);
-            }
-            set
-            {
-                if (SelectedRunningEvent != null)
-                {
-                    SelectedRunningEvent.StartTimeOfDay = value;
-                    RaisePropertyChangedEvent("StartTimeOfDay");
-                }
-                else if (SelectedLoggedEvent != null)
-                {
-                    SelectedLoggedEvent.StartTimeOfDay = value;
-                    RaisePropertyChangedEvent("StartTimeOfDay");
-                }
-                else if (_startTimeOfDay != value)
-                {
-                    _startTimeOfDay = value;
-                    RaisePropertyChangedEvent("StartTimeOfDay");
-                }
-            }
-        }
-        public DateTime EndDate
-        {
-            get
-            {
-                return SelectedRunningEvent?.EndDate ??
-                  (SelectedLoggedEvent != null?
-                  SelectedLoggedEvent.EndDate :
-                  _endDate);
-            }
-            set
-            {
-                if (SelectedRunningEvent != null)
-                {
-                    SelectedRunningEvent.EndDate = value;
-                    RaisePropertyChangedEvent("EndDate");
-                }
-                else if (SelectedLoggedEvent != null)
-                {
-                    SelectedLoggedEvent.EndDate = value;
-                    RaisePropertyChangedEvent("EndDate");
-                }
-                else if (_endDate != value)
-                {
-                    _endDate = value;
-                    RaisePropertyChangedEvent("EndDate");
-                }
-            }
-        }
-
-        public TimeSpan EndTimeOfDay
-        {
-            get
-            {
-                return SelectedRunningEvent?.EndTimeOfDay ??
-                  (SelectedLoggedEvent != null?
-                  SelectedLoggedEvent.EndTimeOfDay :
-                  _endTimeOfDay);
-            }
-            set
-            {
-                if (SelectedRunningEvent != null)
-                {
-                    SelectedRunningEvent.EndTimeOfDay = value;
-                    RaisePropertyChangedEvent("EndTimeOfDay");
-                }
-                else if (SelectedLoggedEvent != null)
-                {
-                    SelectedLoggedEvent.EndTimeOfDay = value;
-                    RaisePropertyChangedEvent("EndTimeOfDay");
-                }
-                else if (_endTimeOfDay != value)
-                {
-                    _endTimeOfDay = value;
-                    RaisePropertyChangedEvent("EndTimeOfDay");
+                    RaisePropertyChangedEvent("SelectedRunningEvent");
+                    UpdateIsEditingAndRelated();
                 }
             }
         }
@@ -350,6 +167,124 @@ namespace ParentingTrackerApp.ViewModels
         #endregion
 
         #region Methods
+
+        private void UpdateIsEditingAndRelated()
+        {
+            IsEditing = SelectedEvent != null || _newEvent != null;
+            CanStop = SelectedEvent != null && SelectedEvent.IsRunning;
+            var prevDc = EventInEditing;
+            if (SelectedEvent != null)
+            {
+                EventInEditing = SelectedEvent;
+            }
+            else
+            {
+                EventInEditing = _newEvent;
+            }
+            RaisePropertyChangedEvent("IsEditing");
+            RaisePropertyChangedEvent("CanStop");
+            if (EventInEditing == null && prevDc != null)
+            {
+                var wasSuppressing = prevDc.SuppressUpdate;
+                prevDc.SuppressUpdate = true;
+                RaisePropertyChangedEvent("EventInEditing");
+                prevDc.SuppressUpdate = wasSuppressing;
+            }
+            else
+            {
+                RaisePropertyChangedEvent("EventInEditing");
+            }
+        }
+
+        public void New()
+        {
+            SelectedEvent = null;
+            FinishEditingBut(null);
+            _newEvent = new EventViewModel(this)
+            {
+                EventType = EventTypes.FirstOrDefault(),
+                StartTime = DateTime.Now
+            };
+            UpdateIsEditingAndRelated();
+        }
+
+
+        public void CloseEditor()
+        {
+            CloseEditor(SelectedEvent);
+        }
+
+        private void CloseEditor(EventViewModel e)
+        {
+            if (e != null && e == SelectedEvent 
+                && (e.IsRunningEvent || !_wasLoggedSelectedBeforeEditing))
+            {
+                SelectedEvent = null;
+            }
+
+            FinishEditingBut(null);
+
+            _newEvent = null;
+            UpdateIsEditingAndRelated();
+        }
+
+        public void Start()
+        {
+            var time = DateTime.Now;
+            var evm = _newEvent?? new EventViewModel(this)
+            {
+                EventType = EventTypes.FirstOrDefault(),
+                Notes = ""
+            };
+            evm.Status = EventViewModel.Statuses.Running;
+            evm.StartTime = time;
+            RunningEvents.Insert(0, evm);
+            SelectedEvent = evm;
+            UpdateIsEditingAndRelated();
+        }
+
+        public void Stop()
+        {
+            var sre = SelectedEvent;
+            if (sre == null)
+            {
+                return;
+            }
+            var t = DateTime.Now;
+            sre.EndTime = t;
+            sre.Status = EventViewModel.Statuses.Logged;
+            RunningEvents.Remove(SelectedEvent);
+            AddLogggedEvent(sre);
+            SelectedEvent = RunningEvents.FirstOrDefault();
+            UpdateIsEditingAndRelated();
+        }
+
+        public void Cancel()
+        {
+            if (SelectedEvent != null && SelectedEvent.IsRunning)
+            {
+                RunningEvents.Remove(SelectedEvent);
+                SelectedEvent = RunningEvents.FirstOrDefault();
+                UpdateIsEditingAndRelated();
+            }
+        }
+
+        public void Log()
+        {
+            var time = DateTime.Now;
+            var evm = _newEvent?? new EventViewModel(this)
+            {
+                StartTime = time,
+                EventType = EventTypes.FirstOrDefault(),
+                Notes = ""
+            };
+            evm.EndTime = evm.StartTime;
+            evm.Status = EventViewModel.Statuses.Logged;
+            AddLogggedEvent(evm);
+            _newEvent = null;
+            UpdateIsEditingAndRelated();
+        }
+
 
         public async Task<bool> Load()
         {
@@ -360,17 +295,36 @@ namespace ParentingTrackerApp.ViewModels
                 ExportPath = expPath;
                 ExportFileToken = expToken;
                 EventTypes.LoadRoamingColorMapping();
-                ResetWithEventTypes();
 
                 var wasSuppressing = _suppressSorting;
                 _suppressSorting = true;
-                var res = await LoggedEvents.LoadEvents(EventTypes);
+                RunningEvents.Clear();
+                LoggedEvents.Clear();
+                var evlines = await EventFileName.LoadEventsLines();
+                if (evlines != null)
+                {
+                    var events = evlines.LoadEvents(this);
+                    foreach (var e in events)
+                    {
+                        if (e.Status == EventViewModel.Statuses.Running)
+                        {
+                            RunningEvents.Add(e);
+                        }
+                        else
+                        {
+                            e.Status = EventViewModel.Statuses.Logged;// make sure it's logged
+                            LoggedEvents.Add(e);
+                        }
+                    }
+                }
+
                 _suppressSorting = false;
+                SortRunningEvents();
                 SortLoggedEvents();
                 _suppressSorting = wasSuppressing;
 
                 _state = States.Synced;
-                return res;
+                return evlines != null;
             }
             else
             {
@@ -384,75 +338,12 @@ namespace ParentingTrackerApp.ViewModels
             {
                 RoamingSettingsHelper.SaveExportSettings(ExportPath, ExportFileToken);
                 EventTypes.SaveRoamingColorMapping();
-                await LoggedEvents.SaveEvents();
+                var events = RunningEvents.Concat(LoggedEvents);
+                await events.SaveEvents(EventFileName);
                 _state = States.Synced;
             }
         }
-        public void New()
-        {
-            SelectedRunningEvent = null;
-            FinishEditingBut(null);
-            SelectedLoggedEvent = null;
-            IsEditing = true;
-        }
 
-        public void Start()
-        {
-            var time = DateTime.Now;
-            var evm = new EventViewModel
-            {
-                StartTime = time,
-                EventType = SelectedEventType,
-                Notes = Notes
-            };
-            RunningEvents.Insert(0, evm);
-            SelectedRunningEvent = evm;
-        }
-
-        public void Stop()
-        {
-            var sre = SelectedRunningEvent;
-            if (sre == null)
-            {
-                return;
-            }
-            var t = DateTime.Now;
-            sre.EndTime = t;
-            RunningEvents.Remove(SelectedRunningEvent);
-            AddLogggedEvent(sre);
-            SelectedRunningEvent = RunningEvents.FirstOrDefault();
-        }
-
-        public void Cancel()
-        {
-            if (SelectedRunningEvent != null)
-            {
-                RunningEvents.Remove(SelectedRunningEvent);
-                SelectedRunningEvent = RunningEvents.FirstOrDefault();
-            }
-        }
-
-        public void CloseEditor()
-        {
-            SelectedRunningEvent = null;
-            FinishEditingBut(null);
-            SelectedLoggedEvent = null;
-            IsEditing = false;
-        }
-
-
-        public void Log()
-        {
-            var time = DateTime.Now;
-            var evm = new EventViewModel
-            {
-                StartTime = time,
-                EndTime = time,
-                EventType = SelectedEventType,
-                Notes = Notes
-            };
-            AddLogggedEvent(evm);
-        }
 
         /// <summary>
         ///  Use this to add an event as it also makes sure events are in order
@@ -481,33 +372,30 @@ namespace ParentingTrackerApp.ViewModels
 
         private void LoggedEventPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
+            if (_isInLoggedEventPropertyChanged)
+            {
+                return;
+            }
+            _isInLoggedEventPropertyChanged = true;
             if (args.PropertyName == "IsEditing")
             {
                 var evm = (EventViewModel)sender;
                 if (evm.IsEditing)
                 {
-                    SelectedRunningEvent = null;
-                    _wasLoggedSelectedBeforeEditing = SelectedLoggedEvent == evm;
+                    _wasLoggedSelectedBeforeEditing = SelectedEvent == evm;
                     if (!_wasLoggedSelectedBeforeEditing)
                     {
-                        SelectedLoggedEvent = evm;
+                        SelectedEvent = evm;
                     }
                     FinishEditingBut(evm);
                 }
                 else
                 {
-                    // finished editing, sort it
-                    SortLoggedEvents();
-                    // make the event remain selected and therefore details displayed
-                    if (_wasLoggedSelectedBeforeEditing)
-                    {
-                        SelectedLoggedEvent = evm;
-                    }
+                    CloseEditor(evm);
                 }
-                AffectPickerEnabled();
-                AffectMutliRoleFields();
             }
             MarkAsDirty();
+            _isInLoggedEventPropertyChanged = false;
         }
         
         /// <summary>
@@ -563,7 +451,19 @@ namespace ParentingTrackerApp.ViewModels
             if (!_suppressSorting)
             {
                 _suppressSorting = true;
-                LoggedEvents.QuickSort();
+                // in descending order (recent first)
+                LoggedEvents.QuickSort((a, b) => -a.CompareTo(b));
+                _suppressSorting = false;
+            }
+        }
+
+        private void SortRunningEvents()
+        {
+            if (!_suppressSorting)
+            {
+                _suppressSorting = true;
+                // in descending order (recent first)
+                RunningEvents.QuickSort((a, b) => -a.CompareTo(b));
                 _suppressSorting = false;
             }
         }
@@ -578,8 +478,6 @@ namespace ParentingTrackerApp.ViewModels
 
         private void EventTypesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            ResetWithEventTypes();
-
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
                 SubscribeForLoadedEventTypes();
@@ -634,44 +532,12 @@ namespace ParentingTrackerApp.ViewModels
             MarkAsDirty();
         }
 
-        /// <summary>
-        ///  note this may also set the broken event type on running event
-        ///  to the first type available
-        /// </summary>
-        private void ResetWithEventTypes()
-        {
-            if (EventTypes.Count > 0)
-            {
-                SelectedEventType = EventTypes[0];
-            }
-            else
-            {
-                SelectedEventType = null;
-            }
-        }
-
         private void MarkAsDirty()
         {
             if (_state == States.Synced)
             {
                 _state = States.Dirty;
             }
-        }
-
-        private void AffectMutliRoleFields()
-        {
-            RaisePropertyChangedEvent("Notes");
-            RaisePropertyChangedEvent("SelectedEventType");
-            RaisePropertyChangedEvent("StartDate");
-            RaisePropertyChangedEvent("StartTimeOfDay");
-            RaisePropertyChangedEvent("EndDate");
-            RaisePropertyChangedEvent("EndTimeOfDay");
-        }
-
-        private void AffectPickerEnabled()
-        {
-            RaisePropertyChangedEvent("StartPickerEnabled");
-            RaisePropertyChangedEvent("EndPickerEnabled");
         }
 
         #endregion

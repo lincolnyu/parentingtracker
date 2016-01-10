@@ -10,59 +10,74 @@ namespace ParentingTrackerApp.Helpers
 {
     public static class RoamingFilesHelper
     {
-        public static async Task<bool> LoadEvents(this ICollection<EventViewModel> events, ICollection<EventTypeViewModel> eventTypes)
+
+        public static async Task<IList<string>> LoadEventsLines(this string fileName)
         {
-            events.Clear();
             var roamingFolder = ApplicationData.Current.RoamingFolder;
             try
             {
-                var eventsFile = await roamingFolder.GetFileAsync("events.csv");
+                var eventsFile = await roamingFolder.GetFileAsync(fileName);
                 var eventsLines = await FileIO.ReadLinesAsync(eventsFile);
-                
-                foreach (var line in eventsLines)
-                {
-                    var segs = line.Split(',');
-                    var sstart = segs[0];
-                    var sstop = segs[1];
-                    var bsType = segs[2];
-                    var bsNotes = segs[3];
-                    var dstart = long.Parse(sstart);
-                    var dstop = long.Parse(sstop);
-
-                    var typeName = bsType.Base64UtfToString();
-                    var notes = bsNotes.Base64UtfToString();
-                    var et = eventTypes.FirstOrDefault(x => x.Name == typeName);
-                    var ev = new EventViewModel
-                    {
-                        StartTime = DateTime.FromBinary(dstart),
-                        EndTime = DateTime.FromBinary(dstop),
-                        EventType = et,
-                        Notes = notes
-                    };
-                    events.Add(ev);
-                }
-                return true;
+                return eventsLines;
             }
             catch (Exception)
             {
                 // files not found
-                return false;
+                return null;
             }
         }
 
-        public static async Task SaveEvents(this ICollection<EventViewModel> events)
+        public static IEnumerable<EventViewModel> LoadEvents(this IList<string> eventsLines, CentralViewModel cvm)
+        {
+            foreach (var line in eventsLines)
+            {
+                var segs = line.Split(',');
+                var sstart = segs[0];
+                var sstop = segs[1];
+                var bsType = segs[2];
+                var bsNotes = segs[3];
+                var dstart = long.Parse(sstart);
+                var dstop = long.Parse(sstop);
+                EventViewModel.Statuses status;
+                if (segs.Length > 4)
+                {
+                    var sstatus = segs[4];
+                    status = (EventViewModel.Statuses)int.Parse(sstatus);
+                }
+                else
+                {
+                    status = EventViewModel.Statuses.Logged;
+                }
+
+                var typeName = bsType.Base64UtfToString();
+                var notes = bsNotes.Base64UtfToString();
+                var et = cvm.EventTypes.FirstOrDefault(x => x.Name == typeName);
+                var ev = new EventViewModel(cvm)
+                {
+                    StartTime = DateTime.FromBinary(dstart),
+                    EndTime = DateTime.FromBinary(dstop),
+                    EventType = et,
+                    Notes = notes,
+                    Status = status
+                };
+                yield return ev;
+            }
+        }
+
+        public static async Task SaveEvents(this IEnumerable<EventViewModel> events, string fileName)
         {
             var roamingFolder = ApplicationData.Current.RoamingFolder;
-            var eventsFile = await roamingFolder.CreateFileAsync("events.csv",
+            var eventsFile = await roamingFolder.CreateFileAsync(fileName,
                 CreationCollisionOption.ReplaceExisting);
-            var lines = new List<string>(events.Count);
+            var lines = new List<string>();
             foreach (var ev in events)
             {
-                var line = string.Format("{0},{1},{2},{3}",
+                var line = string.Format("{0},{1},{2},{3},{4}",
                     ev.StartTime.ToBinary().ToString(),
                     ev.EndTime.ToBinary().ToString(),
                     ev.EventType.Name.StringToBase64Utf(),
-                    ev.Notes.StringToBase64Utf());
+                    ev.Notes.StringToBase64Utf(),
+                    (int)ev.Status);
                 lines.Add(line);
             }
             await FileIO.WriteLinesAsync(eventsFile, lines);

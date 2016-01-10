@@ -47,7 +47,7 @@ namespace ParentingTrackerApp.Views
             {
                 file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
                 var lines = await FileIO.ReadLinesAsync(file);
-                var existing = lines.ReadFromTable(central.EventTypes, otherInfo);
+                var existing = lines.ReadFromTable(central, otherInfo);
                 merged = HtmlExportHelper.Merge(existing, central.LoggedEvents).ToList();
             }
             catch (Exception)

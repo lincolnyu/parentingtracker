@@ -54,6 +54,11 @@ namespace ParentingTrackerApp.Helpers
             list.QuickSort(0, list.Count);
         }
 
+        public static void QuickSort<T>(this IList<T> list, Compare<T> compare)
+        {
+            list.QuickSort(0, list.Count, compare);
+        }
+
         public static void QuickSort<T>(this IList<T> list, int start, int count) where T : IComparable<T>
         {
             list.QuickSort(start, count, (a, b) => a.CompareTo(b));
