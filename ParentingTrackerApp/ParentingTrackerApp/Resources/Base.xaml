@@ -6,34 +6,4 @@
     <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    <converters:EventTemplateSelector x:Key="EventTemplateSelector"
-                                      RunningEventDataTemplate="{StaticResource RunningEventDataTemplate}"
-                                      LoggedEventDataTemplate="{StaticResource LoggedEventDataTemplate}"/>
-    <DataTemplate x:Key="RunningEventDataTemplate">
-        <TextBlock Text="{Binding Title}"></TextBlock>
-    </DataTemplate>
-    <DataTemplate x:Key="LoggedEventDataTemplate">
-        <Grid Loaded="LoggedEntryGridOnLoaded">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <TextBlock Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
-                <TextBlock Text="{Binding EventTypeName}" Margin="5,0,5,0"></TextBlock>
-            </StackPanel>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
-            <StackPanel Name="ControlPanel" Grid.Column="1" Orientation="Horizontal">
-                <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
-                                Click="RemoveLoggedOnClick" 
-                                Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"></Button>
-                <ToggleButton Name="EditButton" Content="&#xE104;" FontFamily="Segoe UI Symbol"
-                                          IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
 </ResourceDictionary>

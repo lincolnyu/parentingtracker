@@ -28,8 +28,6 @@ namespace ParentingTrackerApp.ViewModels
         private string _exportPath;
         private string _exportFileToken;
 
-        private bool _suppressSorting;
-        private bool _inLoggedCollectionChangedHandler;
         private bool _wasLoggedSelectedBeforeEditing;
 
         private EventViewModel _newEvent;
@@ -37,6 +35,7 @@ namespace ParentingTrackerApp.ViewModels
         private const string EventFileName = "events.csv";
         private EventViewModel _selectedEvent;
         private bool _isInLoggedEventPropertyChanged;
+        private bool _inAllEventsCollectionChangedHandler;
 
         #endregion
 
@@ -44,8 +43,9 @@ namespace ParentingTrackerApp.ViewModels
 
         public CentralViewModel()
         {
+            UpdateIsEditingAndRelated();
             EventTypes.CollectionChanged += EventTypesOnCollectionChanged;
-            LoggedEvents.CollectionChanged += LoggedEventsOnCollectionChanged;
+            AllEvents.CollectionChanged += AllEventsOnCollectionChanged;
         }
 
         #endregion
@@ -79,6 +79,16 @@ namespace ParentingTrackerApp.ViewModels
         {
             get; private set;
         }
+
+        /// <summary>
+        ///  If is creating a new event
+        /// </summary>
+        public bool IsCreating
+        {
+            get;
+            private set;
+        }
+
 
         public bool CanStop
         {
@@ -171,6 +181,7 @@ namespace ParentingTrackerApp.ViewModels
         private void UpdateIsEditingAndRelated()
         {
             IsEditing = SelectedEvent != null || _newEvent != null;
+            IsCreating = _newEvent != null;
             CanStop = SelectedEvent != null && SelectedEvent.IsRunning;
             var prevDc = EventInEditing;
             if (SelectedEvent != null)
@@ -182,6 +193,7 @@ namespace ParentingTrackerApp.ViewModels
                 EventInEditing = _newEvent;
             }
             RaisePropertyChangedEvent("IsEditing");
+            RaisePropertyChangedEvent("IsCreating");
             RaisePropertyChangedEvent("CanStop");
             if (EventInEditing == null && prevDc != null)
             {
@@ -203,7 +215,8 @@ namespace ParentingTrackerApp.ViewModels
             _newEvent = new EventViewModel(this)
             {
                 EventType = EventTypes.FirstOrDefault(),
-                StartTime = DateTime.Now
+                StartTime = DateTime.Now,
+                EndTime = DateTime.Now
             };
             UpdateIsEditingAndRelated();
         }
@@ -238,8 +251,9 @@ namespace ParentingTrackerApp.ViewModels
             };
             evm.Status = EventViewModel.Statuses.Running;
             evm.StartTime = time;
-            RunningEvents.Insert(0, evm);
+            AllEvents.Insert(evm);
             SelectedEvent = evm;
+            _newEvent = null;
             UpdateIsEditingAndRelated();
         }
 
@@ -251,11 +265,11 @@ namespace ParentingTrackerApp.ViewModels
                 return;
             }
             var t = DateTime.Now;
+            AllEvents.Remove(sre);
             sre.EndTime = t;
             sre.Status = EventViewModel.Statuses.Logged;
-            RunningEvents.Remove(SelectedEvent);
-            AddLogggedEvent(sre);
-            SelectedEvent = RunningEvents.FirstOrDefault();
+            AllEvents.Insert(sre);
+            SelectedEvent = AllEvents.FirstOrDefault(x => x.IsRunning);
             UpdateIsEditingAndRelated();
         }
 
@@ -263,8 +277,8 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (SelectedEvent != null && SelectedEvent.IsRunning)
             {
-                RunningEvents.Remove(SelectedEvent);
-                SelectedEvent = RunningEvents.FirstOrDefault();
+                AllEvents.Remove(SelectedEvent);
+                SelectedEvent = AllEvents.FirstOrDefault(x=>x.IsRunning);
                 UpdateIsEditingAndRelated();
             }
         }
@@ -280,7 +294,7 @@ namespace ParentingTrackerApp.ViewModels
             };
             evm.EndTime = evm.StartTime;
             evm.Status = EventViewModel.Statuses.Logged;
-            AddLogggedEvent(evm);
+            AllEvents.Insert(evm);
             _newEvent = null;
             UpdateIsEditingAndRelated();
         }
@@ -296,32 +310,20 @@ namespace ParentingTrackerApp.ViewModels
                 ExportFileToken = expToken;
                 EventTypes.LoadRoamingColorMapping();
 
-                var wasSuppressing = _suppressSorting;
-                _suppressSorting = true;
-                RunningEvents.Clear();
-                LoggedEvents.Clear();
+                AllEvents.Clear();
                 var evlines = await EventFileName.LoadEventsLines();
                 if (evlines != null)
                 {
                     var events = evlines.LoadEvents(this);
                     foreach (var e in events)
                     {
-                        if (e.Status == EventViewModel.Statuses.Running)
+                        if (e.Status != EventViewModel.Statuses.Running)
                         {
-                            RunningEvents.Add(e);
+                            e.Status = EventViewModel.Statuses.Logged;// make sure it's logged event
                         }
-                        else
-                        {
-                            e.Status = EventViewModel.Statuses.Logged;// make sure it's logged
-                            LoggedEvents.Add(e);
-                        }
+                        AllEvents.Insert(e);
                     }
                 }
-
-                _suppressSorting = false;
-                SortRunningEvents();
-                SortLoggedEvents();
-                _suppressSorting = wasSuppressing;
 
                 _state = States.Synced;
                 return evlines != null;
@@ -331,46 +333,24 @@ namespace ParentingTrackerApp.ViewModels
                 return true;
             }
         }
-
+        
         public async Task Save(bool forceSave = false)
         {
             if (_state == States.Dirty || forceSave)
             {
                 RoamingSettingsHelper.SaveExportSettings(ExportPath, ExportFileToken);
                 EventTypes.SaveRoamingColorMapping();
-                var events = RunningEvents.Concat(LoggedEvents);
-                await events.SaveEvents(EventFileName);
+                await AllEvents.SaveEvents(EventFileName);
                 _state = States.Synced;
             }
         }
-
-
-        /// <summary>
-        ///  Use this to add an event as it also makes sure events are in order
-        /// </summary>
-        /// <param name="evm"></param>
-        public void AddLogggedEvent(EventViewModel evm)
+        
+        public void RemoveEvent(EventViewModel evm)
         {
-            var index = LoggedEvents.BinarySearch(evm);
-            if (index < 0)
-            {
-                index = -index - 1;
-            }
-            var wasSuppressed = _suppressSorting;
-            _suppressSorting = true;
-            LoggedEvents.Insert(index, evm);
-            _suppressSorting = wasSuppressed;
+            AllEvents.Remove(evm);
         }
 
-        public void RemoveLoggedEvent(EventViewModel evm)
-        {
-            var wasSuppressed = _suppressSorting;
-            _suppressSorting = true;
-            LoggedEvents.Remove(evm);
-            _suppressSorting = wasSuppressed;
-        }
-
-        private void LoggedEventPropertyChanged(object sender, PropertyChangedEventArgs args)
+        private void EventOnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
             if (_isInLoggedEventPropertyChanged)
             {
@@ -411,17 +391,19 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-        private void LoggedEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+
+        private void AllEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            if (_inLoggedCollectionChangedHandler)
+            if (_inAllEventsCollectionChangedHandler)
             {
                 return;
             }
-            _inLoggedCollectionChangedHandler = true;
-
+            _inAllEventsCollectionChangedHandler = true;
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
-                SubscribeForLoadedLoggedEvents();
+                RunningEvents.Clear();
+                LoggedEvents.Clear();
+                SubscribeForEvents();
             }
             else
             {
@@ -429,50 +411,47 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     foreach (var oldItem in args.OldItems.Cast<EventViewModel>())
                     {
-                        oldItem.PropertyChanged -= LoggedEventPropertyChanged;
+                        if (oldItem.IsRunningEvent)
+                        {
+                            RunningEvents.Remove(oldItem);
+                        }
+                        else if (oldItem.IsLoggedEvent)
+                        {
+                            LoggedEvents.Remove(oldItem);
+                        }
+                        oldItem.PropertyChanged -= EventOnPropertyChanged;
                     }
                 }
                 if (args.NewItems != null)
                 {
                     foreach (var newItem in args.NewItems.Cast<EventViewModel>())
                     {
-                        newItem.PropertyChanged += LoggedEventPropertyChanged;
+                        if (newItem.IsRunningEvent)
+                        {
+                            var index = RunningEvents.BinarySearch(newItem);
+                            if (index < 0) index = -index - 1;
+                            RunningEvents.Insert(index, newItem);
+                        }
+                        else if (newItem.IsLoggedEvent)
+                        {
+                            var index = LoggedEvents.BinarySearch(newItem);
+                            if (index < 0) index = -index - 1;
+                            LoggedEvents.Insert(index, newItem);
+                        }
+                        newItem.PropertyChanged += EventOnPropertyChanged;
                     }
                 }
             }
-            SortLoggedEvents();
+       
             MarkAsDirty();
-
-            _inLoggedCollectionChangedHandler = false;
+            _inAllEventsCollectionChangedHandler = false;
         }
 
-        private void SortLoggedEvents()
+        private void SubscribeForEvents()
         {
-            if (!_suppressSorting)
+            foreach (var e in AllEvents)
             {
-                _suppressSorting = true;
-                // in descending order (recent first)
-                LoggedEvents.QuickSort((a, b) => -a.CompareTo(b));
-                _suppressSorting = false;
-            }
-        }
-
-        private void SortRunningEvents()
-        {
-            if (!_suppressSorting)
-            {
-                _suppressSorting = true;
-                // in descending order (recent first)
-                RunningEvents.QuickSort((a, b) => -a.CompareTo(b));
-                _suppressSorting = false;
-            }
-        }
-
-        private void SubscribeForLoadedLoggedEvents()
-        {
-            foreach (var loggedEvent in LoggedEvents)
-            {
-                loggedEvent.PropertyChanged += LoggedEventPropertyChanged;
+                e.PropertyChanged += EventOnPropertyChanged;
             }
         }
 
@@ -492,14 +471,7 @@ namespace ParentingTrackerApp.ViewModels
                         set.Add(oi);
                         oi.PropertyChanged -= EventTypeOnPropertyChanged;
                     }
-                    foreach (var ev in RunningEvents)
-                    {
-                        if (set.Contains(ev.EventType))
-                        {
-                            ev.EventType = null;
-                        }
-                    }
-                    foreach (var ev in LoggedEvents)
+                    foreach (var ev in AllEvents)
                     {
                         if (set.Contains(ev.EventType))
                         {

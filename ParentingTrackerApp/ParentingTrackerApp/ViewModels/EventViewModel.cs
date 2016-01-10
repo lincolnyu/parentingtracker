@@ -253,6 +253,14 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
+        public bool IsRunning
+        {
+            get
+            {
+                return Status == Statuses.Running;
+            }
+        }
+
         public bool IsEditing
         {
             get
@@ -269,14 +277,6 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     Status = Statuses.Logged;
                 }
-            }
-        }
-
-        public bool IsRunning
-        {
-            get
-            {
-                return Status == Statuses.Running;
             }
         }
 

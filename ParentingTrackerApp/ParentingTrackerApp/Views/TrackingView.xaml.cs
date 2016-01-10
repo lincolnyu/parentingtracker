@@ -1,9 +1,10 @@
-﻿using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml;
-using ParentingTrackerApp.ViewModels;
+﻿using ParentingTrackerApp.ViewModels;
 using System.ComponentModel;
-using System.Collections.Specialized;
+using System.Linq;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using System;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -15,17 +16,16 @@ namespace ParentingTrackerApp.Views
         {
             public LoggedEntryUiAdaptor(Grid grid)
             {
+                Grid = grid;
                 LoggedEntry = (EventViewModel)grid.DataContext;
-                if (LoggedEntry == null)
+                if (LoggedEntry != null)
                 {
-                    return;// cancel creation and leave the object as garbage
+                    Initialise();
                 }
-                EditButton = (ToggleButton)grid.FindName("EditButton");
-                RemoveButton = (Button)grid.FindName("RemoveButton");
-                Column = grid.ColumnDefinitions[1];
-                UpdateWidth();
-                grid.Unloaded += GridOnUnloaded;
-                LoggedEntry.PropertyChanged += LoggedDataContextOnPropertyChanged;
+                else
+                {
+                    Grid.DataContextChanged += GridOnUpdateDataContext;
+                }
             }
 
             public EventViewModel LoggedEntry { get; private set; }
@@ -34,11 +34,39 @@ namespace ParentingTrackerApp.Views
 
             public Button RemoveButton { get; private set; }
 
-            public ColumnDefinition Column { get; private set; }
+            public Grid Grid { get; private set; }
+
+            private void Initialise()
+            {
+                EditButton = (ToggleButton)Grid.FindName("EditButton");
+                RemoveButton = (Button)Grid.FindName("RemoveButton");
+               
+                UpdateWidth();
+                Grid.Unloaded += GridOnUnloaded;
+                LoggedEntry.PropertyChanged += LoggedDataContextOnPropertyChanged;
+            }
 
             private void GridOnUnloaded(object sender, RoutedEventArgs e)
             {
-                LoggedEntry.PropertyChanged -= LoggedDataContextOnPropertyChanged;
+                Grid.Unloaded -= GridOnUnloaded;
+                if (LoggedEntry != null)
+                {
+                    LoggedEntry.PropertyChanged -= LoggedDataContextOnPropertyChanged;
+                }
+                else
+                {
+                    Grid.DataContextChanged -= GridOnUpdateDataContext;
+                }
+            }
+
+            private void GridOnUpdateDataContext(FrameworkElement sender, DataContextChangedEventArgs args)
+            {
+                if (args.NewValue != null)
+                {
+                    LoggedEntry = (EventViewModel)args.NewValue;
+                    Initialise();
+                    Grid.DataContextChanged -= GridOnUpdateDataContext;
+                }
             }
 
             public void LoggedDataContextOnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -53,7 +81,8 @@ namespace ParentingTrackerApp.Views
             {
                 var colWidth = LoggedEntry.IsEditing ? RemoveButton.ActualWidth + EditButton.ActualWidth
                     : EditButton.ActualWidth;
-                Column.Width = new GridLength(colWidth);
+                var col1 = Grid.ColumnDefinitions[1];
+                col1.Width = new GridLength(colWidth);
             }
         }
 
@@ -63,21 +92,14 @@ namespace ParentingTrackerApp.Views
 
             DataContextChanged += DataContextOnChanged;
 
-            LoggedEventsList.SelectionChanged += LoggedEventsOnSelectionChanged;
+            EventsList.SelectionChanged += LoggedEventsOnSelectionChanged;
         }
 
         private void DataContextOnChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            UpdateAsPerRunningItems();
             UpdateAsPerIsEditingState();
             var dc = (CentralViewModel)DataContext;
             dc.PropertyChanged += ViewModelPropertyChanged;
-            dc.RunningEvents.CollectionChanged += RunningEventsOnCollectionChanged;
-        }
-
-        private void RunningEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            UpdateAsPerRunningItems();
         }
 
         private void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -87,22 +109,7 @@ namespace ParentingTrackerApp.Views
                 UpdateAsPerIsEditingState();
             }
         }
-
-        private void UpdateAsPerRunningItems()
-        {
-            var dc = (CentralViewModel)DataContext;
-            if (dc.RunningEvents.Count > 0)
-            {
-                RunningRow.MinHeight = 60;
-                RunningRow.Height = new GridLength(0.2, GridUnitType.Star);
-            }
-            else
-            {
-                RunningRow.MinHeight = 0;
-                RunningRow.Height = new GridLength(0);
-            }
-        }
-
+        
         private void UpdateAsPerIsEditingState()
         {
             var dc = (CentralViewModel)DataContext;
@@ -117,12 +124,12 @@ namespace ParentingTrackerApp.Views
                 EditorRow.Height = new GridLength(0);
             }
         }
-        
+
         private void LoggedEventsOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (LoggedEventsList.SelectedItem != null)
+            if (EventsList.SelectedItem != null)
             {
-                LoggedEventsList.ScrollIntoView(LoggedEventsList.SelectedItem);
+                EventsList.ScrollIntoView(EventsList.SelectedItem);
             }
         }
 
@@ -154,7 +161,7 @@ namespace ParentingTrackerApp.Views
         {
             var e = (EventViewModel)((FrameworkElement)sender).DataContext;
             var central = (CentralViewModel)DataContext;
-            central.RemoveLoggedEvent(e);
+            central.RemoveEvent(e);
         }
 
         private void NewOnClick(object sender, RoutedEventArgs e)
@@ -172,6 +179,7 @@ namespace ParentingTrackerApp.Views
         private void LoggedEntryGridOnLoaded(object sender, RoutedEventArgs e)
         {
             var grid = (Grid)sender;
+            var lv = EventsList;
             new LoggedEntryUiAdaptor(grid);
         }
     }

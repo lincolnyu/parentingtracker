@@ -9,6 +9,16 @@ namespace ParentingTrackerApp.Helpers
 
         public delegate int Compare<T>(T lhs, T rhs);
 
+        public static void Insert<T>(this IList<T> list, T newItem) where T : IComparable<T>
+        {
+            var index = list.BinarySearch(newItem);
+            if (index < 0)
+            {
+                index = -index - 1;
+            }
+            list.Insert(index, newItem);
+        }
+
         public static int BinarySearch<T>(this IList<T> list, T target) where T : IComparable<T>
         {
             return list.BinarySearch(0, list.Count, (rhs) => target.CompareTo(rhs));
