@@ -28,7 +28,10 @@ namespace ParentingTrackerApp.ViewModels
         /// </summary>
         public string Name
         {
-            get { return _name; }
+            get
+            {
+                return _name;
+            }
             set
             {
                 if (_name != value)

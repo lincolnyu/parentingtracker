@@ -211,12 +211,12 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("IsEditing");
             RaisePropertyChangedEvent("IsCreating");
             RaisePropertyChangedEvent("CanStop");
-            if (EventInEditing == null && prevDc != null)
+            if (EventInEditing != prevDc)
             {
-                var wasSuppressing = prevDc.SuppressUpdate;
-                prevDc.SuppressUpdate = true;
+                var wasSuppressing = EventViewModel.SuppressUpdate;
+                EventViewModel.SuppressUpdate = true;
                 RaisePropertyChangedEvent("EventInEditing");
-                prevDc.SuppressUpdate = wasSuppressing;
+                EventViewModel.SuppressUpdate = wasSuppressing;
             }
             else
             {
@@ -497,7 +497,7 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
-                SubscribeForLoadedEventTypes();
+                ResetEventTypes();
             }
             else
             {
@@ -529,7 +529,7 @@ namespace ParentingTrackerApp.ViewModels
             MarkAsDirty();
         }
 
-        private void SubscribeForLoadedEventTypes()
+        private void ResetEventTypes()
         {
             foreach (var et in EventTypes)
             {
@@ -554,7 +554,7 @@ namespace ParentingTrackerApp.ViewModels
         {
             foreach (var e in RunningEvents)
             {
-                e.Refresh();
+                e.RefreshRunningTag();
             }
         }
 

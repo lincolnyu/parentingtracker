@@ -171,13 +171,13 @@ namespace ParentingTrackerApp.ViewModels
             }
             set
             {
-                if (_eventType != value && !SuppressUpdate)
+                if (_eventType != value)
                 {
-                    _eventType = value;
-                    RaisePropertyChangedEvent("EventType");
-                    RaisePropertyChangedEvent("RunningTag");
-                    RaisePropertyChangedEvent("EventTypeName");
-                    RaisePropertyChangedEvent("Color");
+                    if (!SuppressUpdate)
+                    {
+                        _eventType = value;
+                    }
+                    RefreshEventTypeProperties();
                 }
             }
         }
@@ -299,7 +299,7 @@ namespace ParentingTrackerApp.ViewModels
         ///  Suppress update of certain properties during the switching of data context
         ///  to avoid undesired data transfer
         /// </summary>
-        public bool SuppressUpdate
+        public static bool SuppressUpdate
         {
             get; set;
         }
@@ -365,7 +365,15 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("IsRunningEvent");
         }
 
-        public void Refresh()
+        public void RefreshEventTypeProperties()
+        {
+            RaisePropertyChangedEvent("EventType");
+            RaisePropertyChangedEvent("RunningTag");
+            RaisePropertyChangedEvent("EventTypeName");
+            RaisePropertyChangedEvent("Color");
+        }
+
+        public void RefreshRunningTag()
         {
             RaisePropertyChangedEvent("RunningTag");
         }

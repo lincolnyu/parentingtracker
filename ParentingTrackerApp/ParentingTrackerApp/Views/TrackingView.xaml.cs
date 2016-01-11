@@ -1,10 +1,11 @@
 ﻿using ParentingTrackerApp.ViewModels;
 using System.ComponentModel;
-using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using System;
+using System.Linq;
+using System.Threading;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -12,6 +13,8 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class TrackingView : UserControl
     {
+        private bool _firstTime = true;
+
         private class LoggedEntryUiAdaptor
         {
             public LoggedEntryUiAdaptor(Grid grid)
@@ -168,6 +171,21 @@ namespace ParentingTrackerApp.Views
         {
             var c = (CentralViewModel)DataContext;
             c.New();
+            if (_firstTime)
+            {
+                // NOTE from time to time XAML based tech requires this kind of silly hacks to work.
+                new Timer(Hack, c, 100, Timeout.Infinite);
+                _firstTime = false;
+            }
+        }
+
+        private async void Hack(object state)
+        {
+            var c = (CentralViewModel)state;
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                c.EventInEditing.RefreshEventTypeProperties();
+            });
         }
 
         private void CloseEditorOnClick(object sender, RoutedEventArgs e)
