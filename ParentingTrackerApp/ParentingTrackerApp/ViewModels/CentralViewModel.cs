@@ -24,19 +24,31 @@ namespace ParentingTrackerApp.ViewModels
 
         #region Fields
 
+        #region Constants
+
+        private const string EventFileName = "events.csv";
+
+        #endregion
+
+        #region Backing fields
+
         private States _state = States.Init;
         private string _exportPath;
         private string _exportFileToken;
 
-        private bool _wasLoggedSelectedBeforeEditing;
-
         private EventViewModel _newEvent;
-
-        private const string EventFileName = "events.csv";
         private EventViewModel _selectedEvent;
+
+        #endregion
+
+        #region Flags
+
+        private bool _wasLoggedSelectedBeforeEditing;
         private bool _isInLoggedEventPropertyChanged;
         private bool _suppressAllEventsCollectionChangedHandler;
 
+        #endregion
+        
         #endregion
 
         #region Constructors
@@ -180,6 +192,10 @@ namespace ParentingTrackerApp.ViewModels
 
         private void UpdateIsEditingAndRelated()
         {
+            if (SelectedEvent != null)
+            {
+                _newEvent = null;
+            }
             IsEditing = SelectedEvent != null || _newEvent != null;
             IsCreating = _newEvent != null;
             CanStop = SelectedEvent != null && SelectedEvent.IsRunning;
@@ -358,9 +374,9 @@ namespace ParentingTrackerApp.ViewModels
                 return;
             }
             _isInLoggedEventPropertyChanged = true;
+            var evm = (EventViewModel)sender;
             if (args.PropertyName == "IsEditing")
             {
-                var evm = (EventViewModel)sender;
                 if (evm.IsEditing)
                 {
                     _wasLoggedSelectedBeforeEditing = SelectedEvent == evm;
@@ -372,16 +388,18 @@ namespace ParentingTrackerApp.ViewModels
                 }
                 else
                 {
+                    // for logged event reordering happens after editing is finished
                     CloseEditor(evm);
                     SortLists();
                 }
             }
-            else
+            else if (evm.IsRunning && evm.IsDataProperty(args.PropertyName))
             {
-                var o = (EventViewModel)sender;
-                if (o.IsRunning)
+                var wasSelected = evm == SelectedEvent;
+                SortLists();
+                if (wasSelected)
                 {
-                    SortLists();
+                    SelectedEvent = evm;
                 }
             }
             MarkAsDirty();
@@ -524,6 +542,14 @@ namespace ParentingTrackerApp.ViewModels
             if (_state == States.Synced)
             {
                 _state = States.Dirty;
+            }
+        }
+        
+        public void Refresh()
+        {
+            foreach (var e in RunningEvents)
+            {
+                e.Refresh();
             }
         }
 

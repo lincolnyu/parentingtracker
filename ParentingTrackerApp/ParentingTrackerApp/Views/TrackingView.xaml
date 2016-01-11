@@ -37,8 +37,7 @@
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
                             <StackPanel Name="ControlPanel" Grid.Column="1" Orientation="Horizontal">
                                 <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol" 
-                        Click="RemoveLoggedOnClick" 
-                        Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
                                 </Button>
                                 <ToggleButton Name="EditButton" Content="&#xE104;" FontFamily="Segoe UI Symbol" 
                               IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>

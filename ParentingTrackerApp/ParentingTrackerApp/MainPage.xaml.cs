@@ -54,7 +54,11 @@ namespace ParentingTrackerApp
         private async void TimerOnTick(object state)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                () => { Time = DateTime.Now; });
+                () =>
+                {
+                    Time = DateTime.Now;
+                    Central.Refresh();
+                });
         }
 
         private void RaisePropertyChanged(string name)

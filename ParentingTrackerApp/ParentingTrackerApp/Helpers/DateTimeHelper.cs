@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace ParentingTrackerApp.Helpers
 {
@@ -62,7 +63,9 @@ namespace ParentingTrackerApp.Helpers
 
         public static string ToHourMinute(this DateTime dt)
         {
-            return string.Format("{0:00}:{1:00}", dt.Hour, dt.Minute);
+            var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
+            var pattern = dtfi.ShortTimePattern;
+            return dt.ToString(pattern);
         }
 
         public static string ToRelativeDateTimeString(this DateTime dt)

@@ -216,8 +216,15 @@ namespace ParentingTrackerApp.ViewModels
         {
             get
             {
-                return string.Format("{0} since {1} for {2}", EventTypeName, 
-                    StartTime.ToString(), (DateTime.Now-StartTime).ToString(@"hh\:mm\:ss"));
+                var isNormal = StartTime <= DateTime.Now;
+                var diff = isNormal ? (DateTime.Now - StartTime) : StartTime - DateTime.Now;
+                var timeOfDayStr = diff.ToString(@"hh\:mm\:ss");
+                var diffStr = diff.Days > 1 ? string.Format("{0} days {1}", diff.Days, timeOfDayStr)
+                    : diff.Days == 1? string.Format("1 day {0}", timeOfDayStr) :
+                    timeOfDayStr;
+
+                return string.Format("{0} since {1} {2} {3}", EventTypeName, 
+                    StartTime.ToString(), isNormal? "for" : "in", diffStr);
             }
         }
 
@@ -352,6 +359,16 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("IsEditingOrRunning");
             RaisePropertyChangedEvent("IsLoggedEvent");
             RaisePropertyChangedEvent("IsRunningEvent");
+        }
+
+        public void Refresh()
+        {
+            RaisePropertyChangedEvent("RunningTag");
+        }
+
+        public bool IsDataProperty(string name)
+        {
+            return name == "StartTime" || name == "EndTime" || name == "EventType" || name == "Notes";
         }
 
         #endregion
