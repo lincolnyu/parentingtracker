@@ -295,6 +295,10 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
         
+        /// <summary>
+        ///  Suppress update of certain properties during the switching of data context
+        ///  to avoid undesired data transfer
+        /// </summary>
         public bool SuppressUpdate
         {
             get; set;
