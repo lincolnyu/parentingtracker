@@ -241,6 +241,7 @@ namespace ParentingTrackerApp.ViewModels
 
         public void CloseEditor()
         {
+            _wasLoggedSelectedBeforeEditing = false;
             CloseEditor(SelectedEvent);
         }
 
@@ -391,6 +392,10 @@ namespace ParentingTrackerApp.ViewModels
                     // for logged event reordering happens after editing is finished
                     CloseEditor(evm);
                     SortLists();
+                    if (_wasLoggedSelectedBeforeEditing)
+                    {
+                        SelectedEvent = evm;
+                    }
                 }
             }
             else if (evm.IsRunning && evm.IsDataProperty(args.PropertyName))

@@ -96,6 +96,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="AdMediator.config" />
     <None Include="ParentingTrackerApp_StoreKey.pfx" />
     <None Include="project.json" />
   </ItemGroup>
