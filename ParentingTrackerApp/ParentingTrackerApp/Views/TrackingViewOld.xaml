@@ -120,7 +120,7 @@
                             <TextBlock Text="{Binding EventTypeName}" Margin="5,0,5,0"></TextBlock>
                         </StackPanel>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
-                        <StackPanel Name="ControlPanel" Grid.Row="0" Grid.RowSpan="2" 
+                        <StackPanel Grid.Row="0" Grid.RowSpan="2" 
                                     Grid.Column="1" Orientation="Horizontal">
                             <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
                                 Click="RemoveLoggedOnClick" 

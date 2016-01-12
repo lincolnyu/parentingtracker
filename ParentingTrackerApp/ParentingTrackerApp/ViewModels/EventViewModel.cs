@@ -304,8 +304,6 @@ namespace ParentingTrackerApp.ViewModels
             get; set;
         }
 
-        #endregion
-
         #region Methods
 
         #region  IComparable<EventViewModel> members

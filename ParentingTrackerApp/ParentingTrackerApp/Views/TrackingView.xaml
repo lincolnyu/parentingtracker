@@ -21,7 +21,7 @@
                         <TextBlock Text="{Binding RunningTag}"></TextBlock>
                     </DataTemplate>
                     <DataTemplate x:Key="LoggedEventDataTemplate">
-                        <Grid Loaded="LoggedEntryGridOnLoaded">
+                        <Grid DataContextChanged="GridDataContextOnChanged">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition/>
@@ -35,8 +35,8 @@
                                 <TextBlock Text="{Binding EventTypeName}" Margin="5,0,5,0"></TextBlock>
                             </StackPanel>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
-                            <StackPanel Name="ControlPanel" Grid.Column="1" Orientation="Horizontal">
-                                <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol" 
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
                                         Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
                                 </Button>
                                 <ToggleButton Name="EditButton" Content="&#xE104;" FontFamily="Segoe UI Symbol" 
