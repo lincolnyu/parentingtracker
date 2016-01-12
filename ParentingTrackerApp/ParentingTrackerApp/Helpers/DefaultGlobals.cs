@@ -8,13 +8,17 @@ namespace ParentingTrackerApp.Helpers
     {
         public static EventTypeViewModel[] DefaultEventTypeList =
         {
-            new EventTypeViewModel("Breast feeding (Left)", Colors.LightPink),
-            new EventTypeViewModel("Breast feeding (Right)", Colors.Wheat),
-            new EventTypeViewModel("Breast feeding (Both)", Colors.Pink),
-            new EventTypeViewModel("Nappy changing", Colors.Brown),
-            new EventTypeViewModel("Bathing", Colors.Blue),
-            new EventTypeViewModel("Sleeping", Colors.DarkBlue),
-            new EventTypeViewModel("Measuring", Colors.Gray),
+            new EventTypeViewModel("Breast feed (Left)", Colors.LightPink),
+            new EventTypeViewModel("Breast feed (Right)", Colors.Wheat),
+            new EventTypeViewModel("Breast feed (Both)", Colors.Pink),
+            new EventTypeViewModel("Express (Left)", Colors.LightPink),
+            new EventTypeViewModel("Express (Right)", Colors.Wheat),
+            new EventTypeViewModel("Express (Both)", Colors.Pink),
+            new EventTypeViewModel("Bottle feed", Colors.Cyan),
+            new EventTypeViewModel("Nappy change", Colors.Brown),
+            new EventTypeViewModel("Bath", Colors.Blue),
+            new EventTypeViewModel("Sleep", Colors.DarkBlue),
+            new EventTypeViewModel("Measurement", Colors.Gray),
             new EventTypeViewModel("Others", Colors.Green),
         };
 
@@ -24,6 +28,7 @@ namespace ParentingTrackerApp.Helpers
             colors.Add(new ColorOptionViewModel("Red", Colors.Red));
             colors.Add(new ColorOptionViewModel("Green", Colors.Green));
             colors.Add(new ColorOptionViewModel("Blue", Colors.Blue));
+            colors.Add(new ColorOptionViewModel("Cyan", Colors.Cyan));
             colors.Add(new ColorOptionViewModel("Pink", Colors.Pink));
             colors.Add(new ColorOptionViewModel("Light Pink", Colors.LightPink));
             colors.Add(new ColorOptionViewModel("Deep Pink", Colors.DeepPink));

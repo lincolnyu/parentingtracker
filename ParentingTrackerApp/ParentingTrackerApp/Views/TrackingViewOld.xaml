@@ -82,7 +82,11 @@
                   ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding RunningTag}"></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding EventTypeName}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"></TextBlock>
+                        <TextBlock>: </TextBlock>
+                        <TextBlock Text="{Binding RunningTime}"></TextBlock>
+                    </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

@@ -190,7 +190,7 @@ namespace ParentingTrackerApp.ViewModels
 
         public Color Color
         {
-            get { return EventType.Color; }
+            get { return EventType != null ? EventType.Color : default(Color); }
         }
 
         public string Notes
@@ -212,7 +212,7 @@ namespace ParentingTrackerApp.ViewModels
         /// <summary>
         ///  The event displayed as a tag when being halfway created
         /// </summary>
-        public string RunningTag
+        public string RunningTime
         {
             get
             {
@@ -222,9 +222,9 @@ namespace ParentingTrackerApp.ViewModels
                 var diffStr = diff.Days > 1 ? string.Format("{0} days {1}", diff.Days, timeOfDayStr)
                     : diff.Days == 1? string.Format("1 day {0}", timeOfDayStr) :
                     timeOfDayStr;
-
-                return string.Format("{0} since {1} {2} {3}", EventTypeName, 
-                    StartTime.ToString(), isNormal? "for" : "in", diffStr);
+                var rdt = StartTime.ToRelativeDateTimeString();
+                return string.Format("since {0} {1} {2}",
+                    rdt, isNormal? "for" : "in", diffStr);
             }
         }
 
@@ -343,7 +343,7 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("StartDate");
             RaisePropertyChangedEvent("StartTime");
             RaisePropertyChangedEvent("StartTimeOfDay");
-            RaisePropertyChangedEvent("RunningTag");
+            RaisePropertyChangedEvent("RunningTime");
             RaisePropertyChangedEvent("LocalisedTimeRange");
         }
 
@@ -368,14 +368,14 @@ namespace ParentingTrackerApp.ViewModels
         public void RefreshEventTypeProperties()
         {
             RaisePropertyChangedEvent("EventType");
-            RaisePropertyChangedEvent("RunningTag");
+            RaisePropertyChangedEvent("RunningTime");
             RaisePropertyChangedEvent("EventTypeName");
             RaisePropertyChangedEvent("Color");
         }
 
         public void RefreshRunningTag()
         {
-            RaisePropertyChangedEvent("RunningTag");
+            RaisePropertyChangedEvent("RunningTime");
         }
 
         public bool IsDataProperty(string name)

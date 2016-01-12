@@ -19,7 +19,13 @@
                                       RunningEventDataTemplate="{StaticResource RunningEventDataTemplate}"
                                       LoggedEventDataTemplate="{StaticResource LoggedEventDataTemplate}"/>
                     <DataTemplate x:Key="RunningEventDataTemplate">
-                        <TextBlock Text="{Binding RunningTag}"></TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
+                                <TextBlock Text="{Binding EventTypeName}"></TextBlock>
+                            </Border>
+                            <TextBlock>:</TextBlock>
+                            <TextBlock Text="{Binding RunningTime}"></TextBlock>
+                        </StackPanel>
                     </DataTemplate>
                     <DataTemplate x:Key="LoggedEventDataTemplate">
                         <Grid DataContextChanged="GridDataContextOnChanged">
@@ -33,7 +39,8 @@
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Orientation="Horizontal">
                                 <TextBlock Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
-                                <TextBlock Text="{Binding EventTypeName}" Margin="5,0,5,0"></TextBlock>
+                                <TextBlock Text="{Binding EventTypeName}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
+                                           Margin="5,0,5,0"></TextBlock>
                             </StackPanel>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">

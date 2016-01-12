@@ -8,6 +8,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Linq;
+using Windows.UI.Popups;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -62,6 +63,33 @@ namespace ParentingTrackerApp.Views
             }
             var wlines = merged.WriteToTable(otherInfo);
             await FileIO.WriteLinesAsync(file, wlines);
+        }
+
+        private async void ViewOnClick(object sender, RoutedEventArgs args)
+        {
+            var central = (CentralViewModel)DataContext;
+            var file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
+            var html = await FileIO.ReadTextAsync(file);
+            Nav.NavigateToString(html);
+                #if false
+            var central = (CentralViewModel)DataContext;
+            string path = central.ExportPath;
+            var uriStr = new Uri(path).AbsoluteUri;
+            var uri = new Uri(uriStr);
+            var succ = await Windows.System.Launcher.LaunchUriAsync(uri);
+            if (!succ)
+            {
+                var dlg = new MessageDialog("Cannot find the file", "Information");
+                await dlg.ShowAsync();
+            }
+#endif
+        }
+
+        private void UserControlOnSizeChanged(object sender, SizeChangedEventArgs args)
+        {
+            var upperHeight = InfoText.ActualHeight + Header.ActualHeight + InputGrid.ActualHeight + MergeButton.ActualHeight;
+            UpperRow.Height = new GridLength(upperHeight);
+            LowerRow.Height = new GridLength(MainGrid.ActualHeight - upperHeight);
         }
     }
 }
