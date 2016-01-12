@@ -15,38 +15,43 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button Click="AddOnClicked">Add</Button>
-                <Button Click="ResetOnClicked">Reset</Button>
-            </StackPanel>
-            <ListView ItemsSource="{Binding EventTypes}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox Text="{Binding Name, Mode=TwoWay}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}"></TextBox>
-                            <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor, Mode=TwoWay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="30" />
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
-                                                <TextBlock Grid.Column="0"/>
-                                            </Border>
-                                            <TextBlock Text="{Binding Name}" Grid.Column="1"></TextBlock>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                            <Button Content="&#xE106;" FontFamily="Segoe UI Symbol" Click="DelOnClicked"></Button>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+    <Grid SizeChanged="GridOnSizeChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="ButtonRow"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <Button Name="AddButton" Click="AddOnClicked">Add</Button>
+            <Button Click="ResetOnClicked">Reset</Button>
         </StackPanel>
+        <ListView ItemsSource="{Binding EventTypes}" Grid.Row="1"
+                  VerticalAlignment="Stretch"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Text="{Binding Name, Mode=TwoWay}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}"></TextBox>
+                        <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
+                                            <TextBlock Grid.Column="0"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Content="&#xE106;" FontFamily="Segoe UI Symbol" Click="DelOnClicked"></Button>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </UserControl>

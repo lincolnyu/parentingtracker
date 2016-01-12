@@ -57,5 +57,10 @@ namespace ParentingTrackerApp.Views
             var tvm = (CentralViewModel)DataContext;
             tvm.ResetEventTypesToDefault();
         }
+
+        private void GridOnSizeChanged(object sender, SizeChangedEventArgs args)
+        {
+            ButtonRow.Height = new GridLength(AddButton.ActualHeight);
+        }
     }
 }

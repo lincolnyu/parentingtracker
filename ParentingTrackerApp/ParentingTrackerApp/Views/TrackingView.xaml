@@ -37,12 +37,13 @@
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
-                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <VariableSizedWrapGrid Orientation="Horizontal">
                                 <TextBlock Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
                                 <TextBlock Text="{Binding EventTypeName}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
                                            Margin="5,0,5,0"></TextBlock>
-                            </StackPanel>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
+                            </VariableSizedWrapGrid>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" TextWrapping="Wrap" 
+                                       Margin="5,0,5,0"></TextBlock>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
                                         Width="40"
