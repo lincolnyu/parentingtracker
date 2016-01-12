@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:ParentingTrackerApp.Converters"
     mc:Ignorable="d"
+    DataContextChanged="DataContextOnChanged"
     d:DesignHeight="300"
     d:DesignWidth="400">
     <UserControl.Resources>
@@ -37,9 +38,10 @@
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" Margin="5,0,5,0"></TextBlock>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
+                                        Width="40"
                                         Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
                                 </Button>
-                                <ToggleButton Name="EditButton" Content="&#xE104;" FontFamily="Segoe UI Symbol" 
+                                <ToggleButton Name="EditButton" Content="&#xE104;" FontFamily="Segoe UI Symbol" Width="40"
                               IsChecked="{Binding IsEditing, Mode=TwoWay}"></ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -56,7 +58,7 @@
         </Grid.RowDefinitions>
         <StackPanel Name="Editor" Grid.Row="0"
                     Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
-            <StackPanel DataContext="{Binding EventInEditing}">
+            <StackPanel DataContext="{Binding EventInEditing}" DataContextChanged="EditorOnDataContextChanged">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -64,7 +66,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                         <TextBlock>Event type:</TextBlock>
-                        <ComboBox ItemsSource="{Binding EventTypes}" SelectedItem="{Binding EventType, Mode=TwoWay}"
+                        <ComboBox Name="SillyBox" ItemsSource="{Binding EventTypes}" SelectedItem="{Binding EventType, Mode=TwoWay}"
                               IsEnabled="{Binding IsEditingOrRunning}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>

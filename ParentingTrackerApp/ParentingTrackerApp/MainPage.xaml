@@ -35,6 +35,6 @@
             </PivotItem>
         </Pivot>
         <universal:AdMediatorControl Grid.Row="2" Name="MyAds" Width="728" Height="90"
-                                     Id="AdMediator-Id-6280A407-B64E-431B-B032-C97daC77CAE7"/>
+                                     Id="MyAdsId"/>
     </Grid>
 </Page>

@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml;
 using Windows.System.Profile;
 using Windows.Foundation;
+using Windows.UI.Core;
 
 namespace ParentingTrackerApp
 {
@@ -16,9 +17,6 @@ namespace ParentingTrackerApp
     /// </summary>
     public sealed partial class MainPage : INotifyPropertyChanged
     {
-        private const string DesktopAdsId = "AdMediator-Id-6280A407-B64E-431B-B032-C97daC77CAE7";
-        private const string MobileAdsId = "AdMediator-Id-535A18C3-9E0D-4BA4-A359-F1928CF778A0";
-
         private readonly Timer _timer;
         private DateTime _time;
 
@@ -70,6 +68,9 @@ namespace ParentingTrackerApp
         {
             base.OnNavigatedTo(e);
 
+            var currentView = SystemNavigationManager.GetForCurrentView();
+            currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+
             await CentralViewModel.Load();
         }
 
@@ -92,7 +93,7 @@ namespace ParentingTrackerApp
         private void MainPageOnSizeChanged(object sender, SizeChangedEventArgs args)
         {
             UpdateClockRowDimension();
-            AdjustAds(args.NewSize);
+           // AdjustAds(args.NewSize);
         }
 
         private void UpdateClockRowDimension()
@@ -107,34 +108,28 @@ namespace ParentingTrackerApp
             switch (df)
             {
                 case "Windows.Desktop":
-                    SetAdsId(DesktopAdsId);
                     SetAdsSize(728, 90);
                     break;
                 case "Windows.Mobile":
                     if (size.Width < 320 && size.Width >= 300)
                     {
-                        SetAdsId(MobileAdsId);
                         SetAdsSize(300, 50);
                     }
                     else if (size.Width < 480)
                     {
-                        SetAdsId(MobileAdsId);
                         SetAdsSize(320, 50);
                     }
                     else if (size.Width < 640)
                     {
-                        SetAdsId(MobileAdsId);
                         SetAdsSize(480, 80);
                     }
                     else if (size.Width < 728)
                     {
-                        SetAdsId(MobileAdsId);
                         SetAdsSize(640, 100);
                     }
                     else
                     {
                         // could be Windows Tablet
-                        SetAdsId(DesktopAdsId);
                         SetAdsSize(728, 90);
                     }
                     break;
@@ -146,14 +141,6 @@ namespace ParentingTrackerApp
             MyAds.Width = width;
             AdsRow.Height = new GridLength(height);
             MyAds.Height = height;
-        }
-        
-        private void SetAdsId(string id)
-        {
-            if (MyAds.Id != id)
-            {
-                MyAds.Id = id;
-            }
         }
     }
 }

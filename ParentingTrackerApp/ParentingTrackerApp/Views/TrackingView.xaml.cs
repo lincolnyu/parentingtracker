@@ -2,10 +2,10 @@
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using ParentingTrackerApp.Helpers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -13,24 +13,14 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class TrackingView : UserControl
     {
-        private bool _firstTime = true;
-
-        private Dictionary<Grid, LoggedEntryUiAdaptor> _gridAdaptorMap = new Dictionary<Grid, LoggedEntryUiAdaptor>();
-
         private class LoggedEntryUiAdaptor
         {
             public LoggedEntryUiAdaptor(Grid grid)
             {
                 Grid = grid;
-                EditButton = (ToggleButton)Grid.FindName("EditButton");
-                RemoveButton = (Button)Grid.FindName("RemoveButton");
             }
 
             public EventViewModel LoggedEntry { get; private set; }
-
-            public ToggleButton EditButton { get; private set; }
-
-            public Button RemoveButton { get; private set; }
 
             public Grid Grid { get; private set; }
 
@@ -44,10 +34,9 @@ namespace ParentingTrackerApp.Views
 
             private void UpdateWidth()
             {
-                var colWidth = LoggedEntry.IsEditing ?
-                    RemoveButton.ActualWidth + EditButton.ActualWidth
-                    : EditButton.ActualWidth;
+                var colWidth = LoggedEntry.IsEditing ? 80 : 40;
                 var col1 = Grid.ColumnDefinitions[1];
+                col1.MinWidth = colWidth;
                 col1.Width = new GridLength(colWidth);
             }
 
@@ -70,11 +59,14 @@ namespace ParentingTrackerApp.Views
             }
         }
 
+        private bool _firstTime = true;
+
+        private Dictionary<Grid, LoggedEntryUiAdaptor> _gridAdaptorMap = new Dictionary<Grid, LoggedEntryUiAdaptor>();
+
+
         public TrackingView()
         {
             InitializeComponent();
-
-            DataContextChanged += DataContextOnChanged;
 
             EventsList.SelectionChanged += LoggedEventsOnSelectionChanged;
         }
@@ -84,6 +76,25 @@ namespace ParentingTrackerApp.Views
             UpdateAsPerIsEditingState();
             var dc = (CentralViewModel)DataContext;
             dc.PropertyChanged += ViewModelPropertyChanged;
+        }
+
+        private void EditorOnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            if (_firstTime && args.NewValue != null)
+            {
+                // NOTE from time to time XAML based tech requires this kind of silly hacks to work.
+                DelayHelper.Delay(args.NewValue, Kick, 100);
+                _firstTime = false;
+            }
+        }
+
+        private async void Kick(object state)
+        {
+            var c = (EventViewModel)state;
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                c.RefreshEventTypeProperties();
+            });
         }
 
         private void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -152,21 +163,6 @@ namespace ParentingTrackerApp.Views
         {
             var c = (CentralViewModel)DataContext;
             c.New();
-            if (_firstTime)
-            {
-                // NOTE from time to time XAML based tech requires this kind of silly hacks to work.
-                new Timer(Hack, c, 100, Timeout.Infinite);
-                _firstTime = false;
-            }
-        }
-
-        private async void Hack(object state)
-        {
-            var c = (CentralViewModel)state;
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                c.EventInEditing.RefreshEventTypeProperties();
-            });
         }
 
         private void CloseEditorOnClick(object sender, RoutedEventArgs e)

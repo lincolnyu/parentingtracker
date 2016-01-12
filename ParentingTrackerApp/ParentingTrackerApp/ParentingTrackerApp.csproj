@@ -110,6 +110,7 @@
     <Compile Include="Converters\EventTemplateSelector.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\DefaultGlobals.cs" />
+    <Compile Include="Helpers\DelayHelper.cs" />
     <Compile Include="Helpers\HtmlExportHelper.cs" />
     <Compile Include="Helpers\ListHelper.cs" />
     <Compile Include="Helpers\RoamingFilesHelper.cs" />

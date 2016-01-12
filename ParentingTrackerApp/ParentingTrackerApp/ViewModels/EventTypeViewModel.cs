@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
 using Windows.UI;
 
 namespace ParentingTrackerApp.ViewModels
@@ -11,10 +12,7 @@ namespace ParentingTrackerApp.ViewModels
         public EventTypeViewModel()
         {
             Name = "New event type";
-            if (AvailableColors.Count > 0)
-            {
-                SelectedColor = AvailableColors[0];
-            }
+            // Again we can't set the 'SelectedColor' property here and need to get it delayed
         }
 
         public EventTypeViewModel(string name, Color color)
@@ -78,7 +76,7 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-        public IList<ColorOptionViewModel> AvailableColors
+        public ObservableCollection<ColorOptionViewModel> AvailableColors
         {
             get { return ColorOptionViewModel.ColorOptions; }
         }

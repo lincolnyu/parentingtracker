@@ -525,7 +525,6 @@ namespace ParentingTrackerApp.ViewModels
                     }
                 }
             }
-           
             MarkAsDirty();
         }
 
