@@ -17,7 +17,10 @@
     </UserControl.Resources>
     <Grid>
         <StackPanel>
-            <Button Click="AddOnClicked">Add</Button>
+            <StackPanel Orientation="Horizontal">
+                <Button Click="AddOnClicked">Add</Button>
+                <Button Click="ResetOnClicked">Reset</Button>
+            </StackPanel>
             <ListView ItemsSource="{Binding EventTypes}">
                 <ListView.ItemTemplate>
                     <DataTemplate>

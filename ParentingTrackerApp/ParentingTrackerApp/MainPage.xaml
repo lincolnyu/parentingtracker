@@ -23,7 +23,8 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Name="Clock"
             FontSize="36" Text="{Binding Time, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
-        <Pivot Grid.Row="1" DataContext="{Binding Central}">
+        <Pivot Grid.Row="1" DataContext="{Binding Central}" Name="MainPivot"
+               SelectionChanged="PivotOnSelectionChanged">
             <PivotItem Header="Track">
                 <views:TrackingView/>
             </PivotItem>

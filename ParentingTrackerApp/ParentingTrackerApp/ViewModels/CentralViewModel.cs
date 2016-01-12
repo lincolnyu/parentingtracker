@@ -46,9 +46,10 @@ namespace ParentingTrackerApp.ViewModels
         private bool _wasLoggedSelectedBeforeEditing;
         private bool _isInLoggedEventPropertyChanged;
         private bool _suppressAllEventsCollectionChangedHandler;
+        private static bool _suppressEventTypeCollectionChangeHandling;
 
         #endregion
-        
+
         #endregion
 
         #region Constructors
@@ -351,7 +352,7 @@ namespace ParentingTrackerApp.ViewModels
                 return true;
             }
         }
-        
+
         public async Task Save(bool forceSave = false)
         {
             if (_state == States.Dirty || forceSave)
@@ -495,6 +496,10 @@ namespace ParentingTrackerApp.ViewModels
 
         private void EventTypesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
+            if (_suppressEventTypeCollectionChangeHandling)
+            {
+                return;
+            }
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
                 ResetEventTypes();
@@ -555,6 +560,28 @@ namespace ParentingTrackerApp.ViewModels
             {
                 e.RefreshRunningTag();
             }
+        }
+
+        public void ResetEventTypesToDefault()
+        {
+            var wasSuppressing = _suppressEventTypeCollectionChangeHandling;
+            _suppressEventTypeCollectionChangeHandling = true;
+            var wasSuppressing2 = EventViewModel.SuppressUpdate;
+            EventViewModel.SuppressUpdate = true;
+            EventTypes.LoadDefaultColorMapping();
+            EventViewModel.SuppressUpdate = false;
+            EventViewModel.SuppressUpdate = wasSuppressing2;
+            _suppressEventTypeCollectionChangeHandling = wasSuppressing;
+
+            wasSuppressing = _suppressAllEventsCollectionChangedHandler;
+            _suppressAllEventsCollectionChangedHandler = true;
+            var allEvents = AllEvents.ToList();
+            foreach (var ev in allEvents)
+            {
+                ev.EventType = EventTypes.FirstOrDefault(x => EventTypeEqualityComparer.Instance.Equals(x, ev.EventType));
+            }
+            _suppressAllEventsCollectionChangedHandler = wasSuppressing;
+            MarkAsDirty();
         }
 
         #endregion

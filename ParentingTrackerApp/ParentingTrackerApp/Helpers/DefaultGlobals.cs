@@ -6,6 +6,18 @@ namespace ParentingTrackerApp.Helpers
 {
     public static class DefaultGlobals
     {
+        public static EventTypeViewModel[] DefaultEventTypeList =
+        {
+            new EventTypeViewModel("Breast feeding (Left)", Colors.LightPink),
+            new EventTypeViewModel("Breast feeding (Right)", Colors.Wheat),
+            new EventTypeViewModel("Breast feeding (Both)", Colors.Pink),
+            new EventTypeViewModel("Nappy changing", Colors.Brown),
+            new EventTypeViewModel("Bathing", Colors.Blue),
+            new EventTypeViewModel("Sleeping", Colors.DarkBlue),
+            new EventTypeViewModel("Measuring", Colors.Gray),
+            new EventTypeViewModel("Others", Colors.Green),
+        };
+
         public static void LoadColorOptions(this ICollection<ColorOptionViewModel> colors)
         {
             colors.Clear();
@@ -22,16 +34,13 @@ namespace ParentingTrackerApp.Helpers
             colors.Add(new ColorOptionViewModel("Gray", Colors.Gray));
         }
 
-        public static void LoadDefaultParentingColorMapping(this ICollection<EventTypeViewModel> types)
+        public static void LoadDefaultParentingColorMapping(this ICollection<EventTypeViewModel> eventTypes)
         {
-            types.Clear();
-            types.Add(new EventTypeViewModel("Breast feeding, Left", Colors.Pink));
-            types.Add(new EventTypeViewModel("Breast feeding, Right", Colors.Wheat));
-            types.Add(new EventTypeViewModel("Nappy changing", Colors.Brown));
-            types.Add(new EventTypeViewModel("Bathing", Colors.Blue));
-            types.Add(new EventTypeViewModel("Sleeping", Colors.DarkBlue));
-            types.Add(new EventTypeViewModel("Measuring", Colors.Gray));
-            types.Add(new EventTypeViewModel("Others", Colors.Green));
+            eventTypes.Clear();
+            foreach (var e in DefaultEventTypeList)
+            {
+                eventTypes.Add(e);
+            }
         }
     }
 }

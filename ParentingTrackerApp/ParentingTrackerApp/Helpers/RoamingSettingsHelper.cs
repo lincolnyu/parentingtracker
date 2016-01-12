@@ -53,9 +53,14 @@ namespace ParentingTrackerApp.Helpers
             }
             else
             {
-                colors.LoadDefaultParentingColorMapping();
-                colors.SaveRoamingColorMapping();
+                LoadDefaultColorMapping(colors);
             }
+        }
+
+        public static void LoadDefaultColorMapping(this ICollection<EventTypeViewModel> colors)
+        {
+            colors.LoadDefaultParentingColorMapping();
+            colors.SaveRoamingColorMapping();
         }
 
         public static void SaveRoamingColorMapping(this ICollection<EventTypeViewModel> colors)

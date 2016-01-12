@@ -68,9 +68,6 @@ namespace ParentingTrackerApp
         {
             base.OnNavigatedTo(e);
 
-            var currentView = SystemNavigationManager.GetForCurrentView();
-            currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-
             await CentralViewModel.Load();
         }
 
@@ -79,6 +76,30 @@ namespace ParentingTrackerApp
             base.OnNavigatedFrom(e);
 
             await CentralViewModel.Save();
+        }
+
+        private void PivotOnSelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs args)
+        {
+            var currentView = SystemNavigationManager.GetForCurrentView();
+            if (MainPivot.SelectedIndex == 0)
+            {
+                currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+                currentView.BackRequested += CurrentViewOnBackRequested;
+            }
+            else
+            {
+                currentView.BackRequested -= CurrentViewOnBackRequested;
+                currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            }
+        }
+
+        private void CurrentViewOnBackRequested(object sender, BackRequestedEventArgs args)
+        {
+            if (CentralViewModel.IsEditing)
+            {
+                CentralViewModel.CloseEditor();
+                args.Handled = true;
+            }
         }
 
         /// <summary>
@@ -93,7 +114,7 @@ namespace ParentingTrackerApp
         private void MainPageOnSizeChanged(object sender, SizeChangedEventArgs args)
         {
             UpdateClockRowDimension();
-           // AdjustAds(args.NewSize);
+            AdjustAds(args.NewSize);
         }
 
         private void UpdateClockRowDimension()

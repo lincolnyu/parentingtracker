@@ -51,5 +51,11 @@ namespace ParentingTrackerApp.Views
             var del = (EventTypeViewModel)((FrameworkElement)sender).DataContext;
             tvm.EventTypes.Remove(del);
         }
+
+        private void ResetOnClicked(object sender, RoutedEventArgs e)
+        {
+            var tvm = (CentralViewModel)DataContext;
+            tvm.ResetEventTypesToDefault();
+        }
     }
 }

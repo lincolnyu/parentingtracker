@@ -11,7 +11,8 @@
 
     <Grid>
         <StackPanel>
-            <TextBlock>File to merge:</TextBlock>
+            <TextBlock TextWrapping="Wrap">The following external file will be updated with entries in this app without losing any existing data. If the file is on OneDrive then it can be shared across devices.</TextBlock>
+            <TextBlock>File path:</TextBlock>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -20,7 +21,7 @@
                 <TextBox Grid.Column="0" Text="{Binding ExportPath}"></TextBox>
                 <Button Grid.Column="1" Click="SelectFileOnClick">...</Button>
             </Grid>
-            <Button Click="ExportOnClick">Export</Button>
+            <Button Click="ExportOnClick">Merge</Button>
         </StackPanel>
     </Grid>
 </UserControl>
