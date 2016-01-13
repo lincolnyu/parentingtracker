@@ -19,7 +19,7 @@
         <Grid.RowDefinitions>
             <RowDefinition x:Name="ClockRow"/>
             <RowDefinition/>
-            <RowDefinition x:Name="AdsRow" Height="90"/>
+            <RowDefinition x:Name="AdsRow" Height="250"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Name="Clock"
             FontSize="36" Text="{Binding Time, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
@@ -35,7 +35,7 @@
                 <views:ExportView/>
             </PivotItem>
         </Pivot>
-        <universal:AdMediatorControl Grid.Row="2" Name="MyAds" Width="728" Height="90"
+        <universal:AdMediatorControl Grid.Row="2" Name="MyAds" Width="300" Height="250"
                                      Id="MyAdsId"/>
     </Grid>
 </Page>

@@ -133,30 +133,10 @@ namespace ParentingTrackerApp
             switch (df)
             {
                 case "Windows.Desktop":
-                    SetAdsSize(728, 90);
+                    SetAdsSize(300, 250);
                     break;
                 case "Windows.Mobile":
-                    if (size.Width < 320 && size.Width >= 300)
-                    {
-                        SetAdsSize(300, 50);
-                    }
-                    else if (size.Width < 480)
-                    {
-                        SetAdsSize(320, 50);
-                    }
-                    else if (size.Width < 640)
-                    {
-                        SetAdsSize(480, 80);
-                    }
-                    else if (size.Width < 728)
-                    {
-                        SetAdsSize(640, 100);
-                    }
-                    else
-                    {
-                        // could be Windows Tablet
-                        SetAdsSize(728, 90);
-                    }
+                    SetAdsSize(480, 80);
                     break;
             }
         }
