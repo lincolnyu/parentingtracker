@@ -9,6 +9,7 @@ using Windows.UI.Xaml;
 using Windows.System.Profile;
 using Windows.Foundation;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Controls;
 
 namespace ParentingTrackerApp
 {
@@ -134,10 +135,33 @@ namespace ParentingTrackerApp
             {
                 case "Windows.Desktop":
                     SetAdsSize(300, 250);
+                    PositionAds(size);
                     break;
                 case "Windows.Mobile":
                     SetAdsSize(480, 80);
                     break;
+            }
+        }
+
+        private void PositionAds(Size size)
+        {
+            if (size.Width > 800)
+            {
+                AdsRow.Height = new GridLength(0);
+                AdsCol.Width = new GridLength(300);
+                MyAds.SetValue(Grid.RowProperty, 0);
+                MyAds.SetValue(Grid.RowSpanProperty, 2);
+                MyAds.SetValue(Grid.ColumnProperty, 1);
+                MyAds.SetValue(Grid.ColumnSpanProperty, 1);
+            }
+            else
+            {
+                AdsRow.Height = new GridLength(250);
+                AdsCol.Width = new GridLength(0);
+                MyAds.SetValue(Grid.RowProperty, 2);
+                MyAds.SetValue(Grid.RowSpanProperty, 1);
+                MyAds.SetValue(Grid.ColumnProperty, 0);
+                MyAds.SetValue(Grid.ColumnSpanProperty, 2);
             }
         }
 

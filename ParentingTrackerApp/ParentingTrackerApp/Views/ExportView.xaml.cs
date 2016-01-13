@@ -56,33 +56,47 @@ namespace ParentingTrackerApp.Views
                 merged = central.LoggedEvents;
             }
 
-            file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
-            if (string.IsNullOrWhiteSpace(otherInfo.Title))
+            Exception something = null;
+            try
             {
-                otherInfo.Title = file.DisplayName;
+                file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
+                if (string.IsNullOrWhiteSpace(otherInfo.Title))
+                {
+                    otherInfo.Title = file.DisplayName;
+                }
+                var wlines = merged.WriteToTable(otherInfo);
+                await FileIO.WriteLinesAsync(file, wlines);
             }
-            var wlines = merged.WriteToTable(otherInfo);
-            await FileIO.WriteLinesAsync(file, wlines);
+            catch (Exception e)
+            {
+                something = e;
+            }
+            if (something != null)
+            {
+                var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error writing to file");
+                await dlg.ShowAsync();
+            }
         }
 
         private async void ViewOnClick(object sender, RoutedEventArgs args)
         {
-            var central = (CentralViewModel)DataContext;
-            var file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
-            var html = await FileIO.ReadTextAsync(file);
-            Nav.NavigateToString(html);
-                #if false
-            var central = (CentralViewModel)DataContext;
-            string path = central.ExportPath;
-            var uriStr = new Uri(path).AbsoluteUri;
-            var uri = new Uri(uriStr);
-            var succ = await Windows.System.Launcher.LaunchUriAsync(uri);
-            if (!succ)
+            Exception something = null;
+            try
             {
-                var dlg = new MessageDialog("Cannot find the file", "Information");
+                var central = (CentralViewModel)DataContext;
+                var file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
+                var html = await FileIO.ReadTextAsync(file);
+                Nav.NavigateToString(html);
+            }
+            catch (Exception e)
+            {
+                something = e;
+            }
+            if (something != null)
+            {
+                var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error accessing file");
                 await dlg.ShowAsync();
             }
-#endif
         }
 
         private void UserControlOnSizeChanged(object sender, SizeChangedEventArgs args)
