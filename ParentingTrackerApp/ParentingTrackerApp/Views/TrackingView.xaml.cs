@@ -42,9 +42,10 @@ namespace ParentingTrackerApp.Views
 
             internal void Unbind()
             {
-                if (LoggedEntry  != null)
+                if (LoggedEntry != null)
                 {
                     LoggedEntry.PropertyChanged -= LoggedDataContextOnPropertyChanged;
+                    LoggedEntry = null;
                 }
             }
 
@@ -82,19 +83,17 @@ namespace ParentingTrackerApp.Views
         {
             if (_firstTime && args.NewValue != null)
             {
+                // TODO may actually want to put this in the view model
                 // NOTE from time to time XAML based tech requires this kind of silly hacks to work.
-                DelayHelper.Delay(args.NewValue, Kick, 100);
+                DelayHelper.Delay(args.NewValue, Kick, 100, Dispatcher);
                 _firstTime = false;
             }
         }
 
-        private async void Kick(object state)
+        private void Kick(object state)
         {
             var c = (EventViewModel)state;
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                c.RefreshEventTypeProperties();
-            });
+            c.RefreshEventTypeProperties();
         }
 
         private void ViewModelPropertyChanged(object sender, PropertyChangedEventArgs args)

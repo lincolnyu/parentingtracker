@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
+using Windows.UI.Core;
 
 namespace ParentingTrackerApp.Helpers
 {
@@ -14,6 +16,17 @@ namespace ParentingTrackerApp.Helpers
                 handler(x);
                 timer.Dispose();
             }, state, dueTime, System.Threading.Timeout.Infinite);
+        }
+
+        public static void Delay(object state, DelayedTaskHandler handler, int dueTime, 
+            CoreDispatcher dispatcher, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal)
+        {
+            Timer timer = null;
+            timer = new Timer(async x=>
+             {
+                 timer.Dispose();
+                 await dispatcher.RunAsync(priority, () => handler(x));
+             }, state, dueTime, Timeout.Infinite);
         }
     }
 }

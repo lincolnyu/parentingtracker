@@ -373,6 +373,19 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("Color");
         }
 
+        public void RefreshAll()
+        {
+            RaisePropertyChangedEvent("Notes");
+            RaiseStartTimeChangedEvent();
+            RaiseEndTimeChangedEvent();
+            RaiseStatusChangedEvents();
+            RefreshEventTypeProperties();
+            if (IsRunning)
+            {
+                RefreshRunningTag();
+            }
+        }
+
         public void RefreshRunningTag()
         {
             RaisePropertyChangedEvent("RunningTime");

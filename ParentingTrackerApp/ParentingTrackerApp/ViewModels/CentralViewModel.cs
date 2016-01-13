@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 
 namespace ParentingTrackerApp.ViewModels
 {
@@ -43,7 +44,7 @@ namespace ParentingTrackerApp.ViewModels
 
         #region Flags
 
-        private bool _wasLoggedSelectedBeforeEditing;
+        private bool _wasSelected;
         private bool _isInLoggedEventPropertyChanged;
         private bool _suppressAllEventsCollectionChangedHandler;
         private static bool _suppressEventTypeCollectionChangeHandling;
@@ -64,6 +65,8 @@ namespace ParentingTrackerApp.ViewModels
         #endregion
 
         #region Properties
+
+        public CoreDispatcher Dispatcher { get; set; }
 
         public ObservableCollection<EventTypeViewModel> EventTypes { get; } =
             new ObservableCollection<EventTypeViewModel>();
@@ -223,6 +226,8 @@ namespace ParentingTrackerApp.ViewModels
             {
                 RaisePropertyChangedEvent("EventInEditing");
             }
+
+            // TODO consider adding delayed update here?
         }
 
         public void New()
@@ -242,14 +247,14 @@ namespace ParentingTrackerApp.ViewModels
 
         public void CloseEditor()
         {
-            _wasLoggedSelectedBeforeEditing = false;
+            _wasSelected = false;
             CloseEditor(SelectedEvent);
         }
 
         private void CloseEditor(EventViewModel e)
         {
             if (e != null && e == SelectedEvent 
-                && (e.IsRunningEvent || !_wasLoggedSelectedBeforeEditing))
+                && (e.IsRunningEvent || !_wasSelected))
             {
                 SelectedEvent = null;
             }
@@ -381,8 +386,8 @@ namespace ParentingTrackerApp.ViewModels
             {
                 if (evm.IsEditing)
                 {
-                    _wasLoggedSelectedBeforeEditing = SelectedEvent == evm;
-                    if (!_wasLoggedSelectedBeforeEditing)
+                    _wasSelected = SelectedEvent == evm;
+                    if (!_wasSelected)
                     {
                         SelectedEvent = evm;
                     }
@@ -392,33 +397,78 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     // for logged event reordering happens after editing is finished
                     CloseEditor(evm);
-                    SortLists();
-                    if (_wasLoggedSelectedBeforeEditing)
-                    {
-                        SelectedEvent = evm;
-                    }
+                    DelayMinimumSort(evm);
                 }
             }
             else if (evm.IsRunning && evm.IsDataProperty(args.PropertyName))
             {
-                var wasSelected = evm == SelectedEvent;
-                SortLists();
-                if (wasSelected)
-                {
-                    SelectedEvent = evm;
-                }
+                _wasSelected = evm == SelectedEvent;
+                DelayMinimumSort(evm);
             }
             MarkAsDirty();
             _isInLoggedEventPropertyChanged = false;
         }
 
-        private void SortLists()
+        private void DelayMinimumSort(EventViewModel evm)
+        {
+            if (Dispatcher != null)
+            {
+                DelayHelper.Delay(evm, x => MinimumSort((EventViewModel)x), 100, Dispatcher);
+            }
+        }
+
+        private void MinimumSort(EventViewModel evm)
+        {
+            var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
+            _suppressAllEventsCollectionChangedHandler = true;
+            MinimumSort(AllEvents, evm);
+            MinimumSort(RunningEvents, evm);
+            MinimumSort(LoggedEvents, evm);
+            if (_wasSelected)
+            {
+                SelectedEvent = evm;
+            }
+            _suppressAllEventsCollectionChangedHandler = wasSuppressing;
+        }
+
+        private static void MinimumSort(IList<EventViewModel> list, EventViewModel evm)
+        {
+            var index = list.IndexOf(evm);
+            if (index < 0)
+            {
+                return;
+            }
+            var t = index;
+            for (; t>0 && list[t-1].CompareTo(list[t])>0; t--)
+            {
+            }
+            if (t < index)
+            {
+                list.RemoveAt(index);
+                list.Insert(t, evm);
+                return;
+            }
+            for (; t < list.Count-1 && list[t].CompareTo(list[t+1])>0; t++)
+            {
+            }
+            if (t>index)
+            {
+                list.RemoveAt(index);
+                list.Insert(t, evm);
+            }
+        }
+
+        private void SortLists(EventViewModel evm)
         {
             var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
             _suppressAllEventsCollectionChangedHandler = true;
             AllEvents.QuickSort();
             RunningEvents.QuickSort();
             LoggedEvents.QuickSort();
+            if (_wasSelected)
+            {
+                SelectedEvent = evm;
+            }
             _suppressAllEventsCollectionChangedHandler = wasSuppressing;
         }
 

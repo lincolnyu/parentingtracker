@@ -24,10 +24,11 @@ namespace ParentingTrackerApp.Views
             var etvm = new EventTypeViewModel();
             tvm.EventTypes.Add(etvm);
 
+            // TODO may actually want to put this in the view model
             // NOTE from time to time XAML based tech requires this kind of silly hacks to work.
             if (_firstTime)
             {
-                DelayHelper.Delay(etvm, Kick, 100);
+                DelayHelper.Delay(etvm, Kick, 100, Dispatcher);
                 _firstTime = false;
             }
             else
@@ -36,13 +37,10 @@ namespace ParentingTrackerApp.Views
             }
         }
 
-        private async void Kick(object state)
+        private void Kick(object state)
         {
             var etvm = (EventTypeViewModel)state;
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                etvm.SelectedColor = etvm.AvailableColors.FirstOrDefault();
-            });
+            etvm.SelectedColor = etvm.AvailableColors.FirstOrDefault();
         }
 
         private void DelOnClicked(object sender, RoutedEventArgs e)

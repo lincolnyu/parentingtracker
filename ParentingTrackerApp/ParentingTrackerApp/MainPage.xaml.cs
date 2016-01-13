@@ -68,12 +68,16 @@ namespace ParentingTrackerApp
         {
             base.OnNavigatedTo(e);
 
+            CentralViewModel.Dispatcher = Dispatcher;
+
             await CentralViewModel.Load();
         }
 
         protected override async void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
+
+            CentralViewModel.Dispatcher = null;
 
             await CentralViewModel.Save();
         }
