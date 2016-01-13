@@ -19,13 +19,12 @@
                                       RunningEventDataTemplate="{StaticResource RunningEventDataTemplate}"
                                       LoggedEventDataTemplate="{StaticResource LoggedEventDataTemplate}"/>
                     <DataTemplate x:Key="RunningEventDataTemplate">
-                        <StackPanel Orientation="Horizontal">
+                        <VariableSizedWrapGrid Orientation="Horizontal" >
                             <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
-                                <TextBlock Text="{Binding EventTypeName}"></TextBlock>
+                                <TextBlock Text="{Binding EventTypeName}" TextWrapping="Wrap" Margin="5,0,5,0"></TextBlock>
                             </Border>
-                            <TextBlock>:</TextBlock>
-                            <TextBlock Text="{Binding RunningTime}"></TextBlock>
-                        </StackPanel>
+                            <TextBlock Text="{Binding RunningTime}" TextWrapping="Wrap" Margin="5,0,5,0"></TextBlock>
+                        </VariableSizedWrapGrid>
                     </DataTemplate>
                     <DataTemplate x:Key="LoggedEventDataTemplate">
                         <Grid DataContextChanged="GridDataContextOnChanged">
@@ -38,8 +37,9 @@
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
                             <VariableSizedWrapGrid Orientation="Horizontal">
-                                <TextBlock Text="{Binding LocalisedTimeRange}" Margin="5,0,5,0"></TextBlock>
-                                <TextBlock Text="{Binding EventTypeName}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
+                                <TextBlock Text="{Binding LocalisedTimeRange}" TextWrapping="Wrap" Margin="5,0,5,0"></TextBlock>
+                                <TextBlock Text="{Binding EventTypeName}" TextWrapping="Wrap"
+                                           Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
                                            Margin="5,0,5,0"></TextBlock>
                             </VariableSizedWrapGrid>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" TextWrapping="Wrap" 
