@@ -28,7 +28,7 @@ namespace ParentingTrackerApp.Views
 
         private void UpdateForDataContextChange()
         {
-            if (DataContext != null && false)
+            if (DataContext != null)
             {
                 switch (MainPage.DeviceFamily)
                 {
