@@ -1,16 +1,7 @@
-﻿using ParentingTrackerApp.Helpers;
-using ParentingTrackerApp.ViewModels;
-using System;
-using System.Collections.Generic;
-using Windows.Storage.AccessCache;
-using Windows.Storage;
-using Windows.Storage.Pickers;
+﻿using ParentingTrackerApp.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using System.Linq;
-using Windows.UI.Popups;
-using Windows.Storage.Provider;
-using System.Threading.Tasks;
+using ParentingTrackerApp.Export;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -18,119 +9,85 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class ExportView : UserControl
     {
-        private StorageFile _file;
+        const string InfoMobile = "The following external file will be updated with entries in this app without losing any existing data. For this mobile phone app, the file which you can specify a name for is to be sitting on the Document folder of your OneDrive which can be shared across devices.";
 
         public ExportView()
         {
             InitializeComponent();
+            DataContextChanged += ViewOnDataContextChanged;
         }
 
-        private async void SelectFileOnClick(object sender, RoutedEventArgs e)
+        public FilePicker FilePicker { get; private set; }
+
+        public OneDriveMobile OneDriveMobile { get; private set; }
+
+        private void ViewOnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            await UseFileOpen();
+            UpdateForDataContextChange();
         }
 
-        private async Task UseFileSave()
+        private void UpdateForDataContextChange()
         {
-            var fsp = new FileSavePicker();
-            fsp.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            fsp.FileTypeChoices.Add("HTML files", new List<string>() { ".html" });
-            fsp.SuggestedFileName = "New Document";
-            _file = await fsp.PickSaveFileAsync();
-            if (_file != null)
+            if (DataContext != null && false)
             {
-                var central = (CentralViewModel)DataContext;
-                central.ExportPath = _file.Path;
-                central.ExportFileToken = StorageApplicationPermissions.FutureAccessList.Add(_file);
+                switch (MainPage.DeviceFamily)
+                {
+                    case MainPage.DeviceFamilies.WindowsDesktop:
+                        FilePicker = new FilePicker((CentralViewModel)DataContext);
+                        break;
+                    case MainPage.DeviceFamilies.WindowsMobile:
+                        OneDriveMobile = new OneDriveMobile((CentralViewModel)DataContext);
+                        break;
+                }
+            }
+
+            UpdateUiForMobile();
+        }
+
+        private void UpdateUiForMobile()
+        {
+            InfoText.Text = InfoMobile;
+            HeaderButtonCol.Width = new GridLength(80);
+            Header.Width = 80;
+            Header.Text = "File Name:";
+            SelectButtonCol.Width = new GridLength(180);
+            Select.Width = 180;
+            Select.Content = "Connect to OneDrive";
+        }
+
+        private async void SelectFileOnClick(object sender, RoutedEventArgs args)
+        {
+            if (FilePicker != null)
+            {
+                await FilePicker.PickFile();
+            }
+            else if (OneDriveMobile != null)
+            {
+                await OneDriveMobile.Connect();
             }
         }
-
-        private async Task UseFileOpen()
-        {
-            var fsp = new FileOpenPicker();
-            fsp.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            fsp.FileTypeFilter.Add(".html");
-            _file = await fsp.PickSingleFileAsync();
-            if (_file != null)
-            {
-                var central = (CentralViewModel)DataContext;
-                central.ExportPath = _file.Path;
-                central.ExportFileToken = StorageApplicationPermissions.FutureAccessList.Add(_file);
-            }
-        }
-
+       
         private async void ExportOnClick(object sender, RoutedEventArgs args)
         {
-            var central = (CentralViewModel)DataContext;
-
-            IEnumerable<EventViewModel> merged;
-            var otherInfo = new HtmlExportHelper.DocInfo();
-
-            string something = null;
-            try
+            if (FilePicker != null)
             {
-                if (_file == null)
-                {
-                    _file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
-                }
-
-                try
-                {
-                    var lines = await FileIO.ReadLinesAsync(_file);
-                    var existing = lines.ReadFromTable(central, otherInfo);
-                    merged = HtmlExportHelper.Merge(existing, central.LoggedEvents).ToList();
-                }
-                catch (Exception)
-                {
-                    merged = central.LoggedEvents;
-                }
-
-                if (string.IsNullOrWhiteSpace(otherInfo.Title))
-                {
-                    otherInfo.Title = _file.DisplayName;
-                }
-                var wlines = merged.WriteToTable(otherInfo);
-                CachedFileManager.DeferUpdates(_file);
-                await FileIO.WriteLinesAsync(_file, wlines);
-                var status = await CachedFileManager.CompleteUpdatesAsync(_file);
-                if (status != FileUpdateStatus.Complete)
-                {
-                    something = "File " + _file.Name + " couldn't be saved.";
-                }
+                await FilePicker.Merge();
             }
-            catch (Exception e)
+            else if (OneDriveMobile != null)
             {
-                something = e.Message;
-            }
-
-            if (something != null)
-            {
-                var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error writing to file");
-                await dlg.ShowAsync();
+                await OneDriveMobile.Merge();
             }
         }
 
         private async void ViewOnClick(object sender, RoutedEventArgs args)
         {
-            Exception something = null;
-            try
+            if (FilePicker != null)
             {
-                var central = (CentralViewModel)DataContext;
-                if (_file == null)
-                {
-                    _file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
-                }
-                var html = await FileIO.ReadTextAsync(_file);
-                Nav.NavigateToString(html);
+                await FilePicker.View(Nav);
             }
-            catch (Exception e)
+            else if (OneDriveMobile != null)
             {
-                something = e;
-            }
-            if (something != null)
-            {
-                var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error accessing file");
-                await dlg.ShowAsync();
+                await OneDriveMobile.View(Nav);
             }
         }
 

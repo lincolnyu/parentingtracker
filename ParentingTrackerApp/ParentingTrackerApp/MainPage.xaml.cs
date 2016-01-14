@@ -18,8 +18,29 @@ namespace ParentingTrackerApp
     /// </summary>
     public sealed partial class MainPage : INotifyPropertyChanged
     {
+        public enum DeviceFamilies
+        {
+            WindowsDesktop, // may also include tablets
+            WindowsMobile
+        }
+
+
         private readonly Timer _timer;
         private DateTime _time;
+
+        static MainPage()
+        {
+            var df = AnalyticsInfo.VersionInfo.DeviceFamily;
+            switch (df)
+            {
+                case "Windows.Desktop":
+                    DeviceFamily = DeviceFamilies.WindowsDesktop;
+                    break;
+                case "Windows.Mobile":
+                    DeviceFamily = DeviceFamilies.WindowsMobile;
+                    break;
+            }
+        }
 
         public MainPage()
         {
@@ -45,6 +66,8 @@ namespace ParentingTrackerApp
         }
 
         public static CentralViewModel CentralViewModel { get; } = new CentralViewModel();
+
+        public static DeviceFamilies DeviceFamily { get; }
 
         public CentralViewModel Central { get { return CentralViewModel; } }
 
@@ -130,14 +153,13 @@ namespace ParentingTrackerApp
         // TODO use single ads source
         private void AdjustAds(Size size)
         {
-            var df = AnalyticsInfo.VersionInfo.DeviceFamily;
-            switch (df)
+            switch (DeviceFamily)
             {
-                case "Windows.Desktop":
+                case DeviceFamilies.WindowsDesktop:
                     SetAdsSize(300, 250);
                     PositionAds(size);
                     break;
-                case "Windows.Mobile":
+                case DeviceFamilies.WindowsMobile:
                     SetAdsSize(480, 80);
                     break;
             }

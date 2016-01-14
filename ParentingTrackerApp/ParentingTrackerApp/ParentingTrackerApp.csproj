@@ -108,6 +108,8 @@
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EventTemplateSelector.cs" />
+    <Compile Include="Export\FilePicker.cs" />
+    <Compile Include="Export\OneDriveMobile.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\DefaultGlobals.cs" />
     <Compile Include="Helpers\DelayHelper.cs" />

@@ -18,13 +18,13 @@
             <TextBlock TextWrapping="Wrap" Name="InfoText">The following external file will be updated with entries in this app without losing any existing data. If the file is on OneDrive then it can be shared across devices.</TextBlock>
             <Grid Name="InputGrid">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition x:Name="HeaderButtonCol" Width="60"/>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition x:Name="SelectButtonCol" Width="30"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Name="Header" VerticalAlignment="Center">File path:</TextBlock>
-                <TextBox Grid.Column="1" Text="{Binding ExportPath}"></TextBox>
-                <Button Grid.Column="2" Click="SelectFileOnClick">...</Button>
+                <TextBox Grid.Column="1" Text="{Binding ExportPath, Mode=TwoWay}"></TextBox>
+                <Button Name="Select" Grid.Column="2" Click="SelectFileOnClick">...</Button>
             </Grid>
             <StackPanel Orientation="Horizontal">
                 <Button Click="ExportOnClick" Name="MergeButton">Merge</Button>
