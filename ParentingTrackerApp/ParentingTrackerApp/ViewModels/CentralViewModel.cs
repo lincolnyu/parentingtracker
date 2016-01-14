@@ -334,20 +334,33 @@ namespace ParentingTrackerApp.ViewModels
                 ExportFileToken = expToken;
                 EventTypes.LoadRoamingColorMapping();
 
+                var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
+                _suppressAllEventsCollectionChangedHandler = true;
                 AllEvents.Clear();
+                LoggedEvents.Clear();
+                RunningEvents.Clear();
                 var evlines = await EventFileName.LoadEventsLines();
                 if (evlines != null)
                 {
                     var events = evlines.LoadEvents(this);
                     foreach (var e in events)
                     {
-                        if (e.Status != EventViewModel.Statuses.Running)
+                        AllEvents.Add(e);
+                        if (e.Status == EventViewModel.Statuses.Running)
                         {
+                            RunningEvents.Add(e);
+                        }
+                        else
+                        {
+                            LoggedEvents.Add(e);
                             e.Status = EventViewModel.Statuses.Logged;// make sure it's logged event
                         }
-                        AllEvents.Insert(e);
                     }
                 }
+
+                SortLists(null);
+
+                _suppressAllEventsCollectionChangedHandler = wasSuppressing;
 
                 _state = States.Synced;
                 return evlines != null;
