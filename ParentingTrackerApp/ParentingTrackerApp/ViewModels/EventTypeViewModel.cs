@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using Windows.UI;
 
 namespace ParentingTrackerApp.ViewModels
@@ -78,6 +79,17 @@ namespace ParentingTrackerApp.ViewModels
         public ObservableCollection<ColorOptionViewModel> AvailableColors
         {
             get { return ColorOptionViewModel.ColorOptions; }
+        }
+
+        public void RefreshSelectedColor()
+        {
+            RaisePropertyChangedEvent("SelectedColor");
+            RaisePropertyChangedEvent("Color");
+        }
+
+        public EventTypeViewModel Clone()
+        {
+            return new EventTypeViewModel(Name, Color);
         }
     }
 }

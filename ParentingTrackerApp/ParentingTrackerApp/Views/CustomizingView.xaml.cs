@@ -11,8 +11,6 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class CustomizingView : UserControl
     {
-        private bool _firstTime = true;
-
         public CustomizingView()
         {
             InitializeComponent();
@@ -23,26 +21,18 @@ namespace ParentingTrackerApp.Views
             var tvm = (CentralViewModel)DataContext;
             var etvm = new EventTypeViewModel();
             tvm.EventTypes.Add(etvm);
-            EventTypesList.SelectedItem = etvm;
-            EventTypesList.ScrollIntoView(etvm);
 
             // TODO may actually want to put this in the view model
             // NOTE from time to time XAML based tech requires this kind of silly hacks to work.
-            if (_firstTime)
-            {
-                DelayHelper.Delay(etvm, Kick, 100, Dispatcher);
-                _firstTime = false;
-            }
-            else
-            {
-                etvm.SelectedColor = etvm.AvailableColors.FirstOrDefault();
-            }
+            DelayHelper.Delay(etvm, Kick, 100, Dispatcher);
         }
 
         private void Kick(object state)
         {
             var etvm = (EventTypeViewModel)state;
             etvm.SelectedColor = etvm.AvailableColors.FirstOrDefault();
+            EventTypesList.SelectedItem = etvm;
+            EventTypesList.ScrollIntoView(etvm);
         }
 
         private void DelOnClicked(object sender, RoutedEventArgs e)

@@ -44,7 +44,7 @@ namespace ParentingTrackerApp.Helpers
             eventTypes.Clear();
             foreach (var e in DefaultEventTypeList)
             {
-                eventTypes.Add(e);
+                eventTypes.Add(e.Clone());
             }
         }
     }
