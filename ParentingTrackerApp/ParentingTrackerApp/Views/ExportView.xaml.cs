@@ -9,6 +9,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Linq;
 using Windows.UI.Popups;
+using Windows.Storage.Provider;
+using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -16,6 +18,8 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class ExportView : UserControl
     {
+        private StorageFile _file;
+
         public ExportView()
         {
             InitializeComponent();
@@ -23,16 +27,35 @@ namespace ParentingTrackerApp.Views
 
         private async void SelectFileOnClick(object sender, RoutedEventArgs e)
         {
+            await UseFileOpen();
+        }
+
+        private async Task UseFileSave()
+        {
             var fsp = new FileSavePicker();
             fsp.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
             fsp.FileTypeChoices.Add("HTML files", new List<string>() { ".html" });
             fsp.SuggestedFileName = "New Document";
-            var file = await fsp.PickSaveFileAsync();
-            if (file != null)
+            _file = await fsp.PickSaveFileAsync();
+            if (_file != null)
             {
                 var central = (CentralViewModel)DataContext;
-                central.ExportPath = file.Path;
-                central.ExportFileToken = StorageApplicationPermissions.FutureAccessList.Add(file);
+                central.ExportPath = _file.Path;
+                central.ExportFileToken = StorageApplicationPermissions.FutureAccessList.Add(_file);
+            }
+        }
+
+        private async Task UseFileOpen()
+        {
+            var fsp = new FileOpenPicker();
+            fsp.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            fsp.FileTypeFilter.Add(".html");
+            _file = await fsp.PickSingleFileAsync();
+            if (_file != null)
+            {
+                var central = (CentralViewModel)DataContext;
+                central.ExportPath = _file.Path;
+                central.ExportFileToken = StorageApplicationPermissions.FutureAccessList.Add(_file);
             }
         }
 
@@ -40,40 +63,49 @@ namespace ParentingTrackerApp.Views
         {
             var central = (CentralViewModel)DataContext;
 
-            StorageFile file;
-
             IEnumerable<EventViewModel> merged;
             var otherInfo = new HtmlExportHelper.DocInfo();
-            try
-            {
-                file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
-                var lines = await FileIO.ReadLinesAsync(file);
-                var existing = lines.ReadFromTable(central, otherInfo);
-                merged = HtmlExportHelper.Merge(existing, central.LoggedEvents).ToList();
-            }
-            catch (Exception)
-            {
-                merged = central.LoggedEvents;
-            }
 
-            Exception something = null;
+            string something = null;
             try
             {
-                file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
+                if (_file == null)
+                {
+                    _file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
+                }
+
+                try
+                {
+                    var lines = await FileIO.ReadLinesAsync(_file);
+                    var existing = lines.ReadFromTable(central, otherInfo);
+                    merged = HtmlExportHelper.Merge(existing, central.LoggedEvents).ToList();
+                }
+                catch (Exception)
+                {
+                    merged = central.LoggedEvents;
+                }
+
                 if (string.IsNullOrWhiteSpace(otherInfo.Title))
                 {
-                    otherInfo.Title = file.DisplayName;
+                    otherInfo.Title = _file.DisplayName;
                 }
                 var wlines = merged.WriteToTable(otherInfo);
-                await FileIO.WriteLinesAsync(file, wlines);
+                CachedFileManager.DeferUpdates(_file);
+                await FileIO.WriteLinesAsync(_file, wlines);
+                var status = await CachedFileManager.CompleteUpdatesAsync(_file);
+                if (status != FileUpdateStatus.Complete)
+                {
+                    something = "File " + _file.Name + " couldn't be saved.";
+                }
             }
             catch (Exception e)
             {
-                something = e;
+                something = e.Message;
             }
+
             if (something != null)
             {
-                var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error writing to file");
+                var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error writing to file");
                 await dlg.ShowAsync();
             }
         }
@@ -84,8 +116,11 @@ namespace ParentingTrackerApp.Views
             try
             {
                 var central = (CentralViewModel)DataContext;
-                var file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
-                var html = await FileIO.ReadTextAsync(file);
+                if (_file == null)
+                {
+                    _file = await StorageFile.GetFileFromPathAsync(central.ExportPath);
+                }
+                var html = await FileIO.ReadTextAsync(_file);
                 Nav.NavigateToString(html);
             }
             catch (Exception e)
