@@ -336,6 +336,12 @@ namespace ParentingTrackerApp.ViewModels
 
                 var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
                 _suppressAllEventsCollectionChangedHandler = true;
+                // TODO this method should be called at the start and they should be empty 
+                //      or it may be problematic
+                foreach (var e in AllEvents)
+                {
+                    e.PropertyChanged -= EventOnPropertyChanged;
+                }
                 AllEvents.Clear();
                 LoggedEvents.Clear();
                 RunningEvents.Clear();
@@ -346,6 +352,7 @@ namespace ParentingTrackerApp.ViewModels
                     foreach (var e in events)
                     {
                         AllEvents.Add(e);
+                        e.PropertyChanged += EventOnPropertyChanged;
                         if (e.Status == EventViewModel.Statuses.Running)
                         {
                             RunningEvents.Add(e);
