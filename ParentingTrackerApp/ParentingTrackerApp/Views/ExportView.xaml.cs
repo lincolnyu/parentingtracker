@@ -50,9 +50,8 @@ namespace ParentingTrackerApp.Views
             HeaderButtonCol.Width = new GridLength(80);
             Header.Width = 80;
             Header.Text = "File Name:";
-            SelectButtonCol.Width = new GridLength(180);
-            Select.Width = 180;
-            Select.Content = "Connect to OneDrive";
+            Select.Visibility = Visibility.Collapsed;
+            SelectButtonCol.Width = new GridLength(0);
         }
 
         private async void SelectFileOnClick(object sender, RoutedEventArgs args)

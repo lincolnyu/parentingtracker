@@ -24,7 +24,9 @@
             <Button Name="AddButton" Click="AddOnClicked">Add</Button>
             <Button Click="ResetOnClicked">Reset</Button>
         </StackPanel>
-        <ListView ItemsSource="{Binding EventTypes}" Grid.Row="1"
+        <ListView Name="EventTypesList"
+                  ItemsSource="{Binding EventTypes}"
+                  Grid.Row="1"
                   VerticalAlignment="Stretch"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto">

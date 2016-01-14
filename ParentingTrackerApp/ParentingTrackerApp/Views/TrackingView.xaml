@@ -19,12 +19,20 @@
                                       RunningEventDataTemplate="{StaticResource RunningEventDataTemplate}"
                                       LoggedEventDataTemplate="{StaticResource LoggedEventDataTemplate}"/>
                     <DataTemplate x:Key="RunningEventDataTemplate">
-                        <VariableSizedWrapGrid Orientation="Horizontal" >
+                        <Grid>
                             <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
-                                <TextBlock Text="{Binding EventTypeName}" TextWrapping="Wrap" Margin="5,0,5,0"></TextBlock>
+                                <RichTextBlock IsTextSelectionEnabled="False">
+                                    <Paragraph>
+                                        <Bold>
+                                            <Underline>
+                                                <Run Text="{Binding EventTypeName}"></Run>
+                                            </Underline>
+                                            <Run Text="{Binding RunningTime}"></Run>
+                                        </Bold>
+                                    </Paragraph>
+                                </RichTextBlock>
                             </Border>
-                            <TextBlock Text="{Binding RunningTime}" TextWrapping="Wrap" Margin="5,0,5,0"></TextBlock>
-                        </VariableSizedWrapGrid>
+                        </Grid>
                     </DataTemplate>
                     <DataTemplate x:Key="LoggedEventDataTemplate">
                         <Grid DataContextChanged="GridDataContextOnChanged">
@@ -32,18 +40,23 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <VariableSizedWrapGrid Orientation="Horizontal">
-                                <TextBlock Text="{Binding LocalisedTimeRange}" TextWrapping="Wrap" Margin="5,0,5,0"></TextBlock>
-                                <TextBlock Text="{Binding EventTypeName}" TextWrapping="Wrap"
-                                           Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
-                                           Margin="5,0,5,0"></TextBlock>
-                            </VariableSizedWrapGrid>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Notes}" TextWrapping="Wrap" 
-                                       Margin="5,0,5,0"></TextBlock>
+                            <Grid Grid.Column="0">
+                                <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
+                                    <RichTextBlock IsTextSelectionEnabled="False">
+                                        <Paragraph>
+                                            <Run Text="{Binding LocalisedTimeRange}"></Run>
+                                            <Underline>
+                                                <Run Text="{Binding EventTypeName}"></Run>
+                                            </Underline>
+                                        </Paragraph>
+                                        <Paragraph>
+                                            <Italic>
+                                                <Run Text="{Binding Notes}"></Run>
+                                            </Italic>
+                                        </Paragraph>
+                                    </RichTextBlock>
+                                </Border>
+                            </Grid>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
                                         Width="40"
@@ -95,7 +108,7 @@
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"></ColumnDefinition>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
                         <ColumnDefinition MaxWidth="300"></ColumnDefinition>
                         <ColumnDefinition MaxWidth="300"></ColumnDefinition>
                     </Grid.ColumnDefinitions>

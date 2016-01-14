@@ -23,6 +23,8 @@ namespace ParentingTrackerApp.Views
             var tvm = (CentralViewModel)DataContext;
             var etvm = new EventTypeViewModel();
             tvm.EventTypes.Add(etvm);
+            EventTypesList.SelectedItem = etvm;
+            EventTypesList.ScrollIntoView(etvm);
 
             // TODO may actually want to put this in the view model
             // NOTE from time to time XAML based tech requires this kind of silly hacks to work.
