@@ -21,8 +21,15 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="80"></Setter>
+                </Style>
+            </StackPanel.Resources>
             <Button Name="AddButton" Click="AddOnClicked">Add</Button>
-            <Button Click="ResetOnClicked">Reset</Button>
+            <Button Click="ResetOnClicked"
+                    PointerEntered="RedHighlightButtonOnPointerEntered"
+                    PointerExited="RedHighlightButtonOnPointerExited">Reset</Button>
         </StackPanel>
         <ListView Name="EventTypesList"
                   ItemsSource="{Binding EventTypes}"
@@ -33,7 +40,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBox Text="{Binding Name, Mode=TwoWay}" Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}"></TextBox>
+                        <TextBox Text="{Binding Name, Mode=TwoWay}"></TextBox>
                         <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -50,7 +57,9 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button Content="&#xE106;" FontFamily="Segoe UI Symbol" Click="DelOnClicked"></Button>
+                        <Button Content="&#xE106;" FontFamily="Segoe UI Symbol" Click="DelOnClicked"
+                                PointerEntered="RedHighlightButtonOnPointerEntered"
+                                PointerExited="RedHighlightButtonOnPointerExited"></Button>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

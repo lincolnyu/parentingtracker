@@ -1,9 +1,10 @@
 ﻿using ParentingTrackerApp.ViewModels;
 using System.ComponentModel;
+using Windows.UI;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using System;
-using System.Threading;
+using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using ParentingTrackerApp.Helpers;
 
@@ -61,9 +62,9 @@ namespace ParentingTrackerApp.Views
         }
 
         private bool _firstTime = true;
-
         private Dictionary<Grid, LoggedEntryUiAdaptor> _gridAdaptorMap = new Dictionary<Grid, LoggedEntryUiAdaptor>();
 
+        private Brush _prevColor;
 
         public TrackingView()
         {
@@ -109,12 +110,10 @@ namespace ParentingTrackerApp.Views
             var dc = (CentralViewModel)DataContext;
             if (dc.IsEditing)
             {
-                EditorRow.MinHeight = 150;
-                EditorRow.Height = new GridLength(0.3, GridUnitType.Star);
+                EditorRow.Height = new GridLength(145);
             }
             else
             {
-                EditorRow.MinHeight = 0;
                 EditorRow.Height = new GridLength(0);
             }
         }
@@ -191,6 +190,17 @@ namespace ParentingTrackerApp.Views
             {
                 _gridAdaptorMap.Remove(grid);
             }
+        }
+
+        private void RedHighlightButtonOnPointerEntered(object sender, PointerRoutedEventArgs args)
+        {
+            _prevColor = ((Button)sender).Background;
+            ((Button)sender).Background = new SolidColorBrush(Colors.Red);
+        }
+
+        private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
+        {
+            ((Button)sender).Background = _prevColor;
         }
     }
 }

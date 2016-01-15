@@ -4,6 +4,9 @@ using ParentingTrackerApp.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Linq;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Input;
+using Windows.UI;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -11,6 +14,8 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class CustomizingView : UserControl
     {
+        private Brush _prevColor;
+
         public CustomizingView()
         {
             InitializeComponent();
@@ -51,6 +56,17 @@ namespace ParentingTrackerApp.Views
         private void GridOnSizeChanged(object sender, SizeChangedEventArgs args)
         {
             ButtonRow.Height = new GridLength(AddButton.ActualHeight);
+        }
+
+        private void RedHighlightButtonOnPointerEntered(object sender, PointerRoutedEventArgs args)
+        {
+            _prevColor = ((Button)sender).Background;
+            ((Button)sender).Background = new SolidColorBrush(Colors.Red);
+        }
+
+        private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
+        {
+            ((Button)sender).Background = _prevColor;
         }
     }
 }

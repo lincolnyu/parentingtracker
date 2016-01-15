@@ -27,6 +27,11 @@
                 <Button Name="Select" Grid.Column="2" Click="SelectFileOnClick">...</Button>
             </Grid>
             <StackPanel Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Width" Value="80"></Setter>
+                    </Style>
+                </StackPanel.Resources>
                 <Button Click="ExportOnClick" Name="MergeButton">Merge</Button>
                 <Button Click="ViewOnClick">View</Button>
             </StackPanel>
