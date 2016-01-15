@@ -141,19 +141,42 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"></ColumnDefinition>
-                            <ColumnDefinition MaxWidth="300"></ColumnDefinition>
-                            <ColumnDefinition MaxWidth="300"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Start" Grid.Row="0" Grid.Column="0"></TextBlock>
-                        <DatePicker Grid.Row="0" Grid.Column="1" IsEnabled="{Binding IsEditingOrRunning}"
-                            Date="{Binding StartDate, Mode=TwoWay}"></DatePicker>
-                        <TimePicker Grid.Row="0" Grid.Column="2" IsEnabled="{Binding IsEditingOrRunning}"
-                            Time="{Binding StartTimeOfDay, Mode=TwoWay}"></TimePicker>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
+                            <Button Content="{Binding StartTime, Converter={StaticResource DateTimeToDateStringConverter}}"
+                                Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditingOrRunning}">
+                                <FlyoutBase.AttachedFlyout>
+                                    <DatePickerFlyout Date="{Binding StartDate, Mode=TwoWay}">
+                                    </DatePickerFlyout>
+                                </FlyoutBase.AttachedFlyout>
+                            </Button>
+                            <Button Content="{Binding StartTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
+                                Click="DateTimeButtonOnClick"  IsEnabled="{Binding IsEditingOrRunning}">
+                                <FlyoutBase.AttachedFlyout>
+                                    <TimePickerFlyout Time="{Binding StartTimeOfDay, Mode=TwoWay}">
+                                    </TimePickerFlyout>
+                                </FlyoutBase.AttachedFlyout>
+                            </Button>
+                        </StackPanel>
                         <TextBlock Text="End" Grid.Row="1" Grid.Column="0"></TextBlock>
-                        <DatePicker Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEditing}"
-                            Date="{Binding EndDate, Mode=TwoWay}"></DatePicker>
-                        <TimePicker Grid.Row="1" Grid.Column="2" IsEnabled="{Binding IsEditing}"
-                            Time="{Binding EndTimeOfDay, Mode=TwoWay}"></TimePicker>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                            <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToDateStringConverter}}"
+                                Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
+                                <FlyoutBase.AttachedFlyout>
+                                    <DatePickerFlyout Date="{Binding EndDate, Mode=TwoWay}">
+                                    </DatePickerFlyout>
+                                </FlyoutBase.AttachedFlyout>
+                            </Button>
+                            <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
+                                Click="DateTimeButtonOnClick"  IsEnabled="{Binding IsEditing}">
+                                <FlyoutBase.AttachedFlyout>
+                                    <TimePickerFlyout Time="{Binding EndTimeOfDay, Mode=TwoWay}">
+                                    </TimePickerFlyout>
+                                </FlyoutBase.AttachedFlyout>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                 </Grid>
             </Grid>

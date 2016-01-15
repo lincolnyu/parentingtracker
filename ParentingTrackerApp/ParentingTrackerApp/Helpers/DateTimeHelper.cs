@@ -68,6 +68,13 @@ namespace ParentingTrackerApp.Helpers
             return dt.ToString(pattern);
         }
 
+        public static string ToShortDate(this DateTime dt)
+        {
+            var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
+            var pattern = dtfi.ShortDatePattern;
+            return dt.ToString(pattern);
+        }
+
         public static string ToRelativeDateTimeString(this DateTime dt)
         {
             var relDayStr = dt.ToRelativeDayString();

@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using ParentingTrackerApp.Helpers;
+using Windows.UI.Xaml.Controls.Primitives;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -201,6 +202,13 @@ namespace ParentingTrackerApp.Views
         private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
         {
             ((Button)sender).Background = _prevColor;
+        }
+
+        private void DateTimeButtonOnClick(object sender, RoutedEventArgs args)
+        {
+            var senderElement = (FrameworkElement)sender;
+            var flyoutBase = FlyoutBase.GetAttachedFlyout(senderElement);
+            flyoutBase.ShowAt(senderElement);
         }
     }
 }

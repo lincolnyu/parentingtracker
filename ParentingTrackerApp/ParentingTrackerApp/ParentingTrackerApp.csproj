@@ -107,7 +107,9 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
+    <Compile Include="Converters\DateTimeToDateStringConverter.cs" />
     <Compile Include="Converters\EventTemplateSelector.cs" />
+    <Compile Include="Converters\DateTimeToTimeStringConverter.cs" />
     <Compile Include="Export\FilePicker.cs" />
     <Compile Include="Export\OneDriveMobile.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
