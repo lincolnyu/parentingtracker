@@ -200,7 +200,11 @@
                     <Setter Property="Width" Value="80"></Setter>
                 </Style>
             </StackPanel.Resources>
-            <Button Click="NewOnClick">New</Button>
+            <Button Click="NewOnClick" Content="New">
+                <ToolTipService.ToolTip>
+                    <TextBlock TextWrapping="Wrap" Text="Create a new event"/>
+                </ToolTipService.ToolTip>
+            </Button>
             <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="StartOnClick"
                     Content="Start">
                 <ToolTipService.ToolTip>
