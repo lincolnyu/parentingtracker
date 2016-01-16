@@ -21,7 +21,8 @@
                     <DataTemplate x:Key="RunningEventDataTemplate">
                         <Grid>
                             <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
-                                <RichTextBlock IsTextSelectionEnabled="False">
+                                <RichTextBlock IsTextSelectionEnabled="False"
+                                               Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">
                                     <Paragraph>
                                         <Bold>
                                             <Underline>
@@ -47,7 +48,8 @@
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
                                 <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
-                                    <RichTextBlock IsTextSelectionEnabled="False">
+                                    <RichTextBlock IsTextSelectionEnabled="False"
+                                                   Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">
                                         <Paragraph>
                                             <Run Text="{Binding LocalisedTimeRange}"></Run>
                                             <Run Text="{Binding Duration}"></Run>
@@ -65,7 +67,11 @@
                             </Grid>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Name="RemoveButton" Content="&#xE106;" FontFamily="Segoe UI Symbol"
-                                        Width="40" PointerEntered="RedHighlightButtonOnPointerEntered" PointerExited="RedHighlightButtonOnPointerExited"
+                                        Width="40" PointerEntered="RedHighlightButtonOnPointerEntered"
+                                        PointerExited="RedHighlightButtonOnPointerExited"
+                                        PointerCanceled="RedHighlightButtonOnPointerExited"
+                                        PointerCaptureLost="RedHighlightButtonOnPointerExited"
+                                        PointerReleased="RedHighlightButtonOnPointerExited"
                                         Click="RemoveLoggedOnClick" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <ToolTipService.ToolTip>
                                         <TextBlock Text="Remove the event"></TextBlock>
@@ -110,9 +116,10 @@
                             <ColumnDefinition Width="30"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
-                            <TextBlock>Event type</TextBlock>
+                            <TextBlock Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">Event type</TextBlock>
                             <ComboBox Name="SillyBox" ItemsSource="{Binding EventTypes}" SelectedItem="{Binding EventType, Mode=TwoWay}"
-                              IsEnabled="{Binding IsEditingOrRunning}">
+                                      Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                      IsEnabled="{Binding IsEditingOrRunning}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Name, Mode=OneWay}"></TextBlock>
@@ -120,7 +127,9 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
-                        <Button Grid.Column="1" Click="CloseEditorOnClick" Content="X" Background="Transparent" BorderBrush="Transparent">
+                        <Button Grid.Column="1" Click="CloseEditorOnClick" Content="X" 
+                                Background="Transparent" BorderBrush="Transparent"
+                                Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">
                             <ToolTipService.ToolTip>
                                 <TextBlock Text="Close the editor"></TextBlock>
                             </ToolTipService.ToolTip>
@@ -131,9 +140,10 @@
                             <ColumnDefinition Width="40"></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0">Notes</TextBlock>
+                        <TextBlock Grid.Column="0" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">Notes</TextBlock>
                         <TextBox Grid.Column="1" Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     IsEnabled="{Binding IsEditingOrRunning}"></TextBox>
+                                 Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                 IsEnabled="{Binding IsEditingOrRunning}"></TextBox>
                     </Grid>
                     <Grid Grid.Row="2">
                         <Grid.RowDefinitions>
@@ -144,23 +154,26 @@
                             <ColumnDefinition Width="40"></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Start" Grid.Row="0" Grid.Column="0"></TextBlock>
+                        <TextBlock Text="Start" Grid.Row="0" Grid.Column="0" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"></TextBlock>
                         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
                             <Button Content="{Binding StartTime, Converter={StaticResource DateTimeToDateStringConverter}}"
-                                Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditingOrRunning}">
+                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditingOrRunning}"
+                                    Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">
                                 <FlyoutBase.AttachedFlyout>
                                     <DatePickerFlyout Date="{Binding StartDate, Mode=TwoWay}">
                                     </DatePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
                             <Button Content="{Binding StartTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
-                                Click="DateTimeButtonOnClick"  IsEnabled="{Binding IsEditingOrRunning}">
+                                    Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                    Click="DateTimeButtonOnClick"  IsEnabled="{Binding IsEditingOrRunning}">
                                 <FlyoutBase.AttachedFlyout>
                                     <TimePickerFlyout Time="{Binding StartTimeOfDay, Mode=TwoWay}">
                                     </TimePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
                             <Button Margin="5,0,0,0" IsEnabled="{Binding IsEditingOrRunning}" Content="Auto"
+                                    Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
                                     Click="StartAutoOnClick">
                                 <ToolTipService.ToolTip>
                                     <TextBlock>Get the time from the last event if available</TextBlock>
@@ -170,20 +183,23 @@
                         <TextBlock Text="End" Grid.Row="1" Grid.Column="0"></TextBlock>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                             <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToDateStringConverter}}"
-                                Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
+                                    Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
                                 <FlyoutBase.AttachedFlyout>
                                     <DatePickerFlyout Date="{Binding EndDate, Mode=TwoWay}">
                                     </DatePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
                             <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
-                                Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
+                                    Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
                                 <FlyoutBase.AttachedFlyout>
                                     <TimePickerFlyout Time="{Binding EndTimeOfDay, Mode=TwoWay}">
                                     </TimePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
                             <Button Margin="5,0,0,0" IsEnabled="{Binding IsEditing}" Content="Auto"
+                                    Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
                                     Click="EndAutoOnClick">
                                 <ToolTipService.ToolTip>
                                     <TextBlock>Get the time from the next event if available</TextBlock>
@@ -218,7 +234,11 @@
                 </ToolTipService.ToolTip>
             </Button>
             <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="CancelOnClick"
-                    Name="Cancel" Content="Cancel" PointerEntered="RedHighlightButtonOnPointerEntered" PointerExited="RedHighlightButtonOnPointerExited">
+                    Name="Cancel" Content="Cancel" PointerEntered="RedHighlightButtonOnPointerEntered" 
+                    PointerExited="RedHighlightButtonOnPointerExited"
+                    PointerCanceled="RedHighlightButtonOnPointerExited"
+                    PointerCaptureLost="RedHighlightButtonOnPointerExited"
+                    PointerReleased="RedHighlightButtonOnPointerExited">
                 <ToolTipService.ToolTip>
                     <TextBlock TextWrapping="Wrap" Text="Cancel the selected running event."/>
                 </ToolTipService.ToolTip>

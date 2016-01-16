@@ -18,6 +18,7 @@ namespace ParentingTrackerApp.Helpers
             new EventTypeViewModel("Nappy change", Colors.Brown),
             new EventTypeViewModel("Bath", Colors.Blue),
             new EventTypeViewModel("Sleep", Colors.DarkBlue),
+            new EventTypeViewModel("Play", Colors.Orange),
             new EventTypeViewModel("Measurement", Colors.Gray),
             new EventTypeViewModel("Others", Colors.Green),
         };
@@ -26,6 +27,9 @@ namespace ParentingTrackerApp.Helpers
         {
             colors.Clear();
             colors.Add(new ColorOptionViewModel("Red", Colors.Red));
+            colors.Add(new ColorOptionViewModel("Orange", Colors.Orange));
+            colors.Add(new ColorOptionViewModel("Yellow", Colors.Yellow));
+            colors.Add(new ColorOptionViewModel("Yellow Green", Colors.YellowGreen));
             colors.Add(new ColorOptionViewModel("Green", Colors.Green));
             colors.Add(new ColorOptionViewModel("Blue", Colors.Blue));
             colors.Add(new ColorOptionViewModel("Cyan", Colors.Cyan));

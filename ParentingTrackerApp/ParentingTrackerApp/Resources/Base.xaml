@@ -8,4 +8,5 @@
     <converters:DateTimeToTimeStringConverter x:Key="DateTimeToTimeStringConverter"/>
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <converters:FontInverseColorToBrushConverter x:Key="FontInverseColorToBrushConverter"/>
 </ResourceDictionary>

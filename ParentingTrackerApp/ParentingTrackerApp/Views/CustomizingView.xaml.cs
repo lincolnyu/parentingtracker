@@ -1,5 +1,4 @@
-﻿using System;
-using ParentingTrackerApp.Helpers;
+﻿using ParentingTrackerApp.Helpers;
 using ParentingTrackerApp.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -7,6 +6,7 @@ using System.Linq;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Input;
 using Windows.UI;
+using Windows.UI.Xaml.Controls.Primitives;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -53,7 +53,7 @@ namespace ParentingTrackerApp.Views
             tvm.ResetEventTypesToDefault();
         }
 
-        private void GridOnSizeChanged(object sender, SizeChangedEventArgs args)
+        private void MainGridOnSizeChanged(object sender, SizeChangedEventArgs args)
         {
             ButtonRow.Height = new GridLength(AddButton.ActualHeight);
         }
@@ -67,6 +67,21 @@ namespace ParentingTrackerApp.Views
         private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
         {
             ((Button)sender).Background = _prevColor;
+        }
+
+        private void ColorPickerButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            var senderElement = (FrameworkElement)sender;
+            var flyoutBase = FlyoutBase.GetAttachedFlyout(senderElement);
+            flyoutBase.ShowAt(senderElement);
+        }
+
+        private void ItemGridOnSizeChanged(object sender, SizeChangedEventArgs args)
+        {
+            var grid = (Grid)sender;
+            var txt = (TextBox)grid.FindName("NameText");
+            var mcol = grid.ColumnDefinitions[0];
+            txt.MaxWidth = mcol.ActualWidth - 50;
         }
     }
 }

@@ -15,7 +15,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid SizeChanged="GridOnSizeChanged">
+    <Grid SizeChanged="MainGridOnSizeChanged">
         <Grid.RowDefinitions>
             <RowDefinition x:Name="ButtonRow"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -33,7 +33,10 @@
             </Button>
             <Button Click="ResetOnClicked" Content="Reset"
                     PointerEntered="RedHighlightButtonOnPointerEntered"
-                    PointerExited="RedHighlightButtonOnPointerExited">
+                    PointerExited="RedHighlightButtonOnPointerExited"
+                    PointerCanceled="RedHighlightButtonOnPointerExited"
+                    PointerCaptureLost="RedHighlightButtonOnPointerExited"
+                    PointerReleased="RedHighlightButtonOnPointerExited">
                 <ToolTipService.ToolTip>
                     <TextBlock>Reset the list to default</TextBlock>
                 </ToolTipService.ToolTip>
@@ -45,30 +48,60 @@
                   VerticalAlignment="Stretch"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox Text="{Binding Name, Mode=TwoWay}"></TextBox>
-                        <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor, Mode=TwoWay}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="30" />
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
-                                            <TextBlock Grid.Column="0"/>
-                                        </Border>
-                                        <TextBlock Text="{Binding Name}" Grid.Column="1"></TextBlock>
-                                    </Grid>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <Button Content="&#xE106;" FontFamily="Segoe UI Symbol" Click="DelOnClicked"
+                    <Grid SizeChanged="ItemGridOnSizeChanged">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition x:Name="MainCol"></ColumnDefinition>
+                            <ColumnDefinition Width="40"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button Width="40" VerticalAlignment="Stretch"
+                                    Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
+                                    Click="ColorPickerButtonOnClick">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock>Choose a color for this type</TextBlock>
+                                </ToolTipService.ToolTip>
+                                <FlyoutBase.AttachedFlyout>
+                                    <Flyout>
+                                        <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedColor, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="30" />
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
+                                                            <TextBlock Grid.Column="0"/>
+                                                        </Border>
+                                                        <TextBlock Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Flyout>
+                                </FlyoutBase.AttachedFlyout>
+                            </Button>
+                            <TextBox Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}" 
+                                 Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                 Text="{Binding Name, Mode=TwoWay}" Name="NameText">
+                            </TextBox>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="&#xE106;" FontFamily="Segoe UI Symbol" 
+                                Width="40" Click="DelOnClicked"
                                 PointerEntered="RedHighlightButtonOnPointerEntered"
-                                PointerExited="RedHighlightButtonOnPointerExited"></Button>
-                    </StackPanel>
+                                PointerExited="RedHighlightButtonOnPointerExited"
+                                PointerCanceled="RedHighlightButtonOnPointerExited"
+                                PointerCaptureLost="RedHighlightButtonOnPointerExited"
+                                PointerReleased="RedHighlightButtonOnPointerExited"></Button>
+                    </Grid>
+                    
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

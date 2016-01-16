@@ -44,7 +44,10 @@
                 </Button>
                 <Button Click="ClearOnClick" Content="Clear"
                         PointerEntered="RedHighlightButtonOnPointerEntered"
-                        PointerExited="RedHighlightButtonOnPointerExited">
+                        PointerExited="RedHighlightButtonOnPointerExited"
+                        PointerCanceled="RedHighlightButtonOnPointerExited"
+                        PointerCaptureLost="RedHighlightButtonOnPointerExited"
+                        PointerReleased="RedHighlightButtonOnPointerExited">
                     <ToolTipService.ToolTip>
                         <TextBlock>Empty the external file</TextBlock>
                     </ToolTipService.ToolTip>
