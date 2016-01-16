@@ -96,7 +96,8 @@ namespace ParentingTrackerApp.Helpers
             yield return "<!DOCTYPE html>";
             yield return "<html>";
             yield return "  <head>";
-            yield return string.Format("    <title>{0}</title>", docInfo.Title);
+            yield return string.Format("    <title>{0}</title>", docInfo != null? docInfo.Title 
+                : "Untitiled");
             yield return "    <meta charset=\"utf-8\">";
             yield return "    <style>";
             yield return "      table { width: 100%; }";
@@ -123,6 +124,12 @@ namespace ParentingTrackerApp.Helpers
             
             yield return "</body>";
             yield return "</html>";
+        }
+
+        public static IEnumerable<string> GetEmptyHtmlLines(string title)
+        {
+            var docInfo = new DocInfo { Title = title };
+            return WriteToTable(Enumerable.Empty<EventViewModel>(), docInfo);
         }
 
         private static string GetIndent(int len)

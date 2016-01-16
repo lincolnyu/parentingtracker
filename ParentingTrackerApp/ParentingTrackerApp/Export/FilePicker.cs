@@ -82,9 +82,7 @@ namespace ParentingTrackerApp.Export
                 }
 
                 var wlines = merged.WriteToTable(otherInfo);
-                CachedFileManager.DeferUpdates(File);
-                await FileIO.WriteLinesAsync(File, wlines);
-                var status = await CachedFileManager.CompleteUpdatesAsync(File);
+                var status = await WriteLinesToFile(wlines);
                 if (status != FileUpdateStatus.Complete)
                 {
                     something = "File " + File.Name + " couldn't be saved.";
@@ -113,7 +111,12 @@ namespace ParentingTrackerApp.Export
                     File = await StorageFile.GetFileFromPathAsync(CentralViewModel.ExportPath);
                 }
                 // empty the file
-                await FileIO.WriteTextAsync(File, "");
+                var wlines = HtmlExportHelper.GetEmptyHtmlLines(File.DisplayName);
+                var status = await WriteLinesToFile(wlines);
+                if (status != FileUpdateStatus.Complete)
+                {
+                    something = "File " + File.Name + " couldn't be cleared.";
+                }
             }
             catch (Exception e)
             {
@@ -152,6 +155,14 @@ namespace ParentingTrackerApp.Export
                 var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error accessing file");
                 await dlg.ShowAsync();
             }
+        }
+
+        private async Task<FileUpdateStatus> WriteLinesToFile(IEnumerable<string> wlines)
+        {
+            CachedFileManager.DeferUpdates(File);// TODO is this ncessary?
+            await FileIO.WriteLinesAsync(File, wlines);
+            var status = await CachedFileManager.CompleteUpdatesAsync(File);
+            return status;
         }
     }
 }

@@ -107,17 +107,7 @@ namespace ParentingTrackerApp.Export
                 }
 
                 var wlines = merged.WriteToTable(otherInfo);
-                using (var memstream = new MemoryStream())
-                {
-                    var sw = new StreamWriter(memstream);
-                    foreach (var line in wlines)
-                    {
-                        await sw.WriteLineAsync(line);
-                    }
-                    await sw.FlushAsync();
-                    memstream.Position = 0;
-                    await OneDriveClient.ItemWithPath(path).Content.Request().PutAsync<Item>(memstream);
-                }
+                await WriteLines(path, wlines);
             }
             catch (Exception e)
             {
@@ -139,11 +129,8 @@ namespace ParentingTrackerApp.Export
                 await CheckAndConnect();
                 string path, displayName, fn;
                 GetOneDrivePath(CentralViewModel.ExportPath, out path, out displayName, out fn);
-                using (var memstream = new MemoryStream())
-                {
-                    // put an empty stream to clear the file
-                    await OneDriveClient.ItemWithPath(path).Content.Request().PutAsync<Item>(memstream);
-                }
+                var wlines = HtmlExportHelper.GetEmptyHtmlLines(displayName);
+                await WriteLines(path, wlines);
             }
             catch (Exception e)
             {
@@ -183,5 +170,21 @@ namespace ParentingTrackerApp.Export
                 await dlg.ShowAsync();
             }
         }
+
+        private async Task WriteLines(string path, IEnumerable<string> wlines)
+        {
+            using (var memstream = new MemoryStream())
+            {
+                var sw = new StreamWriter(memstream);
+                foreach (var line in wlines)
+                {
+                    await sw.WriteLineAsync(line);
+                }
+                await sw.FlushAsync();
+                memstream.Position = 0;
+                await OneDriveClient.ItemWithPath(path).Content.Request().PutAsync<Item>(memstream);
+            }
+        }
+
     }
 }
