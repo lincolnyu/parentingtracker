@@ -201,16 +201,34 @@
                 </Style>
             </StackPanel.Resources>
             <Button Click="NewOnClick">New</Button>
-            <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="StartOnClick">Start</Button>
-            <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="StopOnClick">Stop</Button>
+            <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="StartOnClick"
+                    Content="Start">
+                <ToolTipService.ToolTip>
+                    <TextBlock TextWrapping="Wrap" Text="Start a new event. It will start with the present time if the start time field is left unchanged"/>
+                </ToolTipService.ToolTip>
+            </Button>
+            <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="StopOnClick"
+                    Content="Stop">
+                <ToolTipService.ToolTip>
+                    <TextBlock TextWrapping="Wrap" Text="Terminate and recorded the selected running event."/>
+                </ToolTipService.ToolTip>
+            </Button>
             <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="CancelOnClick"
                     Name="Cancel" Content="Cancel" PointerEntered="RedHighlightButtonOnPointerEntered" PointerExited="RedHighlightButtonOnPointerExited">
+                <ToolTipService.ToolTip>
+                    <TextBlock TextWrapping="Wrap" Text="Cancel the selected running event."/>
+                </ToolTipService.ToolTip>
             </Button>
-            <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="LogOnClick">Just Add</Button>
+            <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="LogOnClick"
+                    Content="Just Add">
+                <ToolTipService.ToolTip>
+                    <TextBlock TextWrapping="Wrap" Text="Add an event straight away with no duration."/>
+                </ToolTipService.ToolTip>
+            </Button>
             <Border Background="Yellow" Height="25" Margin="30,0,0,0" >
                 <TextBlock Foreground="Red" VerticalAlignment="Center" Text="&#xE2C0;" FontFamily="Segoe UI Symbol" >
                 <ToolTipService.ToolTip>
-                    <TextBlock TextWrapping="Wrap" Text="If you click start, it starts from the present time. However, you can always edit the details of an event later."/>
+                    <TextBlock TextWrapping="Wrap" Text="If you don't specify start time and click start, it starts from the present time. However, you can always edit the details of an event later."/>
                 </ToolTipService.ToolTip>
             </TextBlock>
             </Border>
