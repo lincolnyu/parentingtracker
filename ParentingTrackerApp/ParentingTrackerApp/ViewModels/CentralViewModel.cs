@@ -482,23 +482,24 @@ namespace ParentingTrackerApp.ViewModels
             {
                 return;
             }
-            var t = index;
-            for (; t>0 && list[t-1].CompareTo(list[t])>0; t--)
+            var t = index-1;
+            for (; t >= 0 && list[t].CompareTo(evm) > 0; t--)
             {
             }
-            if (t < index)
+            if (t+1 < index)
             {
                 list.RemoveAt(index);
-                list.Insert(t, evm);
+                list.Insert(t+1, evm);
                 return;
             }
-            for (; t < list.Count-1 && list[t].CompareTo(list[t+1])>0; t++)
+            t = index + 1;
+            for (; t < list.Count && evm.CompareTo(list[t])>0; t++)
             {
             }
-            if (t>index)
+            if (t-1 > index)
             {
                 list.RemoveAt(index);
-                list.Insert(t, evm);
+                list.Insert(t-1, evm);
             }
         }
 
