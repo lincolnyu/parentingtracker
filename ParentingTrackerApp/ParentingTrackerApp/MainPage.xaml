@@ -25,7 +25,7 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition x:Name="AdsCol" Width="0"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Name="Clock"
+        <TextBlock Grid.Row="0" Grid.Column="0" Name="Clock" HorizontalAlignment="Center"
             FontSize="36" Text="{Binding Time, Mode=OneWay, Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
         <Pivot Grid.Row="1" Grid.Column="0" DataContext="{Binding Central}" Name="MainPivot"
                SelectionChanged="PivotOnSelectionChanged">

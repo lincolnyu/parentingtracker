@@ -67,6 +67,16 @@ namespace ParentingTrackerApp.Helpers
             }
         }
 
+        public static string ToNotTooLongString(this DateTime dt)
+        {
+            var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
+            var dpat = ShortenShortDayPattern(dtfi.ShortDatePattern);
+            var dstr = dt.ToString(dpat);
+            var tpat = dtfi.LongTimePattern;
+            var tstr = dt.ToString(tpat);
+            return $"{tstr} {dstr}";
+        }
+
         public static string ToHourMinute(this DateTime dt)
         {
             var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
@@ -86,6 +96,11 @@ namespace ParentingTrackerApp.Helpers
             var relDayStr = dt.ToRelativeDayString();
             var hm = dt.ToHourMinute();
             return string.Format("{0} {1}", relDayStr, hm);            
+        }
+
+        private static string ShortenShortDayPattern(string dpat)
+        {
+            return dpat.Replace("yyyy", "yy");
         }
     }
 }
