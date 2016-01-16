@@ -3,9 +3,7 @@ using ParentingTrackerApp.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Linq;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Input;
-using Windows.UI;
 using Windows.UI.Xaml.Controls.Primitives;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -14,8 +12,6 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class CustomizingView : UserControl
     {
-        private Brush _prevColor;
-
         public CustomizingView()
         {
             InitializeComponent();
@@ -58,17 +54,6 @@ namespace ParentingTrackerApp.Views
             ButtonRow.Height = new GridLength(AddButton.ActualHeight);
         }
 
-        private void RedHighlightButtonOnPointerEntered(object sender, PointerRoutedEventArgs args)
-        {
-            _prevColor = ((Button)sender).Background;
-            ((Button)sender).Background = new SolidColorBrush(Colors.Red);
-        }
-
-        private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
-        {
-            ((Button)sender).Background = _prevColor;
-        }
-
         private void ColorPickerButtonOnClick(object sender, RoutedEventArgs e)
         {
             var senderElement = (FrameworkElement)sender;
@@ -82,6 +67,16 @@ namespace ParentingTrackerApp.Views
             var txt = (TextBox)grid.FindName("NameText");
             var mcol = grid.ColumnDefinitions[0];
             txt.MaxWidth = mcol.ActualWidth - 50;
+        }
+
+        private void RedHighlightButtonOnPointerEntered(object sender, PointerRoutedEventArgs args)
+        {
+            MainPage.RedHighlightButtonOnPointerEntered(sender);
+        }
+
+        private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
+        {
+            MainPage.RedHighlightButtonOnPointerExited(sender);
         }
     }
 }

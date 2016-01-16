@@ -10,6 +10,9 @@ using Windows.System.Profile;
 using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
+using Windows.UI.Xaml.Input;
 
 namespace ParentingTrackerApp
 {
@@ -24,9 +27,11 @@ namespace ParentingTrackerApp
             WindowsMobile
         }
 
+        private static SolidColorBrush RedButtonBrush = new SolidColorBrush(Colors.Red);
 
         private readonly Timer _timer;
         private DateTime _time;
+        private static Brush _prevButtonBrush;
 
         static MainPage()
         {
@@ -192,6 +197,21 @@ namespace ParentingTrackerApp
             MyAds.Width = width;
             AdsRow.Height = new GridLength(height);
             MyAds.Height = height;
+        }
+
+        public static void RedHighlightButtonOnPointerEntered(object sender)
+        {
+            var prevBrush = ((Button)sender).Background;
+            if (prevBrush != RedButtonBrush)
+            {
+                _prevButtonBrush = prevBrush;
+            }
+            ((Button)sender).Background = new SolidColorBrush(Colors.Red);
+        }
+
+        public static void RedHighlightButtonOnPointerExited(object sender)
+        {
+            ((Button)sender).Background = _prevButtonBrush;
         }
     }
 }

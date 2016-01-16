@@ -3,8 +3,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using ParentingTrackerApp.Export;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI;
 using Windows.UI.Popups;
 using System;
 
@@ -15,7 +13,6 @@ namespace ParentingTrackerApp.Views
     public sealed partial class ExportView : UserControl
     {
         const string InfoMobile = "The following external file will be updated with entries in this app without losing any existing data. For this mobile phone app, specifiy the name of the file on the Document folder of your OneDrive which can be shared across devices but may require authentication to access.";
-        private Brush _prevColor;
 
         public ExportView()
         {
@@ -134,13 +131,12 @@ namespace ParentingTrackerApp.Views
 
         private void RedHighlightButtonOnPointerEntered(object sender, PointerRoutedEventArgs args)
         {
-            _prevColor = ((Button)sender).Background;
-            ((Button)sender).Background = new SolidColorBrush(Colors.Red);
+            MainPage.RedHighlightButtonOnPointerEntered(sender);
         }
 
         private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
         {
-            ((Button)sender).Background = _prevColor;
+            MainPage.RedHighlightButtonOnPointerExited(sender);
         }
     }
 }

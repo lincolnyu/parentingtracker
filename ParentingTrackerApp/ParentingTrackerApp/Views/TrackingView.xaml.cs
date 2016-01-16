@@ -1,10 +1,8 @@
 ﻿using ParentingTrackerApp.ViewModels;
 using System.ComponentModel;
-using Windows.UI;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using ParentingTrackerApp.Helpers;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -66,9 +64,7 @@ namespace ParentingTrackerApp.Views
 
         private bool _firstTime = true;
         private Dictionary<Grid, LoggedEntryUiAdaptor> _gridAdaptorMap = new Dictionary<Grid, LoggedEntryUiAdaptor>();
-
-        private Brush _prevColor;
-
+        
         public TrackingView()
         {
             InitializeComponent();
@@ -197,13 +193,12 @@ namespace ParentingTrackerApp.Views
 
         private void RedHighlightButtonOnPointerEntered(object sender, PointerRoutedEventArgs args)
         {
-            _prevColor = ((Button)sender).Background;
-            ((Button)sender).Background = new SolidColorBrush(Colors.Red);
+            MainPage.RedHighlightButtonOnPointerEntered(sender);
         }
 
         private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
         {
-            ((Button)sender).Background = _prevColor;
+            MainPage.RedHighlightButtonOnPointerExited(sender);
         }
 
         private void DateTimeButtonOnClick(object sender, RoutedEventArgs args)
