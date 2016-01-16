@@ -208,7 +208,7 @@
             <Button Visibility="{Binding IsCreating, Converter={StaticResource BoolToVisibilityConverter}}" Click="StartOnClick"
                     Content="Start">
                 <ToolTipService.ToolTip>
-                    <TextBlock TextWrapping="Wrap" Text="Start a new event. It will start with the present time if the start time field is left unchanged"/>
+                    <TextBlock TextWrapping="Wrap" Text="Start running a new event. It will start with the present time if the start time field is left unchanged."/>
                 </ToolTipService.ToolTip>
             </Button>
             <Button Visibility="{Binding CanStop, Converter={StaticResource BoolToVisibilityConverter}}" Click="StopOnClick"

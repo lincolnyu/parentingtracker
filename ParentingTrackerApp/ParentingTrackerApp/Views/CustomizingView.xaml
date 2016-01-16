@@ -26,10 +26,18 @@
                     <Setter Property="Width" Value="80"></Setter>
                 </Style>
             </StackPanel.Resources>
-            <Button Name="AddButton" Click="AddOnClicked">Add</Button>
-            <Button Click="ResetOnClicked"
+            <Button Name="AddButton" Content="Add" Click="AddOnClicked">
+                <ToolTipService.ToolTip>
+                    <TextBlock>Add a new event type</TextBlock>
+                </ToolTipService.ToolTip>
+            </Button>
+            <Button Click="ResetOnClicked" Content="Reset"
                     PointerEntered="RedHighlightButtonOnPointerEntered"
-                    PointerExited="RedHighlightButtonOnPointerExited">Reset</Button>
+                    PointerExited="RedHighlightButtonOnPointerExited">
+                <ToolTipService.ToolTip>
+                    <TextBlock>Reset the list to default</TextBlock>
+                </ToolTipService.ToolTip>
+            </Button>
         </StackPanel>
         <ListView Name="EventTypesList"
                   ItemsSource="{Binding EventTypes}"

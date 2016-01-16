@@ -2,6 +2,11 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using ParentingTrackerApp.Export;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
+using Windows.UI.Popups;
+using System;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -9,7 +14,8 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class ExportView : UserControl
     {
-        const string InfoMobile = "The following external file will be updated with entries in this app without losing any existing data. For this mobile phone app, the file which you can specify a name for is to be sitting on the Document folder of your OneDrive which can be shared across devices.";
+        const string InfoMobile = "The following external file will be updated with entries in this app without losing any existing data. For this mobile phone app, specifiy the name of the file on the Document folder of your OneDrive which can be shared across devices but may require authentication to access.";
+        private Brush _prevColor;
 
         public ExportView()
         {
@@ -37,11 +43,10 @@ namespace ParentingTrackerApp.Views
                         break;
                     case MainPage.DeviceFamilies.WindowsMobile:
                         OneDriveMobile = new OneDriveMobile((CentralViewModel)DataContext);
+                        UpdateUiForMobile();
                         break;
                 }
             }
-
-            UpdateUiForMobile();
         }
 
         private void UpdateUiForMobile()
@@ -90,11 +95,52 @@ namespace ParentingTrackerApp.Views
             }
         }
 
+        private async void ClearOnClick(object sender, RoutedEventArgs args)
+        {
+            var dlg = new MessageDialog("Are you sure you want to clear the external file?" );
+            dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(YesToClearHandler)));
+            dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler(NoToClearHandler)));
+            var command = await dlg.ShowAsync();
+            if ((int)command.Id != 1)
+            {
+                return;
+            }
+            if (FilePicker != null)
+            {
+                await FilePicker.Clear();
+            }
+            else if (OneDriveMobile != null)
+            {
+                await OneDriveMobile.Clear();
+            }
+        }
+
+        private void NoToClearHandler(IUICommand command)
+        {
+            command.Id = 0;
+        }
+
+        private void YesToClearHandler(IUICommand command)
+        {
+            command.Id = 1;
+        }
+
         private void UserControlOnSizeChanged(object sender, SizeChangedEventArgs args)
         {
             var upperHeight = InfoText.ActualHeight + Header.ActualHeight + InputGrid.ActualHeight + MergeButton.ActualHeight;
             UpperRow.Height = new GridLength(upperHeight);
             LowerRow.Height = new GridLength(MainGrid.ActualHeight - upperHeight);
+        }
+
+        private void RedHighlightButtonOnPointerEntered(object sender, PointerRoutedEventArgs args)
+        {
+            _prevColor = ((Button)sender).Background;
+            ((Button)sender).Background = new SolidColorBrush(Colors.Red);
+        }
+
+        private void RedHighlightButtonOnPointerExited(object sender, PointerRoutedEventArgs args)
+        {
+            ((Button)sender).Background = _prevColor;
         }
     }
 }

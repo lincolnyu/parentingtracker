@@ -96,7 +96,7 @@ namespace ParentingTrackerApp.Export
                     var existing = lines.ReadFromTable(CentralViewModel, otherInfo);
                     merged = HtmlExportHelper.Merge(existing, CentralViewModel.LoggedEvents).ToList();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     merged = CentralViewModel.LoggedEvents;
                 }
@@ -127,6 +127,32 @@ namespace ParentingTrackerApp.Export
             if (something != null)
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error writing to file");
+                await dlg.ShowAsync();
+            }
+        }
+
+        public async Task Clear()
+        {
+            string something = null;
+            try
+            {
+                await CheckAndConnect();
+                string path, displayName, fn;
+                GetOneDrivePath(CentralViewModel.ExportPath, out path, out displayName, out fn);
+                using (var memstream = new MemoryStream())
+                {
+                    // put an empty stream to clear the file
+                    await OneDriveClient.ItemWithPath(path).Content.Request().PutAsync<Item>(memstream);
+                }
+            }
+            catch (Exception e)
+            {
+                something = e.Message;
+            }
+
+            if (something != null)
+            {
+                var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error deleting file");
                 await dlg.ShowAsync();
             }
         }

@@ -15,7 +15,7 @@
             <RowDefinition x:Name="LowerRow"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Name="UpperStack">
-            <TextBlock TextWrapping="Wrap" Name="InfoText">The following external file will be updated with entries in this app without losing any existing data. If the file is on OneDrive then it can be shared across devices.</TextBlock>
+            <TextBlock TextWrapping="Wrap" Name="InfoText">The following external file will be updated with entries in this app without losing any existing data. It can be shared accross devices if it's on OnDrive, access to which may require authentication.</TextBlock>
             <Grid Name="InputGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition x:Name="HeaderButtonCol" Width="60"/>
@@ -32,8 +32,23 @@
                         <Setter Property="Width" Value="80"></Setter>
                     </Style>
                 </StackPanel.Resources>
-                <Button Click="ExportOnClick" Name="MergeButton">Merge</Button>
-                <Button Click="ViewOnClick">View</Button>
+                <Button Click="ExportOnClick" Name="MergeButton" Content="Merge">
+                    <ToolTipService.ToolTip>
+                        <TextBlock>Merge the events on the device to the specified file</TextBlock>
+                    </ToolTipService.ToolTip>
+                </Button>
+                <Button Click="ViewOnClick" Content="View">
+                    <ToolTipService.ToolTip>
+                        <TextBlock>Refresh the display of the content of the external file</TextBlock>
+                    </ToolTipService.ToolTip>
+                </Button>
+                <Button Click="ClearOnClick" Content="Clear"
+                        PointerEntered="RedHighlightButtonOnPointerEntered"
+                        PointerExited="RedHighlightButtonOnPointerExited">
+                    <ToolTipService.ToolTip>
+                        <TextBlock>Empty the external file</TextBlock>
+                    </ToolTipService.ToolTip>
+                </Button>
             </StackPanel>
         </StackPanel>
         <WebView Grid.Row="1"

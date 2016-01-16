@@ -10,6 +10,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ParentingTrackerApp.Export
 {
@@ -37,7 +38,7 @@ namespace ParentingTrackerApp.Export
                 CentralViewModel.ExportFileToken = StorageApplicationPermissions.FutureAccessList.Add(File);
             }
         }
-
+        
         public async Task Merge()
         {
             string something = null;
@@ -45,7 +46,21 @@ namespace ParentingTrackerApp.Export
             {
                 if (File == null)
                 {
-                    File = await StorageFile.GetFileFromPathAsync(CentralViewModel.ExportPath);
+                    var fileNotFound = false;
+                    try
+                    {
+                        File = await StorageFile.GetFileFromPathAsync(CentralViewModel.ExportPath);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        fileNotFound = true;
+                    }
+                    if (fileNotFound)
+                    {
+                        var dlg = new MessageDialog("File not found, please re-pick the file");
+                        await dlg.ShowAsync();
+                        return;
+                    }
                 }
 
                 IEnumerable<EventViewModel> merged;
@@ -78,11 +93,40 @@ namespace ParentingTrackerApp.Export
             catch (Exception e)
             {
                 something = e.Message;
+                File = null;
             }
 
             if (something != null)
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error writing to file");
+                await dlg.ShowAsync();
+            }
+        }
+
+        public async Task Clear()
+        {
+            string something = null;
+            try
+            {
+                if (File == null)
+                {
+                    File = await StorageFile.GetFileFromPathAsync(CentralViewModel.ExportPath);
+                }
+                // empty the file
+                await FileIO.WriteTextAsync(File, "");
+            }
+            catch (Exception e)
+            {
+                something = e.Message;
+            }
+            finally
+            {
+                File = null;
+            }
+
+            if (something != null)
+            {
+                var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error deleting file");
                 await dlg.ShowAsync();
             }
         }
