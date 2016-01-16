@@ -216,19 +216,32 @@ namespace ParentingTrackerApp.Views
         private void StartAutoOnClick(object sender, RoutedEventArgs args)
         {
             var c = (CentralViewModel)DataContext;
+            EventViewModel e = null;
             if (c.IsCreating)
             {
-                var e = c.AllEvents.FirstOrDefault(x => x.EndTime <= DateTime.Now);
-                if (e != null)
-                {
-
-                }
+                e = c.AllEvents.FirstOrDefault(x => x.IsLoggedEvent && x.EndTime <= DateTime.Now);
+            }
+            else if (c.IsEditing)
+            {
+                e = c.AllEvents.FirstOrDefault(x => x.IsLoggedEvent && x.EndTime <= c.SelectedEvent.StartTime);
+            }
+            if (e != null && c.EventInEditing != null)
+            {
+                c.EventInEditing.StartTime = e.EndTime;
             }
         }
 
         private void EndAutoOnClick(object sender, RoutedEventArgs args)
         {
             var c = (CentralViewModel)DataContext;
+            if (c.IsEditing)
+            {
+                var e = c.AllEvents.Reverse().FirstOrDefault(x => x.IsLoggedEvent && x.StartTime >= c.SelectedEvent.EndTime);
+                if (e != null)
+                {
+                    c.SelectedEvent.EndTime = e.StartTime;
+                }
+            }
         }
     }
 }

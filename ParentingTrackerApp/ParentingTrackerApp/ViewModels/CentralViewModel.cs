@@ -37,26 +37,6 @@ namespace ParentingTrackerApp.ViewModels
         private string _exportPath;
         private string _exportFileToken;
 
-        private EventViewModel NewEvent
-        {
-            get { return _newEvent; }
-            set
-            {
-                if (_newEvent != value)
-                {
-                    if (_newEvent != null)
-                    {
-                        _newEvent.PropertyChanged -= NewEventOnPropertyChanged;
-                    }
-                    _newEvent = value;
-                    if (_newEvent != null)
-                    {
-                        _newEvent.PropertyChanged += NewEventOnPropertyChanged;
-                    }
-                }
-            }
-        }
-
         private EventViewModel _selectedEvent;
 
         #endregion
@@ -100,6 +80,26 @@ namespace ParentingTrackerApp.ViewModels
 
         public ObservableCollection<EventViewModel> AllEvents { get; }
             = new ObservableCollection<EventViewModel>();
+
+        public EventViewModel NewEvent
+        {
+            get { return _newEvent; }
+            set
+            {
+                if (_newEvent != value)
+                {
+                    if (_newEvent != null)
+                    {
+                        _newEvent.PropertyChanged -= NewEventOnPropertyChanged;
+                    }
+                    _newEvent = value;
+                    if (_newEvent != null)
+                    {
+                        _newEvent.PropertyChanged += NewEventOnPropertyChanged;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         ///  Data context for the editor
