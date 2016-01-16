@@ -50,6 +50,7 @@
                                     <RichTextBlock IsTextSelectionEnabled="False">
                                         <Paragraph>
                                             <Run Text="{Binding LocalisedTimeRange}"></Run>
+                                            <Run Text="{Binding Duration}"></Run>
                                             <Underline>
                                                 <Run Text="{Binding EventTypeName}"></Run>
                                             </Underline>
@@ -159,6 +160,12 @@
                                     </TimePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
+                            <Button Margin="5,0,0,0" IsEnabled="{Binding IsEditingOrRunning}" Content="Auto"
+                                    Click="StartAutoOnClick">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock>Get the time from the last event if available</TextBlock>
+                                </ToolTipService.ToolTip>
+                            </Button>
                         </StackPanel>
                         <TextBlock Text="End" Grid.Row="1" Grid.Column="0"></TextBlock>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
@@ -170,11 +177,17 @@
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
                             <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
-                                Click="DateTimeButtonOnClick"  IsEnabled="{Binding IsEditing}">
+                                Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
                                 <FlyoutBase.AttachedFlyout>
                                     <TimePickerFlyout Time="{Binding EndTimeOfDay, Mode=TwoWay}">
                                     </TimePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
+                            </Button>
+                            <Button Margin="5,0,0,0" IsEnabled="{Binding IsEditing}" Content="Auto"
+                                    Click="EndAutoOnClick">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock>Get the time from the next event if available</TextBlock>
+                                </ToolTipService.ToolTip>
                             </Button>
                         </StackPanel>
                     </Grid>

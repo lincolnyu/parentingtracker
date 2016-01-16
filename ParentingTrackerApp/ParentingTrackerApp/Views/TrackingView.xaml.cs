@@ -8,6 +8,8 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using ParentingTrackerApp.Helpers;
 using Windows.UI.Xaml.Controls.Primitives;
+using System.Linq;
+using System;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -209,6 +211,24 @@ namespace ParentingTrackerApp.Views
             var senderElement = (FrameworkElement)sender;
             var flyoutBase = FlyoutBase.GetAttachedFlyout(senderElement);
             flyoutBase.ShowAt(senderElement);
+        }
+
+        private void StartAutoOnClick(object sender, RoutedEventArgs args)
+        {
+            var c = (CentralViewModel)DataContext;
+            if (c.IsCreating)
+            {
+                var e = c.AllEvents.FirstOrDefault(x => x.EndTime <= DateTime.Now);
+                if (e != null)
+                {
+
+                }
+            }
+        }
+
+        private void EndAutoOnClick(object sender, RoutedEventArgs args)
+        {
+            var c = (CentralViewModel)DataContext;
         }
     }
 }

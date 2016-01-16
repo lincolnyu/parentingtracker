@@ -163,6 +163,25 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
+        public string Duration
+        {
+            get
+            {
+                if (StartTime >= EndTime) return "";
+                var diff = EndTime - StartTime;
+                var hourStr = diff.Hours > 1 ? $"{diff.Hours} hrs " : diff.Hours > 0 ? $"{diff.Hours} hr "
+                    : "";
+                var minStr = diff.Minutes > 1 ? $"{diff.Minutes} mins" : diff.Minutes > 0 ? $"{diff.Minutes} min"
+                    : "0 mins";
+                var timeStr = hourStr + minStr;
+                    string.Format("{0}{1}", diff.Hours, diff.Minutes);// diff.ToString(@"hh\:mm\:ss");
+                var diffStr = diff.Days > 1 ? string.Format("{0} days {1}", diff.Days, timeStr)
+                    : diff.Days == 1 ? string.Format("1 day {0}", timeStr) :
+                    timeStr;
+                return "(" + diffStr + ")";
+            }
+        }
+
         public EventTypeViewModel EventType
         {
             get
@@ -345,6 +364,7 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("StartTimeOfDay");
             RaisePropertyChangedEvent("RunningTime");
             RaisePropertyChangedEvent("LocalisedTimeRange");
+            RaisePropertyChangedEvent("Duration");
         }
 
         private void RaiseEndTimeChangedEvent()
@@ -353,6 +373,7 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("EndTime");
             RaisePropertyChangedEvent("EndTimeOfDay");
             RaisePropertyChangedEvent("LocalisedTimeRange");
+            RaisePropertyChangedEvent("Duration");
         }
 
         private void RaiseStatusChangedEvents()

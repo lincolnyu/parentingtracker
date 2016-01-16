@@ -21,12 +21,18 @@ namespace ParentingTrackerApp.Helpers
                 var rdt2 = dt2.ToRelativeDateTimeString();
                 return string.Format("{0} to {1}", rdt1, rdt2);
             }
-            else
+            else if (dt1 != dt2)
             {
                 var rdstr = dt1.ToRelativeDayString();
                 var hm1 = dt1.ToHourMinute();
                 var hm2 = dt2.ToHourMinute();
                 return string.Format("{0} {1} to {2}", rdstr, hm1, hm2);
+            }
+            else
+            {
+                var rdstr = dt1.ToRelativeDayString();
+                var hm1 = dt1.ToHourMinute();
+                return string.Format("{0} {1}", rdstr, hm1);
             }
         }
 
