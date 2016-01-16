@@ -37,7 +37,26 @@ namespace ParentingTrackerApp.ViewModels
         private string _exportPath;
         private string _exportFileToken;
 
-        private EventViewModel _newEvent;
+        private EventViewModel NewEvent
+        {
+            get { return _newEvent; }
+            set
+            {
+                if (_newEvent != value)
+                {
+                    if (_newEvent != null)
+                    {
+                        _newEvent.PropertyChanged -= NewEventOnPropertyChanged;
+                    }
+                    _newEvent = value;
+                    if (_newEvent != null)
+                    {
+                        _newEvent.PropertyChanged += NewEventOnPropertyChanged;
+                    }
+                }
+            }
+        }
+
         private EventViewModel _selectedEvent;
 
         #endregion
@@ -48,6 +67,8 @@ namespace ParentingTrackerApp.ViewModels
         private bool _isInLoggedEventPropertyChanged;
         private bool _suppressAllEventsCollectionChangedHandler;
         private static bool _suppressEventTypeCollectionChangeHandling;
+        private bool _newStartTimeChanged;
+        private EventViewModel _newEvent;
 
         #endregion
 
@@ -198,10 +219,10 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (SelectedEvent != null)
             {
-                _newEvent = null;
+                NewEvent = null;
             }
-            IsEditing = SelectedEvent != null || _newEvent != null;
-            IsCreating = _newEvent != null;
+            IsEditing = SelectedEvent != null || NewEvent != null;
+            IsCreating = NewEvent != null;
             CanStop = SelectedEvent != null && SelectedEvent.IsRunning;
             var prevDc = EventInEditing;
             if (SelectedEvent != null)
@@ -210,7 +231,7 @@ namespace ParentingTrackerApp.ViewModels
             }
             else
             {
-                EventInEditing = _newEvent;
+                EventInEditing = NewEvent;
             }
             RaisePropertyChangedEvent("IsEditing");
             RaisePropertyChangedEvent("IsCreating");
@@ -234,13 +255,14 @@ namespace ParentingTrackerApp.ViewModels
         {
             SelectedEvent = null;
             FinishEditingBut(null);
-            _newEvent = new EventViewModel(this)
+            NewEvent = new EventViewModel(this)
             {
                 Status = EventViewModel.Statuses.Running,
                 EventType = EventTypes.FirstOrDefault(),
                 StartTime = DateTime.Now,
                 EndTime = DateTime.Now
             };
+            _newStartTimeChanged = false;
             UpdateIsEditingAndRelated();
         }
 
@@ -261,23 +283,25 @@ namespace ParentingTrackerApp.ViewModels
 
             FinishEditingBut(null);
 
-            _newEvent = null;
+            NewEvent = null;
             UpdateIsEditingAndRelated();
         }
 
         public void Start()
         {
-            var time = DateTime.Now;
-            var evm = _newEvent?? new EventViewModel(this)
+            var evm = NewEvent?? new EventViewModel(this)
             {
                 EventType = EventTypes.FirstOrDefault(),
                 Notes = ""
             };
             evm.Status = EventViewModel.Statuses.Running;
-            evm.StartTime = time;
+            if (!_newStartTimeChanged)
+            {
+                evm.StartTime = DateTime.Now;
+            }
             AllEvents.Insert(evm);
             SelectedEvent = evm;
-            _newEvent = null;
+            NewEvent = null;
             UpdateIsEditingAndRelated();
         }
 
@@ -310,7 +334,7 @@ namespace ParentingTrackerApp.ViewModels
         public void Log()
         {
             var time = DateTime.Now;
-            var evm = _newEvent?? new EventViewModel(this)
+            var evm = NewEvent?? new EventViewModel(this)
             {
                 StartTime = time,
                 EventType = EventTypes.FirstOrDefault(),
@@ -319,7 +343,7 @@ namespace ParentingTrackerApp.ViewModels
             evm.EndTime = evm.StartTime;
             evm.Status = EventViewModel.Statuses.Logged;
             AllEvents.Insert(evm);
-            _newEvent = null;
+            NewEvent = null;
             UpdateIsEditingAndRelated();
         }
 
@@ -652,6 +676,14 @@ namespace ParentingTrackerApp.ViewModels
             }
             _suppressAllEventsCollectionChangedHandler = wasSuppressing;
             MarkAsDirty();
+        }
+
+        private void NewEventOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "StartTime")
+            {
+                _newStartTimeChanged = true;
+            }
         }
 
         #endregion
