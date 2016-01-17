@@ -467,6 +467,8 @@ namespace ParentingTrackerApp.ViewModels
             else if (args.PropertyName == "GroupName" && !evm.IsEditing)
             {
                 RaisePropertyChangedEvent("AllEventsGrouped");
+                // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
+                SelectedEvent = null;
             }
             else if (evm.IsRunning && evm.IsDataProperty(args.PropertyName))
             {
@@ -493,12 +495,17 @@ namespace ParentingTrackerApp.ViewModels
             MinimumSort(AllEvents, evm);
             MinimumSort(RunningEvents, evm);
             MinimumSort(LoggedEvents, evm);
+            _suppressAllEventsCollectionChangedHandler = wasSuppressing;
+            RaisePropertyChangedEvent("AllEventsGrouped");
             if (_wasSelected)
             {
                 SelectedEvent = evm;
             }
-            _suppressAllEventsCollectionChangedHandler = wasSuppressing;
-            RaisePropertyChangedEvent("AllEventsGrouped");
+            else
+            {
+                // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
+                SelectedEvent = null;
+            }
         }
 
         private static void MinimumSort(IList<EventViewModel> list, EventViewModel evm)
@@ -603,6 +610,8 @@ namespace ParentingTrackerApp.ViewModels
                 }
             }
             RaisePropertyChangedEvent("AllEventsGrouped");
+            // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
+            SelectedEvent = null;
             MarkAsDirty();
             _suppressAllEventsCollectionChangedHandler = false;
         }
