@@ -47,7 +47,6 @@ namespace ParentingTrackerApp.ViewModels
         private bool _isInLoggedEventPropertyChanged;
         private bool _suppressAllEventsCollectionChangedHandler;
         private static bool _suppressEventTypeCollectionChangeHandling;
-        private bool _newStartTimeChanged;
         private EventViewModel _newEvent;
 
         #endregion
@@ -211,6 +210,10 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
+        public bool NewStartTimeChanged { get; set; }
+
+        public bool NewEndTimeChanged { get; set; }
+
         #endregion
 
         #region Methods
@@ -262,7 +265,8 @@ namespace ParentingTrackerApp.ViewModels
                 StartTime = DateTime.Now,
                 EndTime = DateTime.Now
             };
-            _newStartTimeChanged = false;
+            NewStartTimeChanged = false;
+            NewEndTimeChanged = false;
             UpdateIsEditingAndRelated();
         }
 
@@ -295,7 +299,7 @@ namespace ParentingTrackerApp.ViewModels
                 Notes = ""
             };
             evm.Status = EventViewModel.Statuses.Running;
-            if (!_newStartTimeChanged)
+            if (!NewStartTimeChanged)
             {
                 evm.StartTime = DateTime.Now;
             }
@@ -337,10 +341,10 @@ namespace ParentingTrackerApp.ViewModels
             var evm = NewEvent?? new EventViewModel(this)
             {
                 StartTime = time,
+                EndTime = time,
                 EventType = EventTypes.FirstOrDefault(),
                 Notes = ""
             };
-            evm.EndTime = evm.StartTime;
             evm.Status = EventViewModel.Statuses.Logged;
             AllEvents.Insert(evm);
             NewEvent = null;
@@ -683,7 +687,11 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (args.PropertyName == "StartTime")
             {
-                _newStartTimeChanged = true;
+                NewStartTimeChanged = true;
+            }
+            else if (args.PropertyName == "EndTime")
+            {
+                NewEndTimeChanged = true;
             }
         }
 

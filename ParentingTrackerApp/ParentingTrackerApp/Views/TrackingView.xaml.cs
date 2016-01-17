@@ -212,31 +212,46 @@ namespace ParentingTrackerApp.Views
         {
             var c = (CentralViewModel)DataContext;
             EventViewModel e = null;
+            var wasChanged = c.NewStartTimeChanged;
             if (c.IsCreating)
             {
-                e = c.AllEvents.FirstOrDefault(x => x.IsLoggedEvent && x.EndTime <= DateTime.Now);
+                if (c.NewStartTimeChanged)
+                {
+                    e = c.AllEvents.FirstOrDefault(x => x.IsLoggedEvent && x.EndTime <= c.NewEvent.StartTime);
+                }
             }
             else if (c.IsEditing)
             {
                 e = c.AllEvents.FirstOrDefault(x => x.IsLoggedEvent && x.EndTime <= c.SelectedEvent.StartTime);
             }
-            if (e != null && c.EventInEditing != null)
+            if (c.EventInEditing != null)
             {
-                c.EventInEditing.StartTime = e.EndTime;
+                c.EventInEditing.StartTime = e?.EndTime ?? DateTime.Now;
             }
+            c.NewStartTimeChanged = wasChanged; // this opertion retains this status
         }
 
         private void EndAutoOnClick(object sender, RoutedEventArgs args)
         {
             var c = (CentralViewModel)DataContext;
-            if (c.IsEditing)
+            EventViewModel e = null;
+            var wasChanged = c.NewEndTimeChanged;
+            if (c.IsCreating)
             {
-                var e = c.AllEvents.Reverse().FirstOrDefault(x => x.IsLoggedEvent && x.StartTime >= c.SelectedEvent.EndTime);
-                if (e != null)
+                if (c.NewEndTimeChanged)
                 {
-                    c.SelectedEvent.EndTime = e.StartTime;
+                    e = c.AllEvents.Reverse().FirstOrDefault(x => x.IsLoggedEvent && x.StartTime >= c.NewEvent.EndTime);
                 }
             }
+            else if (c.IsEditing)
+            {
+                e = c.AllEvents.Reverse().FirstOrDefault(x => x.IsLoggedEvent && x.StartTime >= c.SelectedEvent.EndTime);
+            }
+            if (c.EventInEditing != null)
+            {
+                c.EventInEditing.EndTime = e?.StartTime ?? DateTime.Now;
+            }
+            c.NewEndTimeChanged = wasChanged; // this opertion retains this status
         }
     }
 }

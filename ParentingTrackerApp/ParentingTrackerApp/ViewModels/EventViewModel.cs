@@ -150,7 +150,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     EndTime = new DateTime(EndTime.Year, EndTime.Month,
                         EndTime.Day, value.Hours, value.Minutes, value.Seconds);
-                    RaiseStartTimeChangedEvent();
+                    RaiseEndTimeChangedEvent();
                 }
             }
         }

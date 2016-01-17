@@ -184,7 +184,7 @@
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                             <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToDateStringConverter}}"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
+                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEdtingOrRunning}">
                                 <FlyoutBase.AttachedFlyout>
                                     <DatePickerFlyout Date="{Binding EndDate, Mode=TwoWay}">
                                     </DatePickerFlyout>
@@ -192,13 +192,13 @@
                             </Button>
                             <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditing}">
+                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEdtingOrRunning}">
                                 <FlyoutBase.AttachedFlyout>
                                     <TimePickerFlyout Time="{Binding EndTimeOfDay, Mode=TwoWay}">
                                     </TimePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
-                            <Button Margin="5,0,0,0" IsEnabled="{Binding IsEditing}" Content="Auto"
+                            <Button Margin="5,0,0,0" IsEnabled="{Binding IsEdtingOrRunning}" Content="Auto"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
                                     Click="EndAutoOnClick">
                                 <ToolTipService.ToolTip>
