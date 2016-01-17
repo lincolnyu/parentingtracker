@@ -403,6 +403,7 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("IsEditingOrRunning");
             RaisePropertyChangedEvent("IsLoggedEvent");
             RaisePropertyChangedEvent("IsRunningEvent");
+            UpdateGroupName();
         }
 
         public void RefreshEventTypeProperties()

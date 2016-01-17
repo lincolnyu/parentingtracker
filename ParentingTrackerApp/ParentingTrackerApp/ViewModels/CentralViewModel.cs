@@ -41,6 +41,14 @@ namespace ParentingTrackerApp.ViewModels
 
         #endregion
 
+        #region Timer related
+
+
+        private const int Underclocking = 5;
+        private int _underclockingCounter = Underclocking;
+
+        #endregion
+
         #region Flags
 
         private bool _wasSelected;
@@ -666,16 +674,25 @@ namespace ParentingTrackerApp.ViewModels
                 _state = States.Dirty;
             }
         }
-        
+
         public void Refresh()
         {
+            _underclockingCounter--;
+            var refreshAll = _underclockingCounter <= 0;
+            if (refreshAll)
+            {
+                _underclockingCounter = Underclocking;
+            }
             foreach (var e in AllEvents)
             {
                 if (e.IsRunningEvent)
                 {
                     e.RefreshRunningTag();
                 }
-                e.RefreshTimeDependent();                
+                if (refreshAll)
+                {
+                    e.RefreshTimeDependent();
+                }
             }
         }
 
