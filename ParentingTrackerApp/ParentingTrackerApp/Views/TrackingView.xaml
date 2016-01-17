@@ -117,12 +117,16 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
                             <TextBlock Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">Event type</TextBlock>
+                            <TextBlock Text="{Binding EventTypeName}" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                       Margin="10,0,0,0" Visibility="{Binding IsEditingOrRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"></TextBlock>
                             <ComboBox Name="SillyBox" ItemsSource="{Binding EventTypes}" SelectedItem="{Binding EventType, Mode=TwoWay}"
                                       Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                      IsEnabled="{Binding IsEditingOrRunning}">
+                                      Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Name, Mode=OneWay}"></TextBlock>
+                                        <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}">
+                                            <TextBlock Text="{Binding Name, Mode=OneWay}" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"></TextBlock>
+                                        </Border>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -141,9 +145,12 @@
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">Notes</TextBlock>
+                        <TextBlock Grid.Column="1" Margin="5,0,0,0" FontStyle="Italic" Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                   Visibility="{Binding IsEditingOrRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"></TextBlock>
                         <TextBox Grid.Column="1" Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                 IsEnabled="{Binding IsEditingOrRunning}"></TextBox>
+                                 Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}"></TextBox>
                     </Grid>
                     <Grid Grid.Row="2">
                         <Grid.RowDefinitions>
@@ -156,8 +163,17 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Start" Grid.Row="0" Grid.Column="0" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"></TextBlock>
                         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
+                            <TextBlock Text="{Binding StartTime, Converter={StaticResource DateTimeToDateStringConverter}}"
+                                       Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                       Visibility="{Binding IsEditingOrRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                       Margin="0,0,10,0">
+                            </TextBlock>
+                            <TextBlock Text="{Binding StartTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
+                                       Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                       Visibility="{Binding IsEditingOrRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                            </TextBlock>
                             <Button Content="{Binding StartTime, Converter={StaticResource DateTimeToDateStringConverter}}"
-                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEditingOrRunning}"
+                                    Click="DateTimeButtonOnClick" Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}">
                                 <FlyoutBase.AttachedFlyout>
                                     <DatePickerFlyout Date="{Binding StartDate, Mode=TwoWay}">
@@ -166,7 +182,8 @@
                             </Button>
                             <Button Content="{Binding StartTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                    Click="DateTimeButtonOnClick"  IsEnabled="{Binding IsEditingOrRunning}">
+                                    Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Click="DateTimeButtonOnClick" >
                                 <FlyoutBase.AttachedFlyout>
                                     <TimePickerFlyout Time="{Binding StartTimeOfDay, Mode=TwoWay}">
                                     </TimePickerFlyout>
@@ -174,17 +191,27 @@
                             </Button>
                             <Button Margin="5,0,0,0" IsEnabled="{Binding IsEditingOrRunning}" Content="Auto"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                    Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Click="StartAutoOnClick">
                                 <ToolTipService.ToolTip>
                                     <TextBlock>Get the time from the last event if available</TextBlock>
                                 </ToolTipService.ToolTip>
                             </Button>
                         </StackPanel>
-                        <TextBlock Text="End" Grid.Row="1" Grid.Column="0"></TextBlock>
+                        <TextBlock Text="End" Grid.Row="1" Grid.Column="0" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"></TextBlock>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                            <TextBlock Text="{Binding EndTime, Converter={StaticResource DateTimeToDateStringConverter}}"
+                                       Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                       Visibility="{Binding IsEditingOrRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                       Margin="0,0,10,0">
+                            </TextBlock>
+                            <TextBlock Text="{Binding EndTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
+                                       Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                       Visibility="{Binding IsEditingOrRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                            </TextBlock>
                             <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToDateStringConverter}}"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEdtingOrRunning}">
+                                    Click="DateTimeButtonOnClick" Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <FlyoutBase.AttachedFlyout>
                                     <DatePickerFlyout Date="{Binding EndDate, Mode=TwoWay}">
                                     </DatePickerFlyout>
@@ -192,15 +219,14 @@
                             </Button>
                             <Button Content="{Binding EndTime, Converter={StaticResource DateTimeToTimeStringConverter}}"
                                     Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                    Click="DateTimeButtonOnClick" IsEnabled="{Binding IsEdtingOrRunning}">
+                                    Click="DateTimeButtonOnClick" Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <FlyoutBase.AttachedFlyout>
                                     <TimePickerFlyout Time="{Binding EndTimeOfDay, Mode=TwoWay}">
                                     </TimePickerFlyout>
                                 </FlyoutBase.AttachedFlyout>
                             </Button>
-                            <Button Margin="5,0,0,0" IsEnabled="{Binding IsEdtingOrRunning}" Content="Auto"
-                                    Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
-                                    Click="EndAutoOnClick">
+                            <Button Margin="5,0,0,0" Content="Auto" Foreground="{Binding Color, Converter={StaticResource FontInverseColorToBrushConverter}}"
+                                    Click="EndAutoOnClick" Visibility="{Binding IsEditingOrRunning, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ToolTipService.ToolTip>
                                     <TextBlock>Get the time from the next event if available</TextBlock>
                                 </ToolTipService.ToolTip>

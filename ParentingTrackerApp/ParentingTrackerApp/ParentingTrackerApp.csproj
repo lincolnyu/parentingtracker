@@ -111,6 +111,7 @@
     <Compile Include="Converters\EventTemplateSelector.cs" />
     <Compile Include="Converters\DateTimeToTimeStringConverter.cs" />
     <Compile Include="Converters\FontInverseColorToBrushConverter.cs" />
+    <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Export\FilePicker.cs" />
     <Compile Include="Export\OneDriveMobile.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
