@@ -80,7 +80,7 @@ namespace ParentingTrackerApp
 
         private async void TimerOnTick(object state)
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                 () =>
                 {
                     Time = DateTime.Now;

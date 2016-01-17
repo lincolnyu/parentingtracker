@@ -80,6 +80,14 @@ namespace ParentingTrackerApp.ViewModels
         public ObservableCollection<EventViewModel> AllEvents { get; }
             = new ObservableCollection<EventViewModel>();
 
+        public IEnumerable<IGrouping<string, EventViewModel>> AllEventsGrouped
+        {
+            get
+            {
+                return AllEvents.GroupBy(x => x.GroupName);
+            }
+        } 
+
         public EventViewModel NewEvent
         {
             get { return _newEvent; }
@@ -448,11 +456,16 @@ namespace ParentingTrackerApp.ViewModels
                     DelayMinimumSort(evm);
                 }
             }
+            else if (args.PropertyName == "GroupName" && !evm.IsEditing)
+            {
+                RaisePropertyChangedEvent("AllEventsGrouped");
+            }
             else if (evm.IsRunning && evm.IsDataProperty(args.PropertyName))
             {
                 _wasSelected = evm == SelectedEvent;
                 DelayMinimumSort(evm);
             }
+            
             MarkAsDirty();
             _isInLoggedEventPropertyChanged = false;
         }
@@ -477,6 +490,7 @@ namespace ParentingTrackerApp.ViewModels
                 SelectedEvent = evm;
             }
             _suppressAllEventsCollectionChangedHandler = wasSuppressing;
+            RaisePropertyChangedEvent("AllEventsGrouped");
         }
 
         private static void MinimumSort(IList<EventViewModel> list, EventViewModel evm)
@@ -580,7 +594,7 @@ namespace ParentingTrackerApp.ViewModels
                     }
                 }
             }
-       
+            RaisePropertyChangedEvent("AllEventsGrouped");
             MarkAsDirty();
             _suppressAllEventsCollectionChangedHandler = false;
         }
@@ -655,9 +669,13 @@ namespace ParentingTrackerApp.ViewModels
         
         public void Refresh()
         {
-            foreach (var e in RunningEvents)
+            foreach (var e in AllEvents)
             {
-                e.RefreshRunningTag();
+                if (e.IsRunningEvent)
+                {
+                    e.RefreshRunningTag();
+                }
+                e.RefreshTimeDependent();                
             }
         }
 

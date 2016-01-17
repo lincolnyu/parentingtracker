@@ -91,6 +91,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <Grid.Resources>
+            <CollectionViewSource x:Key="groupInfoEventList" Source="{Binding AllEventsGrouped}"
+                                  IsSourceGrouped="true"/>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition x:Name="EditorRow"/>
             <RowDefinition Height="40"/>
@@ -284,7 +288,7 @@
             </Border>
         </StackPanel>
         <ListView Grid.Row="2" Name="EventsList"
-                  ItemsSource="{Binding AllEvents}"
+                  ItemsSource="{Binding Source={StaticResource groupInfoEventList}}"
                   SelectedItem="{Binding SelectedEvent, Mode=TwoWay}"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -294,6 +298,15 @@
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
             </ListView.ItemContainerStyle>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}"></TextBlock>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
         </ListView>
     </Grid>
 </UserControl>

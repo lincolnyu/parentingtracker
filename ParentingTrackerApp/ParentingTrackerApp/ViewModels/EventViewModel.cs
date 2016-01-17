@@ -25,6 +25,7 @@ namespace ParentingTrackerApp.ViewModels
         private EventTypeViewModel _eventType;
         private string _notes;
         private Statuses _status;
+        private string _groupName;
 
         #endregion
 
@@ -123,7 +124,7 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-        public DateTime EndDate
+        public DateTimeOffset EndDate
         {
             get
             {
@@ -325,6 +326,22 @@ namespace ParentingTrackerApp.ViewModels
             get; set;
         }
 
+        public string GroupName
+        {
+            get
+            {
+                return _groupName;
+            }
+            set
+            {
+                if (_groupName != value)
+                {
+                    _groupName = value;
+                    RaisePropertyChangedEvent("GroupName");
+                }
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -432,6 +449,43 @@ namespace ParentingTrackerApp.ViewModels
             if (EndTime < StartTime)
             {
                 StartTime = EndTime;
+            }
+        }
+
+        public void RefreshTimeDependent()
+        {
+            UpdateGroupName();
+        }
+
+        private void UpdateGroupName()
+        {
+            if (IsRunningEvent)
+            {
+                GroupName = "Currently Running";
+            }
+            else
+            {
+                var d = DateTimeHelper.GetDayDiff(EndTime, DateTime.Now);
+                if (d == 0)
+                {
+                    GroupName = "Today";
+                }
+                else if (d == 1)
+                {
+                    GroupName = "Yesterday";
+                }
+                else if (d == -1)
+                {
+                    GroupName = "Tomorrow";
+                }
+                else if (d > 0)
+                {
+                    GroupName = $"{d} days ago";
+                }
+                else
+                {
+                    GroupName = $"in {-d} days";
+                }
             }
         }
 
