@@ -67,6 +67,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _startTime = value;
                     RaiseStartTimeChangedEvent();
+                    ValidateEndTimeForStartTime();
                 }
             }
         }
@@ -83,6 +84,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _endTime = value;
                     RaiseEndTimeChangedEvent();
+                    ValidateStartTimeFromEndTime();
                 }
             }
         }
@@ -415,6 +417,22 @@ namespace ParentingTrackerApp.ViewModels
         public bool IsDataProperty(string name)
         {
             return name == "StartTime" || name == "EndTime" || name == "EventType" || name == "Notes";
+        }
+
+        private void ValidateEndTimeForStartTime()
+        {
+            if (EndTime < StartTime)
+            {
+                EndTime = StartTime;
+            }
+        }
+
+        private void ValidateStartTimeFromEndTime()
+        {
+            if (EndTime < StartTime)
+            {
+                StartTime = EndTime;
+            }
         }
 
         #endregion
