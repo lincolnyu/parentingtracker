@@ -37,7 +37,7 @@
                         <TextBlock>Merge the events on the device to the specified file</TextBlock>
                     </ToolTipService.ToolTip>
                 </Button>
-                <Button Click="ViewOnClick" Content="View">
+                <Button Click="ViewOnClick" Name="ViewButton" Content="View">
                     <ToolTipService.ToolTip>
                         <TextBlock>Refresh the display of the content of the external file</TextBlock>
                     </ToolTipService.ToolTip>

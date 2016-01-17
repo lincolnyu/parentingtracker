@@ -5,6 +5,7 @@ using ParentingTrackerApp.Export;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Popups;
 using System;
+using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -12,7 +13,9 @@ namespace ParentingTrackerApp.Views
 {
     public sealed partial class ExportView : UserControl
     {
-        const string InfoMobile = "The following external file will be updated with entries in this app without losing any existing data. For this mobile phone app, specifiy the name of the file on the Document folder of your OneDrive which can be shared across devices but may require authentication to access.";
+        private const string InfoMobile = "The following external file will be updated with entries in this app without losing any existing data. For this mobile phone app, specifiy the name of the file on the Document folder of your OneDrive which can be shared across devices but may require authentication to access.";
+
+        private bool _isViewing;
 
         public ExportView()
         {
@@ -78,9 +81,28 @@ namespace ParentingTrackerApp.Views
             {
                 await OneDriveMobile.Merge();
             }
+            if (_isViewing)
+            {
+                await Refresh();
+            }
         }
 
         private async void ViewOnClick(object sender, RoutedEventArgs args)
+        {
+            if (_isViewing)
+            {
+                Nav.NavigateToString("");
+                ViewButton.Content = "View";
+            }
+            else
+            {
+                await Refresh();
+                ViewButton.Content = "Hide";
+            }
+            _isViewing = !_isViewing;
+        }
+
+        private async Task Refresh()
         {
             if (FilePicker != null)
             {
@@ -109,6 +131,10 @@ namespace ParentingTrackerApp.Views
             else if (OneDriveMobile != null)
             {
                 await OneDriveMobile.Clear();
+            }
+            if (_isViewing)
+            {
+                await Refresh();
             }
         }
 
