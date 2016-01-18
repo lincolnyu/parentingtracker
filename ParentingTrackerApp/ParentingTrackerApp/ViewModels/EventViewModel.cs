@@ -393,6 +393,7 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("EndTimeOfDay");
             RaisePropertyChangedEvent("LocalisedTimeRange");
             RaisePropertyChangedEvent("Duration");
+            UpdateGroupName();
         }
 
         private void RaiseStatusChangedEvents()

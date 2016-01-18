@@ -52,7 +52,7 @@ namespace ParentingTrackerApp.ViewModels
         #region Flags
 
         private bool _wasSelected;
-        private bool _isInLoggedEventPropertyChanged;
+        private bool _suppressLoggedEventPropertyChanged;
         private bool _suppressAllEventsCollectionChangedHandler;
         private static bool _suppressEventTypeCollectionChangeHandling;
         private EventViewModel _newEvent;
@@ -440,11 +440,11 @@ namespace ParentingTrackerApp.ViewModels
 
         private void EventOnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if (_isInLoggedEventPropertyChanged)
+            if (_suppressLoggedEventPropertyChanged)
             {
                 return;
             }
-            _isInLoggedEventPropertyChanged = true;
+            _suppressLoggedEventPropertyChanged = true;
             var evm = (EventViewModel)sender;
             if (args.PropertyName == "IsEditing")
             {
@@ -477,7 +477,7 @@ namespace ParentingTrackerApp.ViewModels
             }
             
             MarkAsDirty();
-            _isInLoggedEventPropertyChanged = false;
+            _suppressLoggedEventPropertyChanged = false;
         }
 
         private void DelayMinimumSort(EventViewModel evm)
@@ -491,7 +491,9 @@ namespace ParentingTrackerApp.ViewModels
         private void MinimumSort(EventViewModel evm)
         {
             var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
+            var wasSuppressing2 = _suppressLoggedEventPropertyChanged;
             _suppressAllEventsCollectionChangedHandler = true;
+            _suppressLoggedEventPropertyChanged = true;
             MinimumSort(AllEvents, evm);
             MinimumSort(RunningEvents, evm);
             MinimumSort(LoggedEvents, evm);
@@ -506,6 +508,7 @@ namespace ParentingTrackerApp.ViewModels
                 // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
                 SelectedEvent = null;
             }
+            _suppressLoggedEventPropertyChanged = wasSuppressing2;
         }
 
         private static void MinimumSort(IList<EventViewModel> list, EventViewModel evm)
