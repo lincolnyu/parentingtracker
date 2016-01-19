@@ -393,6 +393,7 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("RunningTime");
             RaisePropertyChangedEvent("LocalisedTimeRange");
             RaisePropertyChangedEvent("Duration");
+            UpdateGroupName();
         }
 
         private void RaiseEndTimeChangedEvent()
@@ -402,7 +403,6 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("EndTimeOfDay");
             RaisePropertyChangedEvent("LocalisedTimeRange");
             RaisePropertyChangedEvent("Duration");
-            UpdateGroupName();
         }
 
         private void RaiseStatusChangedEvents()
@@ -477,7 +477,7 @@ namespace ParentingTrackerApp.ViewModels
             }
             else
             {
-                var d = DateTimeHelper.GetDayDiff(EndTime, DateTime.Now);
+                var d = DateTimeHelper.GetDayDiff(StartTime, DateTime.Now);
                 if (d == 0)
                 {
                     GroupName = "Today";
