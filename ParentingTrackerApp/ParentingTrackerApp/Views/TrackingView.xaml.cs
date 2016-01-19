@@ -217,12 +217,12 @@ namespace ParentingTrackerApp.Views
             {
                 if (c.NewStartTimeChanged)
                 {
-                    e = LastEndTimeBefore(c.NewEvent.StartTime);
+                    e = LastEndTimeBefore(c.NewEvent.StartTime, null);
                 }
             }
             else if (c.IsEditing)
             {
-                e = LastEndTimeBefore(c.SelectedEvent.StartTime);
+                e = LastEndTimeBefore(c.SelectedEvent.StartTime, c.SelectedEvent);
             }
             if (c.EventInEditing != null)
             {
@@ -240,12 +240,12 @@ namespace ParentingTrackerApp.Views
             {
                 if (c.NewEndTimeChanged)
                 {
-                    e = FirstStartTimeAfter(c.NewEvent.EndTime);
+                    e = FirstStartTimeAfter(c.NewEvent.EndTime, null);
                 }
             }
             else if (c.IsEditing)
             {
-                e = FirstStartTimeAfter(c.SelectedEvent.EndTime);
+                e = FirstStartTimeAfter(c.SelectedEvent.EndTime, c.SelectedEvent);
             }
             if (c.EventInEditing != null)
             {
@@ -254,11 +254,11 @@ namespace ParentingTrackerApp.Views
             c.NewEndTimeChanged = wasChanged; // this opertion retains this status
         }
 
-        private EventViewModel LastEndTimeBefore(DateTime dt)
+        private EventViewModel LastEndTimeBefore(DateTime dt, EventViewModel but)
         {
             var c = (CentralViewModel)DataContext;
-            var logged = c.LoggedEvents.FirstOrDefault(x => x.EndDate <= dt);
-            var running = c.RunningEvents.FirstOrDefault(x => x.EndTime <= dt);
+            var logged = c.LoggedEvents.FirstOrDefault(x => x != but && x.EndTime <= dt);
+            var running = c.RunningEvents.FirstOrDefault(x => x != but && x.EndTime <= dt);
             if (running == null)
             {
                 return logged;
@@ -270,11 +270,11 @@ namespace ParentingTrackerApp.Views
             return logged.EndTime > running.EndTime ? logged : running;
         }
 
-        private EventViewModel FirstStartTimeAfter(DateTime dt)
+        private EventViewModel FirstStartTimeAfter(DateTime dt, EventViewModel but)
         {
             var c = (CentralViewModel)DataContext;
-            var logged = c.LoggedEvents.FirstOrDefault(x => x.StartTime >= dt);
-            var running = c.RunningEvents.FirstOrDefault(x => x.StartTime >= dt);
+            var logged = c.LoggedEvents.FirstOrDefault(x => x != but && x.StartTime >= dt);
+            var running = c.RunningEvents.FirstOrDefault(x => x != but && x.StartTime >= dt);
             if (running == null)
             {
                 return logged;
@@ -285,6 +285,5 @@ namespace ParentingTrackerApp.Views
             }
             return logged.StartTime < running.StartTime ? logged : running;
         }
-
     }
 }

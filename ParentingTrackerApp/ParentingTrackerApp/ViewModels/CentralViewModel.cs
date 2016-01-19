@@ -228,6 +228,7 @@ namespace ParentingTrackerApp.ViewModels
                     RaisePropertyChangedEvent("SelectedRunningEvent");
                     UpdateIsEditingAndRelated();
                 }
+                DelayRefreshSelectedEvent();
             }
         }
 
@@ -513,14 +514,24 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("AllEventsGrouped");
             _suppressSelectedEventSetting = wasSuppressing3;
 
-            var t = _wasSelected ? evm : null;
-            SelectedEvent = t;
+            if (_wasSelected && SelectedEvent == null)
+            {
+                SelectedEvent = evm;
+            }
+            else
+            {
+                DelayRefreshSelectedEvent();
+            }
+
+            _suppressLoggedEventPropertyChanged = wasSuppressing2;
+        }
+
+        private void DelayRefreshSelectedEvent()
+        {
             if (Dispatcher != null)
             {
                 DelayHelper.Delay(null, x => RefreshSelectedEvent(), 100, Dispatcher);
             }
-            
-            _suppressLoggedEventPropertyChanged = wasSuppressing2;
         }
 
         private void RefreshSelectedEvent()
