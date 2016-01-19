@@ -34,6 +34,7 @@ namespace ParentingTrackerApp.ViewModels
         #region Backing fields
 
         private States _state = States.Init;
+        private string _exportOneDriveFileName;
         private string _exportPath;
         private string _exportFileToken;
 
@@ -57,6 +58,7 @@ namespace ParentingTrackerApp.ViewModels
         private static bool _suppressEventTypeCollectionChangeHandling;
         private EventViewModel _newEvent;
         private bool _suppressSelectedEventSetting;
+        private bool _exportUsingOneDriveSdk;
 
         #endregion
 
@@ -148,6 +150,54 @@ namespace ParentingTrackerApp.ViewModels
             get; private set;
         }
 
+        public bool ExportUsingOneDriveSdk
+        {
+            get { return _exportUsingOneDriveSdk; }
+            set
+            {
+                if (_exportUsingOneDriveSdk != value)
+                {
+                    _exportUsingOneDriveSdk = value;
+                    RaisePropertyChangedEvent("ExportFileText");
+                    RaisePropertyChangedEvent("ExportUsingOneDriveSdk");
+                }
+            }
+        }
+
+        public string ExportFileText
+        {
+            get
+            {
+                return ExportUsingOneDriveSdk ? ExportOneDriveFileName : ExportPath;
+            }
+            set
+            {
+                if (ExportUsingOneDriveSdk)
+                {
+                    ExportOneDriveFileName = value;
+                }
+                else
+                {
+                    ExportPath = value;
+                }
+            }
+        }
+
+        public string ExportOneDriveFileName
+        {
+            get { return _exportOneDriveFileName; }
+            set
+            {
+                if (_exportOneDriveFileName != value)
+                {
+                    _exportOneDriveFileName = value;
+                    RaisePropertyChangedEvent("ExportOneDriveFileName");
+                    RaisePropertyChangedEvent("ExportFileText");
+                    MarkAsDirty();
+                }
+            }
+        }
+
         /// <summary>
         ///  File to export to
         /// </summary>
@@ -160,6 +210,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _exportPath = value;
                     RaisePropertyChangedEvent("ExportPath");
+                    RaisePropertyChangedEvent("ExportFileText");
                     MarkAsDirty();
                 }
             }
@@ -378,10 +429,11 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_state == States.Init)
             {
-                string expPath, expToken;
-                RoamingSettingsHelper.LoadExportSettings(out expPath, out expToken);
+                string expPath, expToken, expOneDriveFile;
+                RoamingSettingsHelper.LoadExportSettings(out expPath, out expToken, out expOneDriveFile);
                 ExportPath = expPath;
                 ExportFileToken = expToken;
+                ExportOneDriveFileName = expOneDriveFile;
                 EventTypes.LoadRoamingColorMapping();
 
                 var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
@@ -432,7 +484,7 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_state == States.Dirty || forceSave)
             {
-                RoamingSettingsHelper.SaveExportSettings(ExportPath, ExportFileToken);
+                RoamingSettingsHelper.SaveExportSettings(ExportPath, ExportFileToken, ExportOneDriveFileName);
                 EventTypes.SaveRoamingColorMapping();
                 await AllEvents.SaveEvents(EventFileName);
                 _state = States.Synced;

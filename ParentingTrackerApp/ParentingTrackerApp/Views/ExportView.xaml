@@ -21,10 +21,16 @@
                     <ColumnDefinition x:Name="HeaderButtonCol" Width="60"/>
                     <ColumnDefinition/>
                     <ColumnDefinition x:Name="SelectButtonCol" Width="30"/>
+                    <ColumnDefinition x:Name="OneDriveButtonCol" Width="80"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Name="Header" VerticalAlignment="Center">File path:</TextBlock>
-                <TextBox Grid.Column="1" Text="{Binding ExportPath, Mode=TwoWay}"></TextBox>
+                <TextBox Grid.Column="1" Text="{Binding ExportFileText, Mode=TwoWay}"></TextBox>
                 <Button Name="Select" Grid.Column="2" Click="SelectFileOnClick">...</Button>
+                <CheckBox Name="OneDrive" Grid.Column="3" Content="Mobile" IsChecked="{Binding ExportUsingOneDriveSdk, Mode=TwoWay}">
+                    <ToolTipService.ToolTip>
+                        <TextBlock TextWrapping="Wrap">Tick this box if you wanted to use the same file sharing mechanism as with your mobile phones</TextBlock>
+                    </ToolTipService.ToolTip>
+                </CheckBox>
             </Grid>
             <StackPanel Orientation="Horizontal">
                 <StackPanel.Resources>

@@ -72,7 +72,7 @@ namespace ParentingTrackerApp.Export
                 await CheckAndConnect();
 
                 string path, displayName, fn;
-                GetOneDrivePath(CentralViewModel.ExportPath, out path, out displayName, out fn);
+                GetOneDrivePath(CentralViewModel.ExportOneDriveFileName, out path, out displayName, out fn);
 
                 var lines = new List<string>();
                 IEnumerable<EventViewModel> merged;
@@ -128,7 +128,7 @@ namespace ParentingTrackerApp.Export
             {
                 await CheckAndConnect();
                 string path, displayName, fn;
-                GetOneDrivePath(CentralViewModel.ExportPath, out path, out displayName, out fn);
+                GetOneDrivePath(CentralViewModel.ExportOneDriveFileName, out path, out displayName, out fn);
                 var wlines = HtmlExportHelper.GetEmptyHtmlLines(displayName);
                 await WriteLines(path, wlines);
             }
@@ -152,7 +152,7 @@ namespace ParentingTrackerApp.Export
                 await CheckAndConnect();
 
                 string path, displayName, fn;
-                GetOneDrivePath(CentralViewModel.ExportPath, out path, out displayName, out fn);
+                GetOneDrivePath(CentralViewModel.ExportOneDriveFileName, out path, out displayName, out fn);
                 var stream = await OneDriveClient.ItemWithPath(path).Content.Request().GetAsync();
                 using (var sr = new StreamReader(stream))
                 {

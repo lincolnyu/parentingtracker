@@ -6,6 +6,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Popups;
 using System;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -36,6 +37,8 @@ namespace ParentingTrackerApp.Views
         {
             if (DataContext != null)
             {
+                var c = (CentralViewModel)DataContext;
+                c.PropertyChanged += ViewModelOnPropertyChanged;
                 switch (MainPage.DeviceFamily)
                 {
                     case MainPage.DeviceFamilies.WindowsDesktop:
@@ -49,14 +52,50 @@ namespace ParentingTrackerApp.Views
             }
         }
 
+        private async void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "ExportUsingOneDriveSdk")
+            {
+                await UpdateUiAsPerModeSelection();
+            }
+        }
+
+        private async Task UpdateUiAsPerModeSelection()
+        {
+            var c = (CentralViewModel)DataContext;
+            if (c.ExportUsingOneDriveSdk)
+            {
+                HeaderButtonCol.Width = new GridLength(60);
+                Header.Width = 60;
+                Header.Text = "File Name:";
+                Select.Visibility = Visibility.Collapsed;
+                SelectButtonCol.Width = new GridLength(0);
+                FilePicker = null;
+                OneDriveMobile = new OneDriveMobile(c);
+            }
+            else
+            {
+                HeaderButtonCol.Width = new GridLength(60);
+                Header.Width = 60;
+                Header.Text = "File path:";
+                Select.Visibility = Visibility.Visible;
+                SelectButtonCol.Width = new GridLength(30);
+                OneDriveMobile = null;
+                FilePicker = new FilePicker(c);
+            }
+            await Refresh();
+        }
+
         private void UpdateUiForMobile()
         {
             InfoText.Text = InfoMobile;
-            HeaderButtonCol.Width = new GridLength(80);
-            Header.Width = 80;
+            HeaderButtonCol.Width = new GridLength(60);
+            Header.Width = 60;
             Header.Text = "File Name:";
             Select.Visibility = Visibility.Collapsed;
             SelectButtonCol.Width = new GridLength(0);
+            OneDrive.Visibility = Visibility.Collapsed;
+            OneDriveButtonCol.Width = new GridLength(0);
         }
 
         private async void SelectFileOnClick(object sender, RoutedEventArgs args)
@@ -81,29 +120,30 @@ namespace ParentingTrackerApp.Views
             {
                 await OneDriveMobile.Merge();
             }
-            if (_isViewing)
-            {
-                await Refresh();
-            }
+            await Refresh();
         }
 
         private async void ViewOnClick(object sender, RoutedEventArgs args)
         {
+            _isViewing = !_isViewing;
             if (_isViewing)
-            {
-                Nav.NavigateToString("");
-                ViewButton.Content = "View";
-            }
-            else
             {
                 await Refresh();
                 ViewButton.Content = "Hide";
             }
-            _isViewing = !_isViewing;
+            else
+            {
+                Nav.NavigateToString("");
+                ViewButton.Content = "View";
+            }
         }
 
         private async Task Refresh()
         {
+            if (!_isViewing)
+            {
+                return;
+            }
             if (FilePicker != null)
             {
                 await FilePicker.View(Nav);
@@ -132,10 +172,7 @@ namespace ParentingTrackerApp.Views
             {
                 await OneDriveMobile.Clear();
             }
-            if (_isViewing)
-            {
-                await Refresh();
-            }
+            await Refresh();
         }
 
         private void NoToClearHandler(IUICommand command)
