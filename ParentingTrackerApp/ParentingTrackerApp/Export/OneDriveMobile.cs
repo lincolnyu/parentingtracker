@@ -41,7 +41,10 @@ namespace ParentingTrackerApp.Export
                 "onedrive.readwrite"
             };
             OneDriveClient = OneDriveClientExtensions.GetUniversalClient(scopes);
-            AccountSession = await OneDriveClient.AuthenticateAsync();
+            if (OneDriveClient != null)
+            {
+                AccountSession = await OneDriveClient.AuthenticateAsync();
+            }
             if (!Connected)
             {
                 Disconnect();
@@ -167,7 +170,7 @@ namespace ParentingTrackerApp.Export
 
         public async Task<bool> View(WebView nav)
         {
-            Exception something = null;
+            string something = null;
             try
             {
                 await CheckAndConnect();
@@ -183,12 +186,12 @@ namespace ParentingTrackerApp.Export
             }
             catch (Exception e)
             {
-                something = e;
+                something = e.Message;
                 Disconnect(); // makes sense to reconnect
             }
             if (something != null)
             {
-                var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error accessing file");
+                var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error accessing file");
                 await dlg.ShowAsync();
                 return false;
             }
