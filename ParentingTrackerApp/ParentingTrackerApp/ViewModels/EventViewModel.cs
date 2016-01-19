@@ -11,6 +11,7 @@ namespace ParentingTrackerApp.ViewModels
 
         public enum Statuses
         {
+            Creating,
             Logged,
             Running,
             Editing,
@@ -273,7 +274,7 @@ namespace ParentingTrackerApp.ViewModels
                 return Status == Statuses.Logged || Status == Statuses.Editing;
             }
         }
-
+        
         public bool IsRunningEvent
         {
             get
@@ -287,6 +288,14 @@ namespace ParentingTrackerApp.ViewModels
             get
             {
                 return Status == Statuses.Running;
+            }
+        }
+
+        public bool IsCreatingOrEditing
+        {
+            get
+            {
+                return Status == Statuses.Editing || Status == Statuses.Creating;
             }
         }
 
@@ -309,11 +318,11 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-        public bool IsEditingOrRunning
+        public bool IsCreatingOrRunningOrEditing
         {
             get
             {
-                return IsEditing || IsRunning;
+                return IsCreatingOrEditing || IsRunning;
             }
         }
         
@@ -401,9 +410,10 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("Status");
             RaisePropertyChangedEvent("IsEditing");
             RaisePropertyChangedEvent("IsRunning");
-            RaisePropertyChangedEvent("IsEditingOrRunning");
             RaisePropertyChangedEvent("IsLoggedEvent");
             RaisePropertyChangedEvent("IsRunningEvent");
+            RaisePropertyChangedEvent("IsCreatingOrEditing");
+            RaisePropertyChangedEvent("IsCreatingOrRunningOrEditing");
             UpdateGroupName();
         }
 

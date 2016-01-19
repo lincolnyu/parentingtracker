@@ -56,6 +56,7 @@ namespace ParentingTrackerApp.ViewModels
         private bool _suppressAllEventsCollectionChangedHandler;
         private static bool _suppressEventTypeCollectionChangeHandling;
         private EventViewModel _newEvent;
+        private bool _suppressSelectedEventSetting;
 
         #endregion
 
@@ -214,6 +215,10 @@ namespace ParentingTrackerApp.ViewModels
             get { return _selectedEvent;  }
             set
             {
+                if (_suppressSelectedEventSetting)
+                {
+                    return;
+                }
                 if (_selectedEvent != value)
                 {
                     _selectedEvent = value;
@@ -276,7 +281,7 @@ namespace ParentingTrackerApp.ViewModels
             FinishEditingBut(null);
             NewEvent = new EventViewModel(this)
             {
-                Status = EventViewModel.Statuses.Running,
+                Status = EventViewModel.Statuses.Creating,
                 EventType = EventTypes.FirstOrDefault(),
                 StartTime = DateTime.Now,
                 EndTime = DateTime.Now
@@ -473,7 +478,10 @@ namespace ParentingTrackerApp.ViewModels
             else if (evm.IsRunning && evm.IsDataProperty(args.PropertyName))
             {
                 _wasSelected = evm == SelectedEvent;
-                DelayMinimumSort(evm);
+                if (_wasSelected)
+                {
+                    DelayMinimumSort(evm);
+                }
             }
             
             MarkAsDirty();
@@ -498,17 +506,26 @@ namespace ParentingTrackerApp.ViewModels
             MinimumSort(RunningEvents, evm);
             MinimumSort(LoggedEvents, evm);
             _suppressAllEventsCollectionChangedHandler = wasSuppressing;
+            var wasSuppressing3 = _suppressSelectedEventSetting;
+            // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
+            // TODO and make other unwanted changes to SelectedEvent
+            _suppressSelectedEventSetting = true;
             RaisePropertyChangedEvent("AllEventsGrouped");
-            if (_wasSelected)
+            _suppressSelectedEventSetting = wasSuppressing3;
+
+            var t = _wasSelected ? evm : null;
+            SelectedEvent = t;
+            if (Dispatcher != null)
             {
-                SelectedEvent = evm;
+                DelayHelper.Delay(null, x => RefreshSelectedEvent(), 100, Dispatcher);
             }
-            else
-            {
-                // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
-                SelectedEvent = null;
-            }
+            
             _suppressLoggedEventPropertyChanged = wasSuppressing2;
+        }
+
+        private void RefreshSelectedEvent()
+        {
+            RaisePropertyChangedEvent("SelectedEvent");
         }
 
         private static void MinimumSort(IList<EventViewModel> list, EventViewModel evm)
@@ -546,10 +563,6 @@ namespace ParentingTrackerApp.ViewModels
             AllEvents.QuickSort();
             RunningEvents.QuickSort();
             LoggedEvents.QuickSort();
-            if (_wasSelected)
-            {
-                SelectedEvent = evm;
-            }
             _suppressAllEventsCollectionChangedHandler = wasSuppressing;
         }
 
