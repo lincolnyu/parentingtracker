@@ -1,6 +1,4 @@
-﻿using ParentingTrackerApp.Helpers;
-using ParentingTrackerApp.ViewModels;
-using System;
+﻿using ParentingTrackerApp.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 
