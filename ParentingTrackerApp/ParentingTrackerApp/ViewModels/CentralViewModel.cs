@@ -461,6 +461,7 @@ namespace ParentingTrackerApp.ViewModels
                     {
                         SelectedEvent = evm;
                     }
+                    _wasSelected = true;//we make it always reselected after finalising editing with editing button
                     FinishEditingBut(evm);
                 }
                 else

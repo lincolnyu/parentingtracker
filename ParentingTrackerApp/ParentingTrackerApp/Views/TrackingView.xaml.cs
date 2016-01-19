@@ -69,7 +69,7 @@ namespace ParentingTrackerApp.Views
         {
             InitializeComponent();
 
-            EventsList.SelectionChanged += LoggedEventsOnSelectionChanged;
+            EventsList.SelectionChanged += EventsListOnSelectionChanged;
         }
 
         private void DataContextOnChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -117,7 +117,7 @@ namespace ParentingTrackerApp.Views
             }
         }
 
-        private void LoggedEventsOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void EventsListOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (EventsList.SelectedItem != null)
             {

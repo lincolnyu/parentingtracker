@@ -290,6 +290,7 @@
         <ListView Grid.Row="2" Name="EventsList"
                   ItemsSource="{Binding Source={StaticResource groupInfoEventList}}"
                   SelectedItem="{Binding SelectedEvent, Mode=TwoWay}"
+                  SelectionChanged="EventsListOnSelectionChanged"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                   ItemTemplateSelector="{StaticResource EventTemplateSelector}">
