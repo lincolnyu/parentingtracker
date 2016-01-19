@@ -32,7 +32,7 @@ namespace ParentingTrackerApp.Helpers
                     state = 1;
                     evm = new EventViewModel(cvm);
                 }
-                else if (line.StartsWith("<td"))
+                else if (line.StartsWith("<td") && !line.StartsWith("<td colspan=\"3\">"))
                 {
                     var content = line.IndexOf('>')+1;
                     var val = line.Substring(content, line.Length - content - 5);
@@ -114,8 +114,17 @@ namespace ParentingTrackerApp.Helpers
             {
                 yield return l;
             }
+            string lastGroupName = null;
             foreach (var ev in events)
             {
+                if (ev.GroupName != lastGroupName)
+                {
+                    foreach (var l in WriteGroupHeader(ev.GroupName, indent))
+                    {
+                        yield return l;
+                    }
+                    lastGroupName = ev.GroupName;
+                }
                 foreach (var l in WriteEntry(ev, indent))
                 {
                     yield return l;
@@ -148,6 +157,13 @@ namespace ParentingTrackerApp.Helpers
             yield return string.Format("{0}    <th>Time</th>", indent);
             yield return string.Format("{0}    <th>Type</th>", indent);
             yield return string.Format("{0}    <th>Notes</th>", indent);
+            yield return string.Format("{0}  </tr>", indent);
+        }
+
+        private static IEnumerable<string> WriteGroupHeader(string groupName, string indent)
+        {
+            yield return string.Format("{0}  <tr>", indent);
+            yield return string.Format("{0}    <td colspan=\"3\" style=\"text-align:left;\">{1}<hr></td>", indent, groupName);
             yield return string.Format("{0}  </tr>", indent);
         }
 
