@@ -12,5 +12,11 @@ namespace ParentingTrackerApp.Helpers
             var y = 0.299 * r + 0.587 * g + 0.114 * b;
             return y;
         }
+
+        public static string ToHtmlColor(this Color color)
+        {
+            var s = string.Format("#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
+            return s;
+        }
     }
 }

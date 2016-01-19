@@ -62,6 +62,6 @@
         </StackPanel>
         <WebView Grid.Row="1"
                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                 Name="Nav" DefaultBackgroundColor="LightPink"></WebView>
+                 Name="Nav"></WebView>
     </Grid>
 </UserControl>

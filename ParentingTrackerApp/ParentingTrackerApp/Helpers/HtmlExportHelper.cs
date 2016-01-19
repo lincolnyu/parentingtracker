@@ -20,34 +20,36 @@ namespace ParentingTrackerApp.Helpers
             foreach (var l in lines)
             {
                 var line = l.Trim();
-                if (line.StartsWith("<title>"))
+                if (line.StartsWith("<title"))
                 {
-                    var t = line.Substring(7, line.Length - 7 - 8);
+                    var content = line.IndexOf('>') + 1;
+                    var t = line.Substring(7, line.Length - content - 8);
                     docInfo.Title = t;
                 }
-                else if (line.StartsWith("<tr>"))
+                else if (line.StartsWith("<tr"))
                 {
                     state = 1;
                     evm = new EventViewModel(cvm);
                 }
-                else if (line.StartsWith("<td>"))
+                else if (line.StartsWith("<td"))
                 {
-                    var val = line.Substring(4, line.Length - 4 - 5);
+                    var content = line.IndexOf('>')+1;
+                    var val = line.Substring(content, line.Length - content - 5);
                     switch (state)
                     {
                         case 1:
-                            evm.StartTime = DateTime.Parse(val);
+                            {
+                                var split = val.Split('~');
+                                evm.StartTime = DateTime.Parse(split[0]);
+                                evm.EndTime = DateTime.Parse(split[1]);
+                            }
                             state = 2;
                             break;
                         case 2:
-                            evm.EndTime = DateTime.Parse(val);
+                            evm.EventType = GetOrCreateEventType(cvm.EventTypes, val);
                             state = 3;
                             break;
                         case 3:
-                            evm.EventType = GetOrCreateEventType(cvm.EventTypes, val);
-                            state = 4;
-                            break;
-                        case 4:
                             evm.Notes = val;
                             state = 0;
                             yield return evm;
@@ -56,7 +58,7 @@ namespace ParentingTrackerApp.Helpers
                 }
             }
         }
-
+        
         private static EventTypeViewModel GetOrCreateEventType(ICollection<EventTypeViewModel> eventTypes, string name)
         {
             var et = eventTypes.FirstOrDefault(x => x.Name == name);
@@ -81,7 +83,7 @@ namespace ParentingTrackerApp.Helpers
             EventViewModel last = null;
             foreach (var x in merged)
             {
-                if (last != null && x.CompareTo(last)==0)
+                if (last != null && x.CompareTo(last) == 0)
                 {
                     continue;
                 }
@@ -94,6 +96,7 @@ namespace ParentingTrackerApp.Helpers
             DocInfo docInfo)
         {
             yield return "<!DOCTYPE html>";
+            yield return "<!-- Parenting Tracker Exported File Version 1.2 -->";
             yield return "<html>";
             yield return "  <head>";
             yield return string.Format("    <title>{0}</title>", docInfo != null? docInfo.Title 
@@ -141,8 +144,7 @@ namespace ParentingTrackerApp.Helpers
         {
             yield return string.Format("{0}<table>", indent);
             yield return string.Format("{0}  <tr>", indent);
-            yield return string.Format("{0}    <th>Start</th>", indent);
-            yield return string.Format("{0}    <th>End</th>", indent);
+            yield return string.Format("{0}    <th>Time</th>", indent);
             yield return string.Format("{0}    <th>Type</th>", indent);
             yield return string.Format("{0}    <th>Notes</th>", indent);
             yield return string.Format("{0}  </tr>", indent);
@@ -150,11 +152,13 @@ namespace ParentingTrackerApp.Helpers
 
         private static IEnumerable<string> WriteEntry(EventViewModel ev, string indent)
         {
-            yield return string.Format("{0}  <tr>", indent);
-            yield return string.Format("{0}    <td>{1}</td>", indent, ev.StartTime);
-            yield return string.Format("{0}    <td>{1}</td>", indent, ev.EndTime);
-            yield return string.Format("{0}    <td>{1}</td>", indent, ev.EventTypeName);
-            yield return string.Format("{0}    <td>{1}</td>", indent, ev.Notes);
+            var bgcolor = ev.Color;
+            yield return string.Format("{0}  <tr bgcolor=\"{1}\">", indent, bgcolor.ToHtmlColor());
+            var startTime = DateTimeHelper.ToNotTooLongString(ev.StartTime);
+            var endTime = DateTimeHelper.ToNotTooLongString(ev.EndTime);
+            yield return string.Format("{0}    <td style=\"width:40%\">{1}</td>", indent, $"{startTime} ~ {endTime}");
+            yield return string.Format("{0}    <td style=\"width:30%\">{1}</td>", indent, ev.EventTypeName);
+            yield return string.Format("{0}    <td style=\"width:30%\">{1}</td>", indent, ev.Notes);
             yield return string.Format("{0}  </tr>", indent);
         }
 

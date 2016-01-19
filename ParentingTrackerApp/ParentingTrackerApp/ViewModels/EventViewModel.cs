@@ -11,10 +11,10 @@ namespace ParentingTrackerApp.ViewModels
 
         public enum Statuses
         {
-            Creating,
             Logged,
             Running,
             Editing,
+            Creating,
         }
 
         #endregion
