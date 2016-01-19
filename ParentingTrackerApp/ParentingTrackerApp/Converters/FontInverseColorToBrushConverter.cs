@@ -11,8 +11,7 @@ namespace ParentingTrackerApp.Converters
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             var input = (Color)value;
-            var y = input.GetY();
-            var output = (y < 0.5) ? Colors.White : Colors.Black;
+            var output = input.GetConstrastingBlackOrWhite();
             return new SolidColorBrush(output);
         }
 

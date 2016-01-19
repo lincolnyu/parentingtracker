@@ -67,6 +67,12 @@ namespace ParentingTrackerApp.Helpers
             }
         }
 
+        public static DateTime FromNotTooLongString(this string sdt)
+        {
+            // TODO currently we presume that DateTim.Parse() is able to handle this...
+            return DateTime.Parse(sdt);
+        }
+
         public static string ToNotTooLongString(this DateTime dt)
         {
             var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;

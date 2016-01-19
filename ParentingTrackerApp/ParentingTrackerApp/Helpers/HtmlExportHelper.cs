@@ -1,4 +1,5 @@
-﻿using ParentingTrackerApp.ViewModels;
+﻿using ParentingTrackerApp.Helpers;
+using ParentingTrackerApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,8 +41,8 @@ namespace ParentingTrackerApp.Helpers
                         case 1:
                             {
                                 var split = val.Split('~');
-                                evm.StartTime = DateTime.Parse(split[0]);
-                                evm.EndTime = DateTime.Parse(split[1]);
+                                evm.StartTime = split[0].FromNotTooLongString();
+                                evm.EndTime = split[1].FromNotTooLongString();
                             }
                             state = 2;
                             break;
@@ -103,7 +104,7 @@ namespace ParentingTrackerApp.Helpers
                 : "Untitiled");
             yield return "    <meta charset=\"utf-8\">";
             yield return "    <style>";
-            yield return "      table { width: 100%; }";
+            yield return "      table { width: 100%; font-family:'Arial'; }";
             yield return "      td { text-align: center; }";
             yield return "    </style>";
             yield return "  </head>";
@@ -153,7 +154,8 @@ namespace ParentingTrackerApp.Helpers
         private static IEnumerable<string> WriteEntry(EventViewModel ev, string indent)
         {
             var bgcolor = ev.Color;
-            yield return string.Format("{0}  <tr bgcolor=\"{1}\">", indent, bgcolor.ToHtmlColor());
+            var fgcolor = bgcolor.GetConstrastingBlackOrWhite();
+            yield return string.Format("{0}  <tr bgcolor=\"{1}\" style=\"color:{2}\">", indent, bgcolor.ToHtmlColor(), fgcolor.ToHtmlColor());
             var startTime = DateTimeHelper.ToNotTooLongString(ev.StartTime);
             var endTime = DateTimeHelper.ToNotTooLongString(ev.EndTime);
             yield return string.Format("{0}    <td style=\"width:40%\">{1}</td>", indent, $"{startTime} ~ {endTime}");
