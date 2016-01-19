@@ -42,7 +42,7 @@ namespace ParentingTrackerApp.Views
                 switch (MainPage.DeviceFamily)
                 {
                     case MainPage.DeviceFamilies.WindowsDesktop:
-                        FilePicker = new FilePicker((CentralViewModel)DataContext);
+                        UpdateUiAsPerModeSelection();
                         break;
                     case MainPage.DeviceFamilies.WindowsMobile:
                         c.ExportUsingOneDriveSdk = true;// NOTE forced to be using OneDrive and this will be saved
@@ -58,11 +58,12 @@ namespace ParentingTrackerApp.Views
             if (args.PropertyName == "ExportUsingOneDriveSdk"
                 || args.PropertyName == "ExportFileText")
             {
-                await UpdateUiAsPerModeSelection();
+                UpdateUiAsPerModeSelection();
+                await Refresh();
             }
         }
 
-        private async Task UpdateUiAsPerModeSelection()
+        private void UpdateUiAsPerModeSelection()
         {
             var c = (CentralViewModel)DataContext;
             if (c.ExportUsingOneDriveSdk)
@@ -85,7 +86,7 @@ namespace ParentingTrackerApp.Views
                 OneDriveMobile = null;
                 FilePicker = new FilePicker(c);
             }
-            await Refresh();
+            
         }
 
         private void UpdateUiForMobile()

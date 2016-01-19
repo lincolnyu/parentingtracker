@@ -42,7 +42,17 @@ namespace ParentingTrackerApp.Export
             };
             OneDriveClient = OneDriveClientExtensions.GetUniversalClient(scopes);
             AccountSession = await OneDriveClient.AuthenticateAsync();
+            if (!Connected)
+            {
+                Disconnect();
+            }
             return Connected;
+        }
+
+        public void Disconnect()
+        {
+            OneDriveClient = null;
+            AccountSession = null;
         }
 
         private static void GetOneDrivePath(string userSpecifiedName, out string path, out string displayName,
@@ -117,6 +127,7 @@ namespace ParentingTrackerApp.Export
             catch (Exception e)
             {
                 something = e.Message;
+                Disconnect(); // makes sense to reconnect
             }
 
             if (something != null)
@@ -142,6 +153,7 @@ namespace ParentingTrackerApp.Export
             catch (Exception e)
             {
                 something = e.Message;
+                Disconnect(); // makes sense to reconnect
             }
 
             if (something != null)
@@ -172,6 +184,7 @@ namespace ParentingTrackerApp.Export
             catch (Exception e)
             {
                 something = e;
+                Disconnect(); // makes sense to reconnect
             }
             if (something != null)
             {
