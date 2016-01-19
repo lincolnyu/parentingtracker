@@ -1,4 +1,5 @@
 ﻿using ParentingTrackerApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +17,7 @@ namespace ParentingTrackerApp.Helpers
         {
             var state = 0;
             EventViewModel evm = null;
+            var thCount = 0;
             foreach (var l in lines)
             {
                 var line = l.Trim();
@@ -25,37 +27,93 @@ namespace ParentingTrackerApp.Helpers
                     var t = line.Substring(7, line.Length - content - 8);
                     docInfo.Title = t;
                 }
+                else if (line.StartsWith("<th"))
+                {
+                    if (state == 1)
+                    {
+                        thCount = 1;
+                        state = 2;
+                    }
+                    else
+                    {
+                        thCount++;
+                    }
+                }
                 else if (line.StartsWith("<tr"))
                 {
                     state = 1;
-                    evm = new EventViewModel(cvm);
+                    evm = new EventViewModel(cvm) { Status = EventViewModel.Statuses.Logged }; // should always be of logged type
                 }
-                else if (line.StartsWith("<td") && !line.StartsWith("<td colspan=\"3\">"))
+                else if (state >= 1 && line.StartsWith("<td") && !line.StartsWith("<td colspan=\"3\">"))
                 {
-                    var content = line.IndexOf('>')+1;
-                    var val = line.Substring(content, line.Length - content - 5);
-                    switch (state)
+                    if (thCount==3)
                     {
-                        case 1:
-                            {
-                                var split = val.Split('~');
-                                evm.StartTime = split[0].FromNotTooLongString();
-                                evm.EndTime = split[1].FromNotTooLongString();
-                            }
-                            state = 2;
-                            break;
-                        case 2:
-                            evm.EventType = GetOrCreateEventType(cvm.EventTypes, val);
-                            state = 3;
-                            break;
-                        case 3:
-                            evm.Notes = val;
-                            state = 0;
+                        if (ParseVersion1p2(line, cvm, evm, ref state))
+                        {
                             yield return evm;
-                            break;
+                        }
+                    }
+                    else if (thCount==4)
+                    {
+                        if (ParseInitialVersion(line, cvm, evm, ref state))
+                        {
+                            yield return evm;
+                        }
                     }
                 }
             }
+        }
+
+        private static bool ParseInitialVersion(string line, CentralViewModel cvm, EventViewModel evm, ref int state)
+        {
+            var content = line.IndexOf('>') + 1;
+            var val = line.Substring(content, line.Length - content - 5);
+            switch (state)
+            {
+                case 1:
+                    evm.StartTime = DateTime.Parse(val);
+                    state = 2;
+                    return false;
+                case 2:
+                    evm.EndTime = DateTime.Parse(val);
+                    state = 3;
+                    return false;
+                case 3:
+                    evm.EventType = GetOrCreateEventType(cvm.EventTypes, val);
+                    state = 4;
+                    return false;
+                case 4:
+                    evm.Notes = val;
+                    state = 0;
+                    return true;
+            }
+            return true;// unexpected
+        }
+
+        private static bool ParseVersion1p2(string line, CentralViewModel cvm, EventViewModel evm, ref int state)
+        {
+            var content = line.IndexOf('>') + 1;
+            var val = line.Substring(content, line.Length - content - 5);
+            switch (state)
+            {
+                case 1:
+                    {
+                        var split = val.Split('~');
+                        evm.StartTime = split[0].FromNotTooLongString();
+                        evm.EndTime = split[1].FromNotTooLongString();
+                    }
+                    state = 2;
+                    return false;
+                case 2:
+                    evm.EventType = GetOrCreateEventType(cvm.EventTypes, val);
+                    state = 3;
+                    return false;
+                case 3:
+                    evm.Notes = val;
+                    state = 0;
+                    return true;
+            }
+            return true;// unexpected
         }
         
         private static EventTypeViewModel GetOrCreateEventType(ICollection<EventTypeViewModel> eventTypes, string name)
