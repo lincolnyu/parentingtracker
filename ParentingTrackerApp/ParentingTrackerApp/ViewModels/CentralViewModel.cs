@@ -160,6 +160,7 @@ namespace ParentingTrackerApp.ViewModels
                     _exportUsingOneDriveSdk = value;
                     RaisePropertyChangedEvent("ExportFileText");
                     RaisePropertyChangedEvent("ExportUsingOneDriveSdk");
+                    MarkAsDirty();
                 }
             }
         }
@@ -430,10 +431,13 @@ namespace ParentingTrackerApp.ViewModels
             if (_state == States.Init)
             {
                 string expPath, expToken, expOneDriveFile;
-                RoamingSettingsHelper.LoadExportSettings(out expPath, out expToken, out expOneDriveFile);
+                bool oneDriveSdk;
+                RoamingSettingsHelper.LoadExportSettings(out expPath, out expToken, 
+                    out expOneDriveFile, out oneDriveSdk);
                 ExportPath = expPath;
                 ExportFileToken = expToken;
                 ExportOneDriveFileName = expOneDriveFile;
+                ExportUsingOneDriveSdk = oneDriveSdk;
                 EventTypes.LoadRoamingColorMapping();
 
                 var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
@@ -484,7 +488,8 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_state == States.Dirty || forceSave)
             {
-                RoamingSettingsHelper.SaveExportSettings(ExportPath, ExportFileToken, ExportOneDriveFileName);
+                RoamingSettingsHelper.SaveExportSettings(ExportPath, ExportFileToken, 
+                    ExportOneDriveFileName, ExportUsingOneDriveSdk);
                 EventTypes.SaveRoamingColorMapping();
                 await AllEvents.SaveEvents(EventFileName);
                 _state = States.Synced;

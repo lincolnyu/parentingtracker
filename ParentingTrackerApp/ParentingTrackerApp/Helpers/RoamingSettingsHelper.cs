@@ -8,7 +8,8 @@ namespace ParentingTrackerApp.Helpers
 {
     public static class RoamingSettingsHelper
     {
-        public static void LoadExportSettings(out string path, out string token, out string oneDriveFile)
+        public static void LoadExportSettings(out string path, out string token, 
+            out string oneDriveFile, out bool oneDriveSdk)
         {
             var roamingSettings = ApplicationData.Current.RoamingSettings;
             if (roamingSettings.Values.ContainsKey("exportPath"))
@@ -35,14 +36,23 @@ namespace ParentingTrackerApp.Helpers
             {
                 oneDriveFile = "";
             }
+            if (roamingSettings.Values.ContainsKey("oneDriveSdk"))
+            {
+                oneDriveSdk = (bool)roamingSettings.Values["oneDriveSdk"];
+            }
+            else
+            {
+                oneDriveSdk = false;
+            }
         }
 
-        public static void SaveExportSettings(string path, string token, string oneDriveFile)
+        public static void SaveExportSettings(string path, string token, string oneDriveFile, bool oneDriveSdk)
         {
             var roamingSettings = ApplicationData.Current.RoamingSettings;
             roamingSettings.Values["exportPath"] = path;
             roamingSettings.Values["exportToken"] = token;
             roamingSettings.Values["exportOneDriveFile"] = oneDriveFile;
+            roamingSettings.Values["oneDriveSdk"] = oneDriveSdk;
         }
 
         public static void LoadRoamingColorMapping(this ICollection<EventTypeViewModel> colors)

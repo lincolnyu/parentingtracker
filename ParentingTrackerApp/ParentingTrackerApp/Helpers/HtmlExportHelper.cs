@@ -44,7 +44,7 @@ namespace ParentingTrackerApp.Helpers
                     state = 1;
                     evm = new EventViewModel(cvm) { Status = EventViewModel.Statuses.Logged }; // should always be of logged type
                 }
-                else if (state >= 1 && line.StartsWith("<td") && !line.StartsWith("<td colspan=\"3\">"))
+                else if (state >= 1 && line.StartsWith("<td") && !line.StartsWith("<td colspan=\"3\""))
                 {
                     if (thCount==3)
                     {

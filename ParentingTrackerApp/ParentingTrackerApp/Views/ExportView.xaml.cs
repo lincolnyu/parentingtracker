@@ -45,6 +45,7 @@ namespace ParentingTrackerApp.Views
                         FilePicker = new FilePicker((CentralViewModel)DataContext);
                         break;
                     case MainPage.DeviceFamilies.WindowsMobile:
+                        c.ExportUsingOneDriveSdk = true;// NOTE forced to be using OneDrive and this will be saved
                         OneDriveMobile = new OneDriveMobile((CentralViewModel)DataContext);
                         UpdateUiForMobile();
                         break;
@@ -54,7 +55,8 @@ namespace ParentingTrackerApp.Views
 
         private async void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == "ExportUsingOneDriveSdk")
+            if (args.PropertyName == "ExportUsingOneDriveSdk"
+                || args.PropertyName == "ExportFileText")
             {
                 await UpdateUiAsPerModeSelection();
             }
@@ -100,58 +102,74 @@ namespace ParentingTrackerApp.Views
 
         private async void SelectFileOnClick(object sender, RoutedEventArgs args)
         {
+            bool result = false;
             if (FilePicker != null)
             {
-                await FilePicker.PickFile();
+                result = await FilePicker.PickFile();
             }
             else if (OneDriveMobile != null)
             {
-                await OneDriveMobile.Connect();
+                result = await OneDriveMobile.Connect();
             }
+            await Refresh(result && _isViewing);
         }
        
         private async void ExportOnClick(object sender, RoutedEventArgs args)
         {
+            bool result = false;
             if (FilePicker != null)
             {
-                await FilePicker.Merge();
+                result = await FilePicker.Merge();
             }
             else if (OneDriveMobile != null)
             {
-                await OneDriveMobile.Merge();
+                result = await OneDriveMobile.Merge();
             }
-            await Refresh();
+            await Refresh(result && _isViewing);
         }
 
         private async void ViewOnClick(object sender, RoutedEventArgs args)
         {
-            _isViewing = !_isViewing;
+            await Refresh(!_isViewing);
+        }
+
+        private async Task Refresh(bool view)
+        {
+            _isViewing = view;
+            await Refresh();
+        }
+
+        private async Task Refresh()
+        {
             if (_isViewing)
             {
-                await Refresh();
                 ViewButton.Content = "Hide";
+                var shown = await ShowPage();
+                if (!shown)
+                {
+                    _isViewing = false;
+                }
             }
-            else
+            if (!_isViewing)
             {
                 Nav.NavigateToString("");
                 ViewButton.Content = "View";
             }
         }
+        
 
-        private async Task Refresh()
+        private async Task<bool> ShowPage()
         {
-            if (!_isViewing)
-            {
-                return;
-            }
+            bool result = false;
             if (FilePicker != null)
             {
-                await FilePicker.View(Nav);
+                result = await FilePicker.View(Nav);
             }
             else if (OneDriveMobile != null)
             {
-                await OneDriveMobile.View(Nav);
+                result = await OneDriveMobile.View(Nav);
             }
+            return result;
         }
 
         private async void ClearOnClick(object sender, RoutedEventArgs args)

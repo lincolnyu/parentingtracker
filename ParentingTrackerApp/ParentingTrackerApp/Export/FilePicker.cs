@@ -25,7 +25,7 @@ namespace ParentingTrackerApp.Export
 
         public CentralViewModel CentralViewModel { get; private set;}
 
-        public async Task PickFile()
+        public async Task<bool> PickFile()
         {
             var fsp = new FileSavePicker();
             fsp.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
@@ -36,10 +36,12 @@ namespace ParentingTrackerApp.Export
             {
                 CentralViewModel.ExportPath = File.Path;
                 CentralViewModel.ExportFileToken = StorageApplicationPermissions.FutureAccessList.Add(File);
+                return true;
             }
+            return false;
         }
         
-        public async Task Merge()
+        public async Task<bool> Merge()
         {
             string something = null;
             try
@@ -59,7 +61,7 @@ namespace ParentingTrackerApp.Export
                     {
                         var dlg = new MessageDialog("File not found, please re-pick the file");
                         await dlg.ShowAsync();
-                        return;
+                        return false;
                     }
                 }
 
@@ -98,10 +100,12 @@ namespace ParentingTrackerApp.Export
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error writing to file");
                 await dlg.ShowAsync();
+                return false;
             }
+            return true;
         }
 
-        public async Task Clear()
+        public async Task<bool> Clear()
         {
             string something = null;
             try
@@ -131,10 +135,12 @@ namespace ParentingTrackerApp.Export
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error deleting file");
                 await dlg.ShowAsync();
+                return false;
             }
+            return true;
         }
 
-        public async Task View(WebView nav)
+        public async Task<bool> View(WebView nav)
         {
             Exception something = null;
             try
@@ -154,7 +160,9 @@ namespace ParentingTrackerApp.Export
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error accessing file");
                 await dlg.ShowAsync();
+                return false;
             }
+            return true;
         }
 
         private async Task<FileUpdateStatus> WriteLinesToFile(IEnumerable<string> wlines)

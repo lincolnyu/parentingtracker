@@ -32,7 +32,7 @@ namespace ParentingTrackerApp.Export
             }
         }
 
-        public async Task Connect()
+        public async Task<bool> Connect()
         {
             var scopes = new string[]
             {
@@ -42,6 +42,7 @@ namespace ParentingTrackerApp.Export
             };
             OneDriveClient = OneDriveClientExtensions.GetUniversalClient(scopes);
             AccountSession = await OneDriveClient.AuthenticateAsync();
+            return Connected;
         }
 
         private static void GetOneDrivePath(string userSpecifiedName, out string path, out string displayName,
@@ -61,10 +62,14 @@ namespace ParentingTrackerApp.Export
             if (!Connected)
             {
                 await Connect();
+                if (!Connected)
+                {
+                    throw new Exception("Failed to connect to OneDrive");
+                }
             }
         }
 
-        public async Task Merge()
+        public async Task<bool> Merge()
         {
             string something = null;
             try
@@ -118,10 +123,12 @@ namespace ParentingTrackerApp.Export
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error writing to file");
                 await dlg.ShowAsync();
+                return false;
             }
+            return true;
         }
 
-        public async Task Clear()
+        public async Task<bool> Clear()
         {
             string something = null;
             try
@@ -141,10 +148,12 @@ namespace ParentingTrackerApp.Export
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something), "Error deleting file");
                 await dlg.ShowAsync();
+                return false;
             }
+            return true;
         }
 
-        public async Task View(WebView nav)
+        public async Task<bool> View(WebView nav)
         {
             Exception something = null;
             try
@@ -168,7 +177,9 @@ namespace ParentingTrackerApp.Export
             {
                 var dlg = new MessageDialog(string.Format("Details: {0}", something.Message), "Error accessing file");
                 await dlg.ShowAsync();
+                return false;
             }
+            return true;
         }
 
         private async Task WriteLines(string path, IEnumerable<string> wlines)
