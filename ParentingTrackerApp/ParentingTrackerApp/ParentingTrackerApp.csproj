@@ -142,9 +142,6 @@
     <Compile Include="Views\TrackingView.xaml.cs">
       <DependentUpon>TrackingView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TrackingViewOld.xaml.cs">
-      <DependentUpon>TrackingViewOld.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -228,10 +225,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TrackingView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\TrackingViewOld.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

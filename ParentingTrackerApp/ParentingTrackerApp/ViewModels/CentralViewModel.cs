@@ -87,11 +87,22 @@ namespace ParentingTrackerApp.ViewModels
         public ObservableCollection<EventTypeViewModel> EventTypes { get; } =
             new ObservableCollection<EventTypeViewModel>();
 
-        public ObservableCollection<EventViewModel> RunningEvents { get; }
-            = new ObservableCollection<EventViewModel>();
+        public IEnumerable<EventViewModel> RunningEvents
+        {
+            get
+            {
+                return AllEvents.Where(x => x.IsRunningEvent);
+            }
+        }
 
-        public ObservableCollection<EventViewModel> LoggedEvents { get; }
-            = new ObservableCollection<EventViewModel>();
+
+        public IEnumerable<EventViewModel> LoggedEvents
+        {
+            get
+            {
+                return AllEvents.Where(x => x.IsLoggedEvent);
+            }
+        }
 
         public ObservableCollection<EventViewModel> AllEvents { get; }
             = new ObservableCollection<EventViewModel>();
@@ -454,8 +465,6 @@ namespace ParentingTrackerApp.ViewModels
                     e.PropertyChanged -= EventOnPropertyChanged;
                 }
                 AllEvents.Clear();
-                LoggedEvents.Clear();
-                RunningEvents.Clear();
                 var evlines = await EventFileName.LoadEventsLines();
                 if (evlines != null)
                 {
@@ -464,13 +473,8 @@ namespace ParentingTrackerApp.ViewModels
                     {
                         AllEvents.Add(e);
                         e.PropertyChanged += EventOnPropertyChanged;
-                        if (e.Status == EventViewModel.Statuses.Running)
+                        if (e.Status != EventViewModel.Statuses.Running)
                         {
-                            RunningEvents.Add(e);
-                        }
-                        else
-                        {
-                            LoggedEvents.Add(e);
                             e.Status = EventViewModel.Statuses.Logged;// make sure it's logged event
                         }
                     }
@@ -567,8 +571,6 @@ namespace ParentingTrackerApp.ViewModels
             _suppressAllEventsCollectionChangedHandler = true;
             _suppressLoggedEventPropertyChanged = true;
             MinimumSort(AllEvents, evm);
-            MinimumSort(RunningEvents, evm);
-            MinimumSort(LoggedEvents, evm);
             _suppressAllEventsCollectionChangedHandler = wasSuppressing;
             var wasSuppressing3 = _suppressSelectedEventSetting;
             // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
@@ -635,8 +637,6 @@ namespace ParentingTrackerApp.ViewModels
             var wasSuppressing = _suppressAllEventsCollectionChangedHandler;
             _suppressAllEventsCollectionChangedHandler = true;
             AllEvents.QuickSort();
-            RunningEvents.QuickSort();
-            LoggedEvents.QuickSort();
             _suppressAllEventsCollectionChangedHandler = wasSuppressing;
         }
 
@@ -653,6 +653,13 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
+        private void RaiseDerivedCollectionsChanged()
+        {
+            RaisePropertyChangedEvent("LoggedEvents");
+            RaisePropertyChangedEvent("RunningEvents");
+            RaisePropertyChangedEvent("AllEventsGrouped");
+        }
+
         private void AllEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             if (_suppressAllEventsCollectionChangedHandler)
@@ -662,8 +669,7 @@ namespace ParentingTrackerApp.ViewModels
             _suppressAllEventsCollectionChangedHandler = true;
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
-                RunningEvents.Clear();
-                LoggedEvents.Clear();
+                // TODO cleared items with subscriptions?
                 SubscribeForEvents();
             }
             else
@@ -672,14 +678,6 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     foreach (var oldItem in args.OldItems.Cast<EventViewModel>())
                     {
-                        if (oldItem.IsRunningEvent)
-                        {
-                            RunningEvents.Remove(oldItem);
-                        }
-                        else if (oldItem.IsLoggedEvent)
-                        {
-                            LoggedEvents.Remove(oldItem);
-                        }
                         oldItem.PropertyChanged -= EventOnPropertyChanged;
                     }
                 }
@@ -687,19 +685,11 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     foreach (var newItem in args.NewItems.Cast<EventViewModel>())
                     {
-                        if (newItem.IsRunningEvent)
-                        {
-                            RunningEvents.Insert(newItem);
-                        }
-                        else if (newItem.IsLoggedEvent)
-                        {
-                            LoggedEvents.Insert(newItem);
-                        }
                         newItem.PropertyChanged += EventOnPropertyChanged;
                     }
                 }
             }
-            RaisePropertyChangedEvent("AllEventsGrouped");
+            RaiseDerivedCollectionsChanged();
             // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
             SelectedEvent = null;
             MarkAsDirty();
