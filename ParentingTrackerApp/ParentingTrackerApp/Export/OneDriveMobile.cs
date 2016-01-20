@@ -85,6 +85,7 @@ namespace ParentingTrackerApp.Export
         public async Task<bool> Merge()
         {
             string something = null;
+            var wasSuppressed = false;
             try
             {
                 await CheckAndConnect();
@@ -95,6 +96,11 @@ namespace ParentingTrackerApp.Export
                 var lines = new List<string>();
                 IEnumerable<EventViewModel> merged;
                 var otherInfo = new HtmlExportHelper.DocInfo();
+
+                // suppress property/collection order change
+                wasSuppressed = CentralViewModel.SuppressPeriodicChange;
+                CentralViewModel.SuppressPeriodicChange = true;
+
                 try
                 {
                     using (var stream = await OneDriveClient.ItemWithPath(path).Content.Request().GetAsync())
@@ -131,6 +137,10 @@ namespace ParentingTrackerApp.Export
             {
                 something = e.Message;
                 Disconnect(); // makes sense to reconnect
+            }
+            finally
+            {
+                CentralViewModel.SuppressPeriodicChange = wasSuppressed;
             }
 
             if (something != null)

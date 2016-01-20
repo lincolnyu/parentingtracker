@@ -44,6 +44,7 @@ namespace ParentingTrackerApp.Export
         public async Task<bool> Merge()
         {
             string something = null;
+            var wasSuppressed = false;
             try
             {
                 if (File == null)
@@ -64,6 +65,10 @@ namespace ParentingTrackerApp.Export
                         return false;
                     }
                 }
+
+                // suppress property/collection order change
+                wasSuppressed = CentralViewModel.SuppressPeriodicChange;
+                CentralViewModel.SuppressPeriodicChange = true;
 
                 IEnumerable<EventViewModel> merged;
                 var otherInfo = new HtmlExportHelper.DocInfo();
@@ -94,6 +99,10 @@ namespace ParentingTrackerApp.Export
             {
                 something = e.Message;
                 File = null;
+            }
+            finally
+            {
+                CentralViewModel.SuppressPeriodicChange = wasSuppressed;
             }
 
             if (something != null)

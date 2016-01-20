@@ -44,6 +44,11 @@ namespace ParentingTrackerApp.ViewModels
 
         #region Timer related
 
+        /// <summary>
+        ///  exporting may want it not interrupted
+        /// </summary>
+        public bool SuppressPeriodicChange { get; set; }
+
 
         private const int Underclocking = 5;
         private int _underclockingCounter = Underclocking;
@@ -771,6 +776,10 @@ namespace ParentingTrackerApp.ViewModels
 
         public void Refresh()
         {
+            if (SuppressPeriodicChange)
+            {
+                return;
+            }
             _underclockingCounter--;
             var refreshAll = _underclockingCounter <= 0;
             if (refreshAll)
