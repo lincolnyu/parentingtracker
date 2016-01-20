@@ -357,6 +357,7 @@ namespace ParentingTrackerApp.ViewModels
             };
             NewStartTimeChanged = false;
             NewEndTimeChanged = false;
+            _wasSelected = false; // so the previously focused and edited item will not come in the way
             UpdateIsEditingAndRelated();
         }
 
@@ -411,7 +412,8 @@ namespace ParentingTrackerApp.ViewModels
             sre.EndTime = t;
             sre.Status = EventViewModel.Statuses.Logged;
             AllEvents.Insert(sre);
-            SelectedEvent = AllEvents.FirstOrDefault(x => x.IsRunning);
+            var nextRunning = AllEvents.FirstOrDefault(x => x.IsRunning);
+            SelectedEvent = nextRunning ?? sre;
             UpdateIsEditingAndRelated();
         }
 
