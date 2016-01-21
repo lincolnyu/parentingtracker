@@ -212,13 +212,9 @@ namespace ParentingTrackerApp.Views
         {
             var c = (CentralViewModel)DataContext;
             EventViewModel e = null;
-            var wasChanged = c.NewStartTimeChanged;
             if (c.IsCreating)
             {
-                if (c.NewStartTimeChanged)
-                {
-                    e = LastEndTimeBefore(c.NewEvent.StartTime, null);
-                }
+                e = LastEndTimeBefore(c.NewEvent.StartTime, null);
             }
             else if (c.IsEditing)
             {
@@ -228,20 +224,15 @@ namespace ParentingTrackerApp.Views
             {
                 c.EventInEditing.StartTime = e?.EndTime ?? DateTime.Now;
             }
-            c.NewStartTimeChanged = wasChanged; // this opertion retains this status
         }
 
         private void EndAutoOnClick(object sender, RoutedEventArgs args)
         {
             var c = (CentralViewModel)DataContext;
             EventViewModel e = null;
-            var wasChanged = c.NewEndTimeChanged;
             if (c.IsCreating)
             {
-                if (c.NewEndTimeChanged)
-                {
-                    e = FirstStartTimeAfter(c.NewEvent.EndTime, null);
-                }
+                e = FirstStartTimeAfter(c.NewEvent.EndTime, null);
             }
             else if (c.IsEditing)
             {
@@ -251,7 +242,6 @@ namespace ParentingTrackerApp.Views
             {
                 c.EventInEditing.EndTime = e?.StartTime ?? DateTime.Now;
             }
-            c.NewEndTimeChanged = wasChanged; // this opertion retains this status
         }
 
         private EventViewModel LastEndTimeBefore(DateTime dt, EventViewModel but)

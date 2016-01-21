@@ -370,6 +370,11 @@ namespace ParentingTrackerApp.ViewModels
 
         private void CloseEditor(EventViewModel e)
         {
+            if (e != null)
+            {
+                e.ValidateEndTimeAgainstStartTime();
+            }
+
             if (e != null && e == SelectedEvent 
                 && (e.IsRunningEvent || !_wasSelected))
             {
@@ -410,6 +415,7 @@ namespace ParentingTrackerApp.ViewModels
             var t = DateTime.Now;
             AllEvents.Remove(sre);
             sre.EndTime = t;
+            sre.ValidateStartTimeAgainstEndTime();
             sre.Status = EventViewModel.Statuses.Logged;
             AllEvents.Insert(sre);
             var nextRunning = AllEvents.FirstOrDefault(x => x.IsRunning);
@@ -437,6 +443,7 @@ namespace ParentingTrackerApp.ViewModels
                 EventType = EventTypes.FirstOrDefault(),
                 Notes = ""
             };
+            evm.ValidateEndTimeAgainstStartTime();
             evm.Status = EventViewModel.Statuses.Logged;
             AllEvents.Insert(evm);
             NewEvent = null;

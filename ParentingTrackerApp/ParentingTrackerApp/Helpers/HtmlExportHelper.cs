@@ -98,9 +98,25 @@ namespace ParentingTrackerApp.Helpers
             {
                 case 1:
                     {
-                        var split = val.Split('~');
-                        evm.StartTime = split[0].FromNotTooLongString();
-                        evm.EndTime = split[1].FromNotTooLongString();
+                        const string hdt = "<time datetime=\"";
+                        // should have at least one
+                        var i1 = val.IndexOf(hdt);
+                        var is1 = i1 + hdt.Length;
+                        var ie1 = val.IndexOf('"', is1);
+                        var s1 = val.Substring(is1, ie1 - is1);
+                        evm.StartTime = DateTime.Parse(s1);
+                        var i2 = val.IndexOf(hdt, ie1);
+                        if (i2 >= 0)
+                        {
+                            var is2 = i2 + hdt.Length;
+                            var ie2 = val.IndexOf('"', is2);
+                            var s2 = val.Substring(is2, ie2 - is2);
+                            evm.EndTime = DateTime.Parse(s2);
+                        }
+                        else
+                        {
+                            evm.EndTime = evm.StartTime;
+                        }
                     }
                     state = 2;
                     return false;
@@ -175,7 +191,7 @@ namespace ParentingTrackerApp.Helpers
             {
                 if (ev.GroupName != lastGroupName)
                 {
-                    foreach (var l in WriteGroupHeader(ev.GroupName, indent))
+                    foreach (var l in WriteGroupHeader(ev, indent))
                     {
                         yield return l;
                     }
@@ -216,10 +232,11 @@ namespace ParentingTrackerApp.Helpers
             yield return string.Format("{0}  </tr>", indent);
         }
 
-        private static IEnumerable<string> WriteGroupHeader(string groupName, string indent)
+        private static IEnumerable<string> WriteGroupHeader(EventViewModel ev, string indent)
         {
+            var date = ev.StartTime.ToShortDate();
             yield return string.Format("{0}  <tr>", indent);
-            yield return string.Format("{0}    <td colspan=\"3\" style=\"text-align:left;\">{1}<hr></td>", indent, groupName);
+            yield return string.Format("{0}    <td colspan=\"3\" style=\"text-align:left;\">{1}<hr></td>", indent, date);
             yield return string.Format("{0}  </tr>", indent);
         }
 
@@ -228,12 +245,27 @@ namespace ParentingTrackerApp.Helpers
             var bgcolor = ev.Color;
             var fgcolor = bgcolor.GetConstrastingBlackOrWhite();
             yield return string.Format("{0}  <tr bgcolor=\"{1}\" style=\"color:{2}\">", indent, bgcolor.ToHtmlColor(), fgcolor.ToHtmlColor());
-            var startTime = DateTimeHelper.ToNotTooLongString(ev.StartTime);
-            var endTime = DateTimeHelper.ToNotTooLongString(ev.EndTime);
-            yield return string.Format("{0}    <td style=\"width:40%\">{1}</td>", indent, $"{startTime} ~ {endTime}");
-            yield return string.Format("{0}    <td style=\"width:30%\">{1}</td>", indent, ev.EventTypeName);
-            yield return string.Format("{0}    <td style=\"width:30%\">{1}</td>", indent, ev.Notes);
-            yield return string.Format("{0}  </tr>", indent);
+            var startTime = ev.StartTime.ToTimeString();
+            var endTime = ev.EndDate == ev.StartDate ?
+                ev.EndTime.ToTimeString() : ev.EndTime.ToNotTooLongStringDateFirst();
+            var duration = ev.Duration;
+            var standardStart = ev.StartTime.ToStandardHtmlTime();
+            var standardEnd = ev.EndTime.ToStandardHtmlTime();
+            if (ev.StartTime.CompareTimeIgnoreMs(ev.EndTime) == 0)
+            {
+                yield return $"{indent}    <td style=\"width:40%\"><time datetime=\"{standardStart}\">{startTime}</time></td>";
+            }
+            else if (string.IsNullOrWhiteSpace(duration))
+            {
+                yield return $"{indent}    <td style=\"width:40%\"><time datetime=\"{standardStart}\">{startTime}</time> ~ <time datetime=\"{standardEnd}\">{endTime}</time></td>";
+            }
+            else
+            {
+                yield return $"{indent}    <td style=\"width:40%\"><time datetime=\"{standardStart}\">{startTime}</time> ~ <time datetime=\"{standardEnd}\">{endTime}</time> {duration}</td>";
+            }
+            yield return $"{indent}    <td style=\"width:30%\">{ev.EventTypeName}</td>";
+            yield return $"{indent}    <td style=\"width:30%\">{ev.Notes}</td>";
+            yield return $"{indent}  </tr>";
         }
 
         private static IEnumerable<string> WriteTableFooter(string indent)

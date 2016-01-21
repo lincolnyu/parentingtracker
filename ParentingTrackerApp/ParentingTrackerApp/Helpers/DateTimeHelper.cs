@@ -83,10 +83,27 @@ namespace ParentingTrackerApp.Helpers
             return $"{tstr} {dstr}";
         }
 
+        public static string ToNotTooLongStringDateFirst(this DateTime dt)
+        {
+            var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
+            var dpat = ShortenShortDayPattern(dtfi.ShortDatePattern);
+            var dstr = dt.ToString(dpat);
+            var tpat = dtfi.LongTimePattern;
+            var tstr = dt.ToString(tpat);
+            return $"{dstr} {tstr}";
+        }
+
         public static string ToHourMinute(this DateTime dt)
         {
             var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
             var pattern = dtfi.ShortTimePattern;
+            return dt.ToString(pattern);
+        }
+
+        public static string ToTimeString(this DateTime dt)
+        {
+            var dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
+            var pattern = dtfi.LongTimePattern;
             return dt.ToString(pattern);
         }
 
@@ -107,6 +124,11 @@ namespace ParentingTrackerApp.Helpers
         private static string ShortenShortDayPattern(string dpat)
         {
             return dpat.Replace("yyyy", "yy");
+        }
+
+        public static string ToStandardHtmlTime(this DateTime dt)
+        {
+            return dt.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }

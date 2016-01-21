@@ -69,7 +69,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _startTime = value;
                     RaiseStartTimeChangedEvent();
-                    ValidateEndTimeForStartTime();
+                    // TODO validation...
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _endTime = value;
                     RaiseEndTimeChangedEvent();
-                    ValidateStartTimeFromEndTime();
+                    // TODO validation...
                 }
             }
         }
@@ -176,7 +176,7 @@ namespace ParentingTrackerApp.ViewModels
                 var hourStr = diff.Hours > 1 ? $"{diff.Hours} hrs " : diff.Hours > 0 ? $"{diff.Hours} hr "
                     : "";
                 var minStr = diff.Minutes > 1 ? $"{diff.Minutes} mins" : diff.Minutes > 0 ? $"{diff.Minutes} min"
-                    : "0 mins";
+                    : diff.TotalMinutes > 1 ? "" : "0 mins";
                 var timeStr = hourStr + minStr;
                     string.Format("{0}{1}", diff.Hours, diff.Minutes);// diff.ToString(@"hh\:mm\:ss");
                 var diffStr = diff.Days > 1 ? string.Format("{0} days {1}", diff.Days, timeStr)
@@ -448,22 +448,6 @@ namespace ParentingTrackerApp.ViewModels
             return name == "StartTime" || name == "EndTime" || name == "EventType" || name == "Notes";
         }
 
-        private void ValidateEndTimeForStartTime()
-        {
-            if (EndTime < StartTime)
-            {
-                EndTime = StartTime;
-            }
-        }
-
-        private void ValidateStartTimeFromEndTime()
-        {
-            if (EndTime < StartTime)
-            {
-                StartTime = EndTime;
-            }
-        }
-
         public void RefreshTimeDependent()
         {
             UpdateGroupName();
@@ -498,6 +482,22 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     GroupName = $"in {-d} days";
                 }
+            }
+        }
+
+        public void ValidateEndTimeAgainstStartTime()
+        {
+            if (EndTime < StartTime)
+            {
+                EndTime = StartTime;
+            }
+        }
+
+        public void ValidateStartTimeAgainstEndTime()
+        {
+            if (EndTime < StartTime)
+            {
+                StartTime = EndTime;
             }
         }
 
