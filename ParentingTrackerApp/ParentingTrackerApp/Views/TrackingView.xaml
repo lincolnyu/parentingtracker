@@ -325,7 +325,7 @@
                   SelectionChanged="GroupListOnSelectionChanged">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" FontSize="24"></TextBlock>
+                    <TextBlock Text="{Binding}" FontSize="20"></TextBlock>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
