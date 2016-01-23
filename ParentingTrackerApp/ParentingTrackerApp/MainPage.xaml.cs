@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
+using ParentingTrackerApp.Views;
 
 namespace ParentingTrackerApp
 {
@@ -111,7 +112,7 @@ namespace ParentingTrackerApp
             await CentralViewModel.Save();
         }
 
-        private void PivotOnSelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs args)
+        private void PivotOnSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             var currentView = SystemNavigationManager.GetForCurrentView();
             if (MainPivot.SelectedIndex == 0)
@@ -128,6 +129,11 @@ namespace ParentingTrackerApp
 
         private void CurrentViewOnBackRequested(object sender, BackRequestedEventArgs args)
         {
+            var tv = ((PivotItem)MainPivot.SelectedItem).Content as TrackingView;
+            if (tv != null && tv.Restore())
+            {
+                return;
+            }
             if (CentralViewModel.IsEditing)
             {
                 CentralViewModel.CloseEditor();

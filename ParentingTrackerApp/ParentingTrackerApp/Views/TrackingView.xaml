@@ -301,13 +301,33 @@
             </ListView.ItemContainerStyle>
             <ListView.GroupStyle>
                 <GroupStyle>
+                    <GroupStyle.HeaderContainerStyle>
+                        <Style TargetType="ListViewHeaderItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </GroupStyle.HeaderContainerStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Key}"></TextBlock>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="30"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Key}" PointerReleased="GroupHeaderClicked"></TextBlock>
+                            </Grid>
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </ListView.GroupStyle>
+        </ListView>
+        <ListView Name="GroupList" Grid.Row="0" Grid.RowSpan="3" Visibility="Collapsed" Background="White"
+                  ItemsSource="{Binding GroupNames}" SelectionMode="Single"
+                  SelectionChanged="GroupListOnSelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontSize="24"></TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
     </Grid>
 </UserControl>

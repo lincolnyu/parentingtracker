@@ -275,5 +275,45 @@ namespace ParentingTrackerApp.Views
             }
             return logged.StartTime < running.StartTime ? logged : running;
         }
+       
+        /// <summary>
+        ///  Restores the tracking view from group selection
+        /// </summary>
+        /// <returns>True if it's been restored or false if there's no need to restore</returns>
+        public bool Restore()
+        {
+            if (GroupList.Visibility == Visibility.Visible)
+            {
+                GroupList.Visibility = Visibility.Collapsed;
+                return true;
+            }
+            return false;
+        }
+
+        private void GroupHeaderClicked(object sender, PointerRoutedEventArgs args)
+        {
+            GroupList.Visibility = Visibility.Visible;
+        }
+
+        private void GroupListOnSelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            var sel = args.AddedItems.FirstOrDefault() as string;
+            ScrollToGroup(sel);
+        }
+
+        private void ScrollToGroup(string name)
+        {
+            GroupList.Visibility = Visibility.Collapsed;
+            if (name != null)
+            {
+                var c = (CentralViewModel)DataContext;
+                var first = c.AllEvents.FirstOrDefault(x => x.GroupName == name);
+                if (first != null)
+                {
+                    EventsList.ScrollIntoView(first, ScrollIntoViewAlignment.Leading);
+                }
+            }
+            GroupList.SelectedItem = null;
+        }
     }
 }

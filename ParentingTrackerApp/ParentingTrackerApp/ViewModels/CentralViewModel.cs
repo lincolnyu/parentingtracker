@@ -116,7 +116,15 @@ namespace ParentingTrackerApp.ViewModels
             {
                 return AllEvents.GroupBy(x => x.GroupName);
             }
-        } 
+        }
+
+        public IEnumerable<string> GroupNames
+        {
+            get
+            {
+                return AllEventsGrouped.Select(x => x.Key);
+            }
+        }
 
         public EventViewModel NewEvent
         {
@@ -551,7 +559,7 @@ namespace ParentingTrackerApp.ViewModels
             }
             else if (args.PropertyName == "GroupName" && !evm.IsEditing)
             {
-                RaisePropertyChangedEvent("AllEventsGrouped");
+                RaiseGroupRelatedCollectionsChanged();
                 // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
                 SelectedEvent = null;
             }
@@ -588,7 +596,7 @@ namespace ParentingTrackerApp.ViewModels
             // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
             // TODO and make other unwanted changes to SelectedEvent
             _suppressSelectedEventSetting = true;
-            RaisePropertyChangedEvent("AllEventsGrouped");
+            RaiseGroupRelatedCollectionsChanged();
             _suppressSelectedEventSetting = wasSuppressing3;
 
             if (_wasSelected && SelectedEvent == null)
@@ -669,8 +677,16 @@ namespace ParentingTrackerApp.ViewModels
         {
             RaisePropertyChangedEvent("LoggedEvents");
             RaisePropertyChangedEvent("RunningEvents");
-            RaisePropertyChangedEvent("AllEventsGrouped");
+            RaiseGroupRelatedCollectionsChanged();
         }
+
+        private void RaiseGroupRelatedCollectionsChanged()
+        {
+            RaisePropertyChangedEvent("AllEventsGrouped");
+            RaisePropertyChangedEvent("GroupNames");
+        }
+
+
 
         private void AllEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
