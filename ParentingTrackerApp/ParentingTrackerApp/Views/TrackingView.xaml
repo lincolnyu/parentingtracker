@@ -313,7 +313,8 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="30"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding Key}" PointerReleased="GroupHeaderClicked"></TextBlock>
+                                <TextBlock Grid.Column="0" Text="{Binding Key}" TextWrapping="Wrap" 
+                                           PointerReleased="GroupHeaderClicked"></TextBlock>
                             </Grid>
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
@@ -322,10 +323,26 @@
         </ListView>
         <ListView Name="GroupList" Grid.Row="0" Grid.RowSpan="3" Visibility="Collapsed" Background="White"
                   ItemsSource="{Binding GroupNames}" SelectionMode="Single"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                   SelectionChanged="GroupListOnSelectionChanged">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" FontSize="20"></TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="40"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Name}" TextWrapping="Wrap" FontSize="20"></TextBlock>
+                        <Button Grid.Column="1" Content="&#xE106;" FontFamily="Segoe UI Symbol"
+                                Visibility="{Binding CanDelete, Converter={StaticResource ResourceKey=BoolToVisibilityConverter}}"
+                                Click="DeleteGroupsButtonOnClick">
+                        </Button>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

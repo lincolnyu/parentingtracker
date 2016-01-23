@@ -176,8 +176,8 @@ namespace ParentingTrackerApp.Views
         private async void ClearOnClick(object sender, RoutedEventArgs args)
         {
             var dlg = new MessageDialog("Are you sure you want to clear the external file?" );
-            dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(YesToClearHandler)));
-            dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler(NoToClearHandler)));
+            dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(MainPage.YesCommandHandler)));
+            dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler(MainPage.NoCommandHandler)));
             var command = await dlg.ShowAsync();
             if ((int)command.Id != 1)
             {
@@ -192,16 +192,6 @@ namespace ParentingTrackerApp.Views
                 await OneDriveMobile.Clear();
             }
             await Refresh();
-        }
-
-        private void NoToClearHandler(IUICommand command)
-        {
-            command.Id = 0;
-        }
-
-        private void YesToClearHandler(IUICommand command)
-        {
-            command.Id = 1;
         }
 
         private void UserControlOnSizeChanged(object sender, SizeChangedEventArgs args)

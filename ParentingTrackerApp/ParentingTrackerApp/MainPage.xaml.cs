@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
 using ParentingTrackerApp.Views;
+using Windows.UI.Popups;
 
 namespace ParentingTrackerApp
 {
@@ -219,5 +220,17 @@ namespace ParentingTrackerApp
         {
             ((Button)sender).Background = _prevButtonBrush;
         }
+
+
+        public static void NoCommandHandler(IUICommand command)
+        {
+            command.Id = 0;
+        }
+
+        public static void YesCommandHandler(IUICommand command)
+        {
+            command.Id = 1;
+        }
+
     }
 }

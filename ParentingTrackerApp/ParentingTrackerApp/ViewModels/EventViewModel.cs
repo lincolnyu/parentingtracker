@@ -21,6 +21,8 @@ namespace ParentingTrackerApp.ViewModels
 
         #region Fields
 
+        public const string CurrentRunningGroup = "Currently Running";
+
         private DateTime _startTime;
         private DateTime _endTime;
         private EventTypeViewModel _eventType;
@@ -457,7 +459,7 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (IsRunningEvent)
             {
-                GroupName = "Currently Running";
+                GroupName = CurrentRunningGroup;
             }
             else
             {

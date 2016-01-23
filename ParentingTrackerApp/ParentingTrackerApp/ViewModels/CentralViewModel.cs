@@ -23,6 +23,16 @@ namespace ParentingTrackerApp.ViewModels
 
         #endregion
 
+        #region Nested types
+
+        public class GroupName
+        {
+            public string Name { get; set; }
+            public bool CanDelete { get; set; }
+        }
+
+        #endregion
+
         #region Fields
 
         #region Constants
@@ -118,11 +128,15 @@ namespace ParentingTrackerApp.ViewModels
             }
         }
 
-        public IEnumerable<string> GroupNames
+        public IEnumerable<GroupName> GroupNames
         {
             get
             {
-                return AllEventsGrouped.Select(x => x.Key);
+                return AllEventsGrouped.Select(x => new GroupName
+                {
+                    Name = x.Key,
+                    CanDelete = x.Key != EventViewModel.CurrentRunningGroup
+                });
             }
         }
 
@@ -685,8 +699,6 @@ namespace ParentingTrackerApp.ViewModels
             RaisePropertyChangedEvent("AllEventsGrouped");
             RaisePropertyChangedEvent("GroupNames");
         }
-
-
 
         private void AllEventsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
