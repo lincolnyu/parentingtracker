@@ -67,6 +67,9 @@ namespace ParentingTrackerApp.ViewModels
 
         #endregion
 
+        private readonly Dictionary<EventViewModel, EventTypeViewModel> _recycleBin 
+            = new Dictionary<EventViewModel, EventTypeViewModel>();
+
         #endregion
 
         #region Constructors
@@ -679,6 +682,7 @@ namespace ParentingTrackerApp.ViewModels
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
                 // TODO cleared items with subscriptions?
+                _recycleBin.Clear();
                 SubscribeForEvents();
             }
             else
@@ -688,6 +692,7 @@ namespace ParentingTrackerApp.ViewModels
                     foreach (var oldItem in args.OldItems.Cast<EventViewModel>())
                     {
                         oldItem.PropertyChanged -= EventOnPropertyChanged;
+                        _recycleBin.Remove(oldItem);
                     }
                 }
                 if (args.NewItems != null)
@@ -717,10 +722,12 @@ namespace ParentingTrackerApp.ViewModels
         {
             if (_suppressEventTypeCollectionChangeHandling)
             {
+                MarkAsDirty();
                 return;
             }
             if (args.Action == NotifyCollectionChangedAction.Reset)
             {
+                _recycleBin.Clear();
                 ResetEventTypes();
             }
             else
@@ -737,6 +744,7 @@ namespace ParentingTrackerApp.ViewModels
                     {
                         if (set.Contains(ev.EventType))
                         {
+                            _recycleBin[ev] = ev.EventType;
                             ev.EventType = null;
                         }
                     }
@@ -746,6 +754,16 @@ namespace ParentingTrackerApp.ViewModels
                     foreach (var ni in args.NewItems.Cast<EventTypeViewModel>())
                     {
                         ni.PropertyChanged += EventTypeOnPropertyChanged;
+                    }
+                    foreach (var r in _recycleBin.ToList())
+                    {
+                        var ev = r.Key;
+                        var et = r.Value;
+                        if (args.NewItems.Contains(et))
+                        {
+                            ev.EventType = et;
+                            _recycleBin.Remove(ev);
+                        }
                     }
                 }
             }

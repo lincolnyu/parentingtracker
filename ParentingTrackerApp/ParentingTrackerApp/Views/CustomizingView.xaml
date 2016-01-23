@@ -44,6 +44,8 @@
         </StackPanel>
         <ListView Name="EventTypesList"
                   ItemsSource="{Binding EventTypes}"
+                  CanReorderItems="True"
+                  AllowDrop="True"
                   Grid.Row="1"
                   VerticalAlignment="Stretch"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
