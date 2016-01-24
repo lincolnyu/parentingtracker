@@ -133,6 +133,7 @@ namespace ParentingTrackerApp
             var tv = ((PivotItem)MainPivot.SelectedItem).Content as TrackingView;
             if (tv != null && tv.Restore())
             {
+                args.Handled = true;
                 return;
             }
             if (CentralViewModel.IsEditing)
