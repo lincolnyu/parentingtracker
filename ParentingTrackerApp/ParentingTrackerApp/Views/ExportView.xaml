@@ -15,20 +15,28 @@
             <RowDefinition x:Name="LowerRow"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Name="UpperStack">
-            <TextBlock TextWrapping="Wrap" Name="InfoText">The following external file will be updated with entries in this app without losing any existing data. It can be shared accross devices if it's on OnDrive, access to which may require authentication.</TextBlock>
             <Grid Name="InputGrid">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition x:Name="HeaderButtonCol" Width="60"/>
+                    <ColumnDefinition x:Name="HeaderButtonCol" Width="70"/>
+                    <ColumnDefinition Width="30"/>
                     <ColumnDefinition/>
                     <ColumnDefinition x:Name="SelectButtonCol" Width="30"/>
                     <ColumnDefinition x:Name="OneDriveButtonCol" Width="80"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Name="Header" VerticalAlignment="Center">File path:</TextBlock>
-                <TextBox Grid.Column="1" Text="{Binding ExportFileText, Mode=TwoWay}"></TextBox>
-                <Button Name="Select" Grid.Column="2" Click="SelectFileOnClick">...</Button>
-                <CheckBox Name="OneDrive" Grid.Column="3" Content="Mobile" IsChecked="{Binding ExportUsingOneDriveSdk, Mode=TwoWay}">
+                <Border Grid.Column="1" Background="Yellow" Height="25" Width="20">
+                    <TextBlock Foreground="Red" VerticalAlignment="Center" Text="&#xE2C0;" FontFamily="Segoe UI Symbol" >
+                        <ToolTipService.ToolTip>
+                            <TextBlock TextWrapping="Wrap" Name="InfoText">The following external file will be updated with entries in this app without losing any existing data. It can be shared accross devices if it's on OnDrive, access to which may require authentication.</TextBlock>
+                        </ToolTipService.ToolTip>
+                    </TextBlock>
+                </Border>
+                <TextBox Grid.Column="2" Text="{Binding ExportFileText, Mode=TwoWay}" PlaceholderText="{Binding ExportFilePlaceHolderText}">
+                </TextBox>
+                <Button Name="Select" Grid.Column="3" Click="SelectFileOnClick">...</Button>
+                <CheckBox Name="OneDrive" Grid.Column="4" Content="Mobile" IsChecked="{Binding ExportUsingOneDriveSdk, Mode=TwoWay}">
                     <ToolTipService.ToolTip>
-                        <TextBlock TextWrapping="Wrap">Tick this box if you wanted to use the same file sharing mechanism as with your mobile phones</TextBlock>
+                        <TextBlock TextWrapping="Wrap">Tick this box if you wanted to use the same OneDrive based file sharing mechanism as with your mobile phones. The file with the specified name will be in the Document folder of your OneDrive.</TextBlock>
                     </ToolTipService.ToolTip>
                 </CheckBox>
             </Grid>

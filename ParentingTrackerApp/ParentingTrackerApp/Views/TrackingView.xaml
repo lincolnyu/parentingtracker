@@ -341,6 +341,9 @@
                         <Button Grid.Column="1" Content="&#xE106;" FontFamily="Segoe UI Symbol"
                                 Visibility="{Binding CanDelete, Converter={StaticResource ResourceKey=BoolToVisibilityConverter}}"
                                 Click="DeleteGroupsButtonOnClick">
+                            <ToolTipService.ToolTip>
+                                <TextBlock TextWrapping="Wrap">Delete all events in this group and groups earlier than it</TextBlock>
+                            </ToolTipService.ToolTip>
                         </Button>
                     </Grid>
                 </DataTemplate>

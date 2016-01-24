@@ -68,9 +68,9 @@ namespace ParentingTrackerApp.Views
             var c = (CentralViewModel)DataContext;
             if (c.ExportUsingOneDriveSdk)
             {
-                HeaderButtonCol.Width = new GridLength(60);
-                Header.Width = 60;
-                Header.Text = "File Name:";
+                HeaderButtonCol.Width = new GridLength(70);
+                Header.Width = 70;
+                Header.Text = "File name:";
                 Select.Visibility = Visibility.Collapsed;
                 SelectButtonCol.Width = new GridLength(0);
                 FilePicker = null;
@@ -78,22 +78,21 @@ namespace ParentingTrackerApp.Views
             }
             else
             {
-                HeaderButtonCol.Width = new GridLength(60);
-                Header.Width = 60;
+                HeaderButtonCol.Width = new GridLength(70);
+                Header.Width = 70;
                 Header.Text = "File path:";
                 Select.Visibility = Visibility.Visible;
                 SelectButtonCol.Width = new GridLength(30);
                 OneDriveMobile = null;
                 FilePicker = new FilePicker(c);
             }
-            
         }
 
         private void UpdateUiForMobile()
         {
             InfoText.Text = InfoMobile;
-            HeaderButtonCol.Width = new GridLength(60);
-            Header.Width = 60;
+            HeaderButtonCol.Width = new GridLength(70);
+            Header.Width = 70;
             Header.Text = "File Name:";
             Select.Visibility = Visibility.Collapsed;
             SelectButtonCol.Width = new GridLength(0);

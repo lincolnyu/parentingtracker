@@ -298,8 +298,11 @@ namespace ParentingTrackerApp.Views
 
         private void GroupListOnSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            var sel = args.AddedItems.FirstOrDefault() as string;
-            ScrollToGroup(sel);
+            var sel = args.AddedItems.FirstOrDefault() as CentralViewModel.GroupName;
+            if(sel != null)
+            {
+                ScrollToGroup(sel.Name);
+            }
         }
 
         private void ScrollToGroup(string name)
@@ -324,7 +327,7 @@ namespace ParentingTrackerApp.Views
             var f = c.AllEvents.FirstOrDefault(x => x.GroupName == gn.Name);
             if (f != null)
             {
-                var dlg = new MessageDialog("All events that occured {0} or ealier will be deleted. Are you sure to continue?");
+                var dlg = new MessageDialog($"All events that occured {gn.Name} or ealier will be deleted. Are you sure to continue?");
                 dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(MainPage.YesCommandHandler)));
                 dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler(MainPage.NoCommandHandler)));
                 var command = await dlg.ShowAsync();

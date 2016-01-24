@@ -200,9 +200,18 @@ namespace ParentingTrackerApp.ViewModels
                 {
                     _exportUsingOneDriveSdk = value;
                     RaisePropertyChangedEvent("ExportFileText");
+                    RaisePropertyChangedEvent("ExportFilePlaceHolderText");
                     RaisePropertyChangedEvent("ExportUsingOneDriveSdk");
                     MarkAsDirty();
                 }
+            }
+        }
+
+        public string ExportFilePlaceHolderText
+        {
+            get
+            {
+                return ExportUsingOneDriveSdk ? "OneDrive File Name" : null;
             }
         }
 
