@@ -3,8 +3,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using ParentingTrackerApp.Export;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Popups;
-using System;
 using System.Threading.Tasks;
 using System.ComponentModel;
 
@@ -174,11 +172,8 @@ namespace ParentingTrackerApp.Views
 
         private async void ClearOnClick(object sender, RoutedEventArgs args)
         {
-            var dlg = new MessageDialog("Are you sure you want to clear the external file?" );
-            dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(MainPage.YesCommandHandler)));
-            dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler(MainPage.NoCommandHandler)));
-            var command = await dlg.ShowAsync();
-            if ((int)command.Id != 1)
+            var res = await MainPage.PromptUserToConfirm("Are you sure you want to clear the external file?");
+            if (!res)
             {
                 return;
             }

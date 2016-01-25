@@ -43,8 +43,13 @@ namespace ParentingTrackerApp.Views
             tvm.EventTypes.Remove(del);
         }
 
-        private void ResetOnClicked(object sender, RoutedEventArgs e)
+        private async void ResetOnClicked(object sender, RoutedEventArgs e)
         {
+            var res = await MainPage.PromptUserToConfirm("Events with custom types will lose their types. Are you sure to continue?");
+            if (!res)
+            {
+                return;
+            }
             var tvm = (CentralViewModel)DataContext;
             tvm.ResetEventTypesToDefault();
         }

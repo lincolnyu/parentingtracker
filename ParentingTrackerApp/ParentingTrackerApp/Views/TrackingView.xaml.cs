@@ -8,7 +8,6 @@ using ParentingTrackerApp.Helpers;
 using Windows.UI.Xaml.Controls.Primitives;
 using System.Linq;
 using System;
-using Windows.UI.Popups;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -327,15 +326,11 @@ namespace ParentingTrackerApp.Views
             var f = c.AllEvents.FirstOrDefault(x => x.GroupName == gn.Name);
             if (f != null)
             {
-                var dlg = new MessageDialog($"All events that occured {gn.Name} or ealier will be deleted. Are you sure to continue?");
-                dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(MainPage.YesCommandHandler)));
-                dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler(MainPage.NoCommandHandler)));
-                var command = await dlg.ShowAsync();
-                if ((int)command.Id != 1)
+                var res = await MainPage.PromptUserToConfirm($"All events that occured {gn.Name} or ealier will be deleted. Are you sure to continue?");
+                if (!res)
                 {
                     return;
                 }
-
                 var index = c.AllEvents.IndexOf(f);
                 for (var i = c.AllEvents.Count-1; i >= index; i--)
                 {

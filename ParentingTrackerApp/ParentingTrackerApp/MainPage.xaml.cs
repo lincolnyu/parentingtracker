@@ -12,9 +12,9 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
-using Windows.UI.Xaml.Input;
 using ParentingTrackerApp.Views;
 using Windows.UI.Popups;
+using System.Threading.Tasks;
 
 namespace ParentingTrackerApp
 {
@@ -222,6 +222,14 @@ namespace ParentingTrackerApp
             ((Button)sender).Background = _prevButtonBrush;
         }
 
+        public static async Task<bool> PromptUserToConfirm(string message, string title=null)
+        {
+            var dlg = title != null? new MessageDialog(message, title) : new MessageDialog(message);
+            dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(YesCommandHandler)));
+            dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler(NoCommandHandler)));
+            var command = await dlg.ShowAsync();
+            return ((int)command.Id == 1);
+        }
 
         public static void NoCommandHandler(IUICommand command)
         {
