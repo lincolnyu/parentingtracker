@@ -341,6 +341,13 @@ namespace ParentingTrackerApp.Views
                 {
                     c.AllEvents.RemoveAt(i);
                 }
+
+                if (c.AllEvents.Count == 0 || index == 0)
+                {
+                    // cleared
+                    GroupList.Visibility = Visibility.Collapsed;
+                    GroupList.SelectedItem = null;
+                }
             }
         }
     }
