@@ -788,15 +788,17 @@ namespace ParentingTrackerApp.ViewModels
                 }
                 if (args.NewItems != null)
                 {
+					var set = new HashSet<EventTypeViewModel>();
                     foreach (var ni in args.NewItems.Cast<EventTypeViewModel>())
                     {
+						set.Add(ni);
                         ni.PropertyChanged += EventTypeOnPropertyChanged;
                     }
                     foreach (var r in _recycleBin.ToList())
                     {
                         var ev = r.Key;
                         var et = r.Value;
-                        if (args.NewItems.Contains(et))
+                        if (set.Contains(et))
                         {
                             ev.EventType = et;
                             _recycleBin.Remove(ev);
