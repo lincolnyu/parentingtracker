@@ -54,7 +54,7 @@ namespace ParentingTrackerApp.Views
             internal void Rebind(EventViewModel newValue)
             {
                 LoggedEntry = newValue;
-                if (LoggedEntry!= null)
+                if (LoggedEntry != null)
                 {
                     UpdateWidth();
                     LoggedEntry.PropertyChanged += LoggedDataContextOnPropertyChanged;
@@ -64,7 +64,7 @@ namespace ParentingTrackerApp.Views
 
         private bool _firstTime = true;
         private Dictionary<Grid, LoggedEntryUiAdaptor> _gridAdaptorMap = new Dictionary<Grid, LoggedEntryUiAdaptor>();
-        
+
         public TrackingView()
         {
             InitializeComponent();
@@ -103,7 +103,7 @@ namespace ParentingTrackerApp.Views
                 UpdateAsPerIsEditingState();
             }
         }
-        
+
         private void UpdateAsPerIsEditingState()
         {
             var dc = (CentralViewModel)DataContext;
@@ -275,7 +275,7 @@ namespace ParentingTrackerApp.Views
             }
             return logged.StartTime < running.StartTime ? logged : running;
         }
-       
+
         /// <summary>
         ///  Restores the tracking view from group selection
         /// </summary>
@@ -298,7 +298,7 @@ namespace ParentingTrackerApp.Views
         private void GroupListOnSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             var sel = args.AddedItems.FirstOrDefault() as CentralViewModel.GroupName;
-            if(sel != null)
+            if (sel != null)
             {
                 ScrollToGroup(sel.Name);
             }
@@ -332,10 +332,12 @@ namespace ParentingTrackerApp.Views
                     return;
                 }
                 var index = c.AllEvents.IndexOf(f);
-                for (var i = c.AllEvents.Count-1; i >= index; i--)
+                c.StartFastCollectionChange();
+                for (var i = c.AllEvents.Count - 1; i >= index; i--)
                 {
                     c.AllEvents.RemoveAt(i);
                 }
+                c.StopFastCollectionChange();
 
                 if (c.AllEvents.Count == 0 || index == 0)
                 {
@@ -345,5 +347,58 @@ namespace ParentingTrackerApp.Views
                 }
             }
         }
+
+        #region Testing
+#if false
+
+        private void TestOnClick(object sender, RoutedEventArgs e)
+        {
+            var r = new Random();
+            var day = DateTime.Today;
+            const int m = 100;
+            day = day.AddDays(-m + 1);
+            var c = (CentralViewModel)DataContext;
+            c.StartFastCollectionChange();
+            for (var i = 0; i < m; i++)
+            {
+                var n = r.Next(6, 12);
+                var delta = 24.0 / (n+1);
+                var duration = delta / 2;
+                var start = day;
+                for (var j = 0; j < n; j++)
+                {
+                    start = start.AddHours(delta);
+                    var end = start.AddHours(duration);
+                    AddRecord(start, end);
+                }
+                day = day.AddDays(1);
+            }
+            c.StopFastCollectionChange();
+        }
+
+        private void AddRecord(DateTime startTime, DateTime endTime)
+        {
+            var c = (CentralViewModel)DataContext;
+            var evm = new EventViewModel(c)
+            {
+                StartTime = startTime,
+                EndTime = endTime,
+                EventType = c.EventTypes.FirstOrDefault(),
+                Notes = ""
+            };
+            evm.ValidateEndTimeAgainstStartTime();
+            evm.Status = EventViewModel.Statuses.Logged;
+            c.AllEvents.Insert(evm);
+        }
+
+        private void FinaliseAdd()
+        {
+            var c = (CentralViewModel)DataContext;
+            c.NewEvent = null;
+            c.UpdateIsEditingAndRelated();
+        }
+
+#endif
+        #endregion
     }
 }

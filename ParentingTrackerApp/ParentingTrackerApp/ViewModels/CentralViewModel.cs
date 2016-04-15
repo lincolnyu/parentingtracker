@@ -55,6 +55,11 @@ namespace ParentingTrackerApp.ViewModels
         #region Timer related
 
         /// <summary>
+        ///  whether to perform a fast collection changed handling
+        /// </summary>
+        public bool FastCollectionChange { get; private set; }
+
+        /// <summary>
         ///  exporting may want it not interrupted
         /// </summary>
         public bool SuppressPeriodicChange { get; set; }
@@ -74,6 +79,7 @@ namespace ParentingTrackerApp.ViewModels
         private EventViewModel _newEvent;
         private bool _suppressSelectedEventSetting;
         private bool _exportUsingOneDriveSdk;
+        private bool _fastChangePerformed;
 
         #endregion
 
@@ -342,7 +348,7 @@ namespace ParentingTrackerApp.ViewModels
 
         #region Methods
 
-        private void UpdateIsEditingAndRelated()
+        public void UpdateIsEditingAndRelated()
         {
             if (SelectedEvent != null)
             {
@@ -528,6 +534,9 @@ namespace ParentingTrackerApp.ViewModels
                 _suppressAllEventsCollectionChangedHandler = wasSuppressing;
 
                 _state = States.Synced;
+
+                // NOTE this may be useful when sometimes the UI is slack to update
+                RaiseDerivedCollectionsChanged();
                 return evlines != null;
             }
             else
@@ -740,11 +749,38 @@ namespace ParentingTrackerApp.ViewModels
                     }
                 }
             }
-            RaiseDerivedCollectionsChanged();
-            // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
-            SelectedEvent = null;
+
+            if (FastCollectionChange)
+            {
+                _fastChangePerformed = true;
+            }
+            else
+            {
+                RaiseDerivedCollectionsChanged();
+                // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
+                SelectedEvent = null;
+            }
+
             MarkAsDirty();
             _suppressAllEventsCollectionChangedHandler = false;
+        }
+
+        public void StartFastCollectionChange()
+        {
+            FastCollectionChange = true;
+            _fastChangePerformed = false;
+        }
+
+        public void StopFastCollectionChange()
+        {
+            if (_fastChangePerformed)
+            {
+                RaiseDerivedCollectionsChanged();
+                // TODO seems AllEventsGrouped notification will cause SelectedEvent to be the first one
+                SelectedEvent = null;
+                _fastChangePerformed = false;
+            }
+            FastCollectionChange = false;
         }
 
         private void SubscribeForEvents()
